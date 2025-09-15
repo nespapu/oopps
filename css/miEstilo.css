@@ -1,0 +1,217 @@
+* {
+    font-family: 'Courier New', Courier, monospace;
+}
+
+button {
+    margin: 10px;
+    width: 10%;
+    height: 30px;
+    display: inline-block;
+}
+
+input {
+    border: none;
+    border-bottom: 1px solid black;
+    margin: 2px;
+}
+
+input:focus {
+    border: none;
+    border-bottom: 1px solid black;
+    outline: none;
+}
+
+input::placeholder {
+    color: grey;
+    text-align: left;
+}
+
+input.incorrecto {
+    border-bottom: 2px solid red;
+}
+
+textarea.incorrecto {
+    border: 2px solid red;
+}
+
+input.correcto {
+    border-bottom: 2px solid green;
+}
+
+textarea.correcto {
+    border: 2px solid green;
+}
+
+.titulo_ejercicio {
+    text-align: center;
+}
+
+.contenedor_ejercicio {
+    font-size: 14px;
+    width: 100%;
+}
+
+.contenedor_pregunta_solucion {
+    width: 100%;
+}
+
+.contenedor_pregunta_solucion div {
+    float: left;
+}
+
+.contenedor_pregunta {
+    width: 50%;
+    clear: left;
+}
+
+.contenedor_pregunta ul {
+    list-style-type: none;
+}
+
+.contenedor_solucion {
+    width: 50%;
+}
+
+.solucion_visible {
+    float: none !important;
+    width: 90%;
+    margin: auto;
+}
+
+.contenedor_botones {
+    width: 100%;
+    clear: both;
+    text-align: center;
+}
+
+.tituloTitulo {
+    width: 85%;
+}
+
+.indiceNumeracion {
+    width: 7em;
+}
+
+.indiceApartado {
+    width: 85%;
+}
+
+.justificacionCiclo {
+    width: 100%;
+}
+
+.justificacionLey {
+    width: 100%;
+}
+
+.justificacionModulo {
+    width: 100%;
+}
+
+.citasConcepto {
+    width: 50%;
+}
+
+.citasAutor {
+    width: 25%;
+}
+
+.citasAnyo {
+    width: 10%;
+}
+
+.citasNumeracion {
+    width: 7em;
+}
+
+.citasApartado {
+    width: 80%;
+}
+
+.citasCita {
+    width: 96%;
+    height: 150px;
+}
+
+.herramientasNombre {
+    width: 40%;
+}
+
+.herramientasDescripcion {
+    width: 96%;
+    height: 150px;
+}
+
+.contextoEscolarEnsenyanza {
+    width: 40%;
+}
+
+.contextoEscolarCiclos {
+    width: 40%;
+}
+
+.contextoEscolarModulos {
+    width: 40%;
+}
+
+.contextoEscolarConcepto {
+    width: 96%;
+    height: 100px;
+}
+
+.contextoEscolarAplicacion {
+    width: 96%;
+    height: 100px;
+}
+
+.contextoEscolarMetodo {
+    width: 96%;
+    height: 100px;
+}
+
+.contextoLaboralCampo {
+    width: 40%;
+}
+
+.contextoLaboralProfesional {
+    width: 40%;
+}
+
+.contextoLaboralConcepto {
+    width: 96%;
+    height: 100px;
+}
+
+.contextoLaboralAplicacion {
+    width: 96%;
+    height: 100px;
+}
+
+.contextoLaboralBeneficio {
+    width: 96%;
+    height: 100px;
+}
+
+.bibliografiaAutor {
+    width: 12%;
+}
+
+.bibliografiaAnyo {
+    width: 6%;
+}
+
+.bibliografiaTitulo {
+    width: 65%;
+}
+
+.bibliografiaEditorial {
+    width: 12%;
+}
+
+.webgrafiaNombre {
+    width: 15%;
+}
+
+.webgrafiaUrl {
+    width: 80%;
+}
