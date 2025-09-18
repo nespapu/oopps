@@ -1,0 +1,20 @@
+{
+    "name": "nespapu/oopps",
+    "description": "Una aplicación para ayudar al opostitor a memorizar sus temas",
+    "type": "project",
+    "require": {
+        "vlucas/phpdotenv": "^5.6"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Néstor",
+            "email": "nespapu@gmail.com"
+        }
+    ]
+}
