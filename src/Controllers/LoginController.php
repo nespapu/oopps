@@ -1,0 +1,52 @@
+<?php
+namespace App\Controllers;
+use App\Models\Usuario;
+use App\Helpers\Http;
+use App\Helpers\Flash;
+
+final class LoginController {
+    public function mostrar () : void {
+        // Datos vista
+        $titulo = "Login";
+
+        // Renderizar vista
+        ob_start();
+        require __DIR__.'/../../views/login/formulario.php';
+        $contenido = ob_get_clean();
+
+        // Cargar plantilla
+        require __DIR__.'/../../views/plantilla.php';
+    }
+
+    public function comprobar () : void {
+        $titulo = "Login";
+
+        $nombre = $_POST["nombre"];
+        $clave = $_POST["clave"];
+
+        $usuario = Usuario::buscarPorNombre($nombre);
+
+        if ($usuario) {
+            if ($usuario["clave"] != $clave) {
+                Flash::set('error', 'clave');
+                Http::redirigir("login/error");
+            }
+        } else {
+            Flash::set('error', 'nombre');
+            Http::redirigir("login/error");
+        }
+        Http::redirigir("oposicion/formulario");               
+    }
+
+    public function error () {
+        $titulo = "Login";
+        $error = Flash::get('error'); 
+        
+        ob_start();
+        require __DIR__.'/../../views/login/error.php';
+        $contenido = ob_get_clean();
+        
+        require __DIR__.'/../../views/plantilla.php';
+    }
+}
+?>
