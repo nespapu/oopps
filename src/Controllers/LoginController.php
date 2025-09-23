@@ -1,5 +1,7 @@
 <?php
 namespace App\Controllers;
+
+use App\Helpers\Auth;
 use App\Models\Usuario;
 use App\Helpers\Http;
 use App\Helpers\Flash;
@@ -35,18 +37,26 @@ final class LoginController {
             Flash::set('error', 'nombre');
             Http::redirigir("login/error");
         }
+        
+        session_regenerate_id(true);
+        $_SESSION['usuario'] = $usuario['nombre'];
+        
         Http::redirigir("oposicion/formulario");               
     }
 
     public function error () {
         $titulo = "Login";
         $error = Flash::get('error'); 
-        
+
         ob_start();
         require __DIR__.'/../../views/login/error.php';
         $contenido = ob_get_clean();
         
         require __DIR__.'/../../views/plantilla.php';
+    }
+
+    public function salir () {
+        Auth::logout();
     }
 }
 ?>
