@@ -9,7 +9,7 @@
         <script src="/oopps/js/misScripts.js"></script>
     </head>
     <body>
-
+        <?php require __DIR__ . '/partials/menu.php'; ?>
         <main>
             <?= $contenido /* aquí se incrusta la vista concreta */ ?>
         </main>

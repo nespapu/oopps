@@ -10,7 +10,11 @@ final class Auth {
         }
     }
 
-    public static function userId(): ?int {
+    public static function hayUsuarioLogueado(): bool {
+        return !empty($_SESSION['usuario']);
+    }
+
+    public static function usuario(): ?string {
         return $_SESSION['usuario'] ?? null;
     }
 
