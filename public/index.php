@@ -50,6 +50,14 @@ switch ($ruta) {
         Auth::requiereLogin();
         (new App\Controllers\OposicionController())->mostrar();
         break;
+    case 'oposicion/comprobar':
+        Auth::requiereLogin();
+        (new App\Controllers\OposicionController())->comprobar();
+        break;
+    case 'menu/formulario':
+        Auth::requiereLogin();
+        (new App\Controllers\MenuController())->mostrar();
+        break;
     default:
         http_response_code(404);
         echo "404 - Ruta no encontrada";
