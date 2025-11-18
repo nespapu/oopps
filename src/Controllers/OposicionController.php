@@ -22,7 +22,7 @@ final class OposicionController {
 
     public function comprobar () : void {
         $_SESSION['oposicion'] = $_POST['oposicion'];
-        Http::redirigir("menu/formulario");
+        Http::redirigir("panel-control-ejercicios");
     }
 }
 ?>

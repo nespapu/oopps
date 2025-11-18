@@ -54,9 +54,9 @@ switch ($ruta) {
         Auth::requiereLogin();
         (new App\Controllers\OposicionController())->comprobar();
         break;
-    case 'menu/formulario':
+    case 'panel-control-ejercicios':
         Auth::requiereLogin();
-        (new App\Controllers\MenuController())->mostrar();
+        (new App\Controllers\PanelControlEjerciciosController())->mostrar();
         break;
     default:
         http_response_code(404);
