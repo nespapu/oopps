@@ -42,7 +42,7 @@ $ejercicios = $ejercicios ?? [];
                                 <?php if ($activo): ?>
                                     <!-- Tarjeta de ejercicio ACTIVO (clicable) -->
                                     <a 
-                                        href="index.php?ruta=<?= htmlspecialchars($ruta, ENT_QUOTES, 'UTF-8') ?>" 
+                                        href="/oopps/menu.php?nombre=nestor&oposicion=590107" 
                                         class="text-decoration-none"
                                     >
                                         <div class="card h-100 border-0 shadow-sm">
