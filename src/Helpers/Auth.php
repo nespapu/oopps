@@ -2,11 +2,19 @@
 namespace App\Helpers;
 
 use App\Helpers\Http;
+use App\Helpers\Router;
 
 final class Auth {
     public static function requiereLogin(): void {
-        if (empty($_SESSION['usuario'])) {
+        if (!self::hayUsuarioLogueado()) {
+            
+            // Guardar ruta para redirigir al usuario si necesita autenticación previa
+            if (empty($_SESSION['siguiente_url'])) {
+                $_SESSION['siguiente_url'] = Router::obtenerRuta();
+            }
+
             Http::redirigir('login/formulario');
+            exit;
         }
     }
 

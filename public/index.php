@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-use App\Helpers\Http;
+use App\Helpers\Router;
 use App\Helpers\Auth;
 
 $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
@@ -25,13 +25,7 @@ require __DIR__.'/../vendor/autoload.php';
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__.'/../');
 $dotenv->load();
 
-$rutaBase = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/'); 
-$rutaPeticion = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-$ruta = trim(substr($rutaPeticion, strlen($rutaBase)), '/'); 
-
-if ($ruta === '') {
-    $ruta = 'login/formulario';
-}
+$ruta = Router::obtenerRuta(); 
 
 switch ($ruta) {
     case 'login/formulario':
@@ -55,7 +49,6 @@ switch ($ruta) {
         (new App\Controllers\OposicionController())->comprobar();
         break;
     case 'panel-control-ejercicios':
-        Auth::requiereLogin();
         (new App\Controllers\PanelControlEjerciciosController())->mostrar();
         break;
     default:

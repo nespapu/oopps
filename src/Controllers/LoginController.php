@@ -41,7 +41,11 @@ final class LoginController {
         session_regenerate_id(true);
         $_SESSION['usuario'] = $usuario['nombre'];
         
-        Http::redirigir("oposicion/formulario");               
+        $redireccion = $_SESSION['siguiente_url'] ?? 'panel-control-ejercicios';
+        unset($_SESSION['siguiente_url']);
+        Http::redirigir($redireccion);               
+        
+        exit;
     }
 
     public function error () {
