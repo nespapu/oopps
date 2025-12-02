@@ -79,7 +79,7 @@ $ejercicios = $ejercicios ?? [];
 
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
                     <a 
-                        href="index.php?ruta=login/salir" 
+                        href="login/salir" 
                         class="btn btn-outline-danger btn-sm"
                     >
                         Cerrar sesión

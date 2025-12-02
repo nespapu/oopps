@@ -27,6 +27,10 @@ final class Auth {
     }
 
     public static function logout(): void {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
         $_SESSION = [];
 
         if (ini_get('session.use_cookies')) {
@@ -34,6 +38,9 @@ final class Auth {
             setcookie(session_name(), '', time()-42000, $params['path'], $params['domain'], $params['secure'], $params['httponly']);
         }
         session_destroy();
+
+        session_start();
+        session_regenerate_id(true);
 
         Http::redirigir('login/formulario');
     }
