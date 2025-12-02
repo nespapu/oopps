@@ -13,7 +13,7 @@ final class Auth {
                 $_SESSION['siguiente_url'] = Router::obtenerRuta();
             }
 
-            Http::redirigir('login/formulario');
+            Http::redirigir('login');
             exit;
         }
     }
@@ -42,7 +42,7 @@ final class Auth {
         session_start();
         session_regenerate_id(true);
 
-        Http::redirigir('login/formulario');
+        Http::redirigir('login');
     }
 }
 ?>

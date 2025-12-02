@@ -17,19 +17,14 @@ final class LoginController {
     }
 
     public function comprobar () : void {
-        $nombre = $_POST["nombre"];
-        $clave = $_POST["clave"];
+        $nombre = $_POST['nombre'] ?? '';
+        $clave  = $_POST['clave'] ?? '';
 
         $usuario = Usuario::buscarPorNombre($nombre);
 
-        if ($usuario) {
-            if ($usuario["clave"] != $clave) {
-                Flash::set('error', 'La contraseña no es correcta');
-                Http::redirigir("login/formulario");
-            }
-        } else {
-            Flash::set('error', 'El nombre de usuario no existe');
-            Http::redirigir("login/formulario");
+        if (!$usuario || $usuario['clave'] !== $clave) {
+            Flash::set('error', 'Usuario o contraseña incorrectos');
+            Http::redirigir('login');
         }
         
         session_regenerate_id(true);
@@ -38,22 +33,9 @@ final class LoginController {
         $redireccion = $_SESSION['siguiente_url'] ?? 'panel-control-ejercicios';
         unset($_SESSION['siguiente_url']);
         Http::redirigir($redireccion);               
-        
-        exit;
     }
 
-    public function error () {
-        $titulo = "Login";
-        $error = Flash::get('error'); 
-
-        ob_start();
-        require __DIR__.'/../../views/login/error.php';
-        $contenido = ob_get_clean();
-        
-        require __DIR__.'/../../views/plantilla.php';
-    }
-
-    public function salir () {
+    public function salir () : void {
         Auth::logout();
     }
 }

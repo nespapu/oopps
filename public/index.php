@@ -39,15 +39,6 @@ switch ($ruta) {
             http_response_code(405);
         }
         break;
-    case 'login/formulario':
-        (new App\Controllers\LoginController())->mostrar();
-        break;
-    case 'login/comprobar':
-        (new App\Controllers\LoginController())->comprobar();
-        break;
-    case 'login/error':
-        (new App\Controllers\LoginController())->error();
-        break;
     case 'login/salir':
         (new App\Controllers\LoginController())->salir();
         break;

@@ -19,7 +19,7 @@ $titulo = 'Login';
                         </div>
                     <?php endif; ?>
 
-                    <form method="post" action="/oopps/public/login/comprobar">
+                    <form method="post" action="login">
                         <div class="mb-3">
                             <label for="nombre" class="form-label">Nombre de usuario</label>
                             <input
