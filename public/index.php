@@ -25,9 +25,20 @@ require __DIR__.'/../vendor/autoload.php';
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__.'/../');
 $dotenv->load();
 
-$ruta = Router::obtenerRuta(); 
+$ruta = Router::obtenerRuta();
+$metodo = Router::obtenerMetodo(); 
 
 switch ($ruta) {
+    case 'login':
+        $controlador = new App\Controllers\LoginController();
+        if (Router::esGet()) {
+            $controlador->mostrar();
+        } elseif (Router::esPost()) {
+            $controlador->comprobar();
+        } else {
+            http_response_code(405);
+        }
+        break;
     case 'login/formulario':
         (new App\Controllers\LoginController())->mostrar();
         break;

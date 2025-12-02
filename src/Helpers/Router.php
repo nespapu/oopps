@@ -14,5 +14,17 @@ class Router {
         $ruta = trim($path, '/');
         return $ruta === '' ? 'panel-control-ejercicios' : $ruta;
     }
+
+    public static function obtenerMetodo(): string {
+        return $_SERVER['REQUEST_METHOD'] ?? 'GET';
+    }
+
+    public static function esPost(): bool {
+        return self::obtenerMetodo() === 'POST';
+    }
+
+    public static function esGet(): bool {
+        return self::obtenerMetodo() === 'GET';
+    }
 }
 ?>
