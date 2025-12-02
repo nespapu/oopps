@@ -1,6 +1,7 @@
 <?php
 namespace App\Controllers;
 
+use App\Core\View;
 use App\Helpers\Auth;
 use App\Models\Usuario;
 use App\Helpers\Http;
@@ -8,21 +9,14 @@ use App\Helpers\Flash;
 
 final class LoginController {
     public function mostrar () : void {
-        // Datos vista
-        $titulo = "Login";
-
-        // Renderizar vista
-        ob_start();
-        require __DIR__.'/../../views/login/formulario.php';
-        $contenido = ob_get_clean();
-
-        // Cargar plantilla
-        require __DIR__.'/../../views/plantilla.php';
+        $error = Flash::get('error');
+    
+        View::render('login/index.php', [
+            'error' => $error
+        ]);
     }
 
     public function comprobar () : void {
-        $titulo = "Login";
-
         $nombre = $_POST["nombre"];
         $clave = $_POST["clave"];
 
@@ -30,12 +24,12 @@ final class LoginController {
 
         if ($usuario) {
             if ($usuario["clave"] != $clave) {
-                Flash::set('error', 'clave');
-                Http::redirigir("login/error");
+                Flash::set('error', 'La contraseña no es correcta');
+                Http::redirigir("login/formulario");
             }
         } else {
-            Flash::set('error', 'nombre');
-            Http::redirigir("login/error");
+            Flash::set('error', 'El nombre de usuario no existe');
+            Http::redirigir("login/formulario");
         }
         
         session_regenerate_id(true);
