@@ -9,13 +9,9 @@
             <input type="submit" value="Entrar">
             <?php 
                 if (isset($_GET['error'])) {
-                    print "<script>";
                     $error = $_GET['error'];
-                    if($error == 'nombre' || $error == 'clave') {
-                        print "document.getElementById('".$error."').classList.add('incorrecto')";
-                    } else {
-                        print "alert('Por favor, contacte con administrador del sitio')";
-                    }
+                    print "<script>";
+                    print "document.getElementById('".$error."').classList.add('incorrecto')";
                     print "</script>";
                 }
             ?>

@@ -42,14 +42,6 @@ switch ($ruta) {
     case 'login/salir':
         (new App\Controllers\LoginController())->salir();
         break;
-    case 'oposicion/formulario':
-        Auth::requiereLogin();
-        (new App\Controllers\OposicionController())->mostrar();
-        break;
-    case 'oposicion/comprobar':
-        Auth::requiereLogin();
-        (new App\Controllers\OposicionController())->comprobar();
-        break;
     case 'panel-control-ejercicios':
         (new App\Controllers\PanelControlEjerciciosController())->mostrar();
         break;
