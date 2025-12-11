@@ -48,6 +48,8 @@ oopps/
 └─ composer.json  # Composer configuration
 ```
 
+---
+
 ## 🚀 Getting Started
 
 ### 1. Clone the repository
@@ -72,6 +74,8 @@ cd oopps
 Then visit:
 👉 http://localhost:8000
 
+---
+
 ## 🛣️ Roadmap
 
 - [ ] Finish migrating old views to the new View class
@@ -82,12 +86,18 @@ Then visit:
 - [ ] Add usage statistics for users
 - [ ] Add PHPUnit tests for controllers and services
 
+---
+
 ## ❓ Why this project?
 
 This app merges my two professional profiles:
 - Software developer: applying clean code, MVC, refactoring, and architectural patterns in PHP.
 - IT teacher: creating a real tool to practice and memorize exam topics more effectively.
 
+---
+
 ## 📝 License
 
-MIT License.
+This project is open-source and distributed under the MIT License.  
+Copyright © 2025–present Néstor Pavón Puro.  
+For more information, see the [LICENSE](./LICENSE) file.
