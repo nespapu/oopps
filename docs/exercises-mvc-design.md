@@ -89,26 +89,590 @@ For each form that affects exercises, record:
 - Hidden fields that act as “exercise id / type / config”
 
 **Forms found**
-- [ ] TODO
+
+- Form: "Simulacro examen teórico" - Configuración
+  - Form tag: none (JS-driven UI)
+  - View: /menu.php
+  - Action: N/A (JS-driven navigation)
+  - Method: N/A (no HTTP submit)
+  - Trigger: onclick -> irPantallaEjercicioSimulacro()
+  - Hidden fields (context):
+    - nombre: {user}
+    - oposicion: {oppositionId}
+  - Inputs: none in `/menu.php` (uses hidden `nombre` and `oposicion` as context)
+
+- Form: "Cuánto sabes del tema"  wizard — step: Configuración
+  - Form tag: none (JS-driven UI)
+  - View: /menu.php
+  - Action: N/A (JS-driven navigation)
+  - Method: N/A (no HTTP submit)
+  - Trigger: onclick -> irPantallaEjercicioCuantoSabesTema('titulo.php', 'checkbox')
+  - Hidden fields (context):
+    - nombre: {user}
+    - oposicion: {oppositionId}
+  - Inputs:
+    - tema: {default|0|topicOrder} topic id/order to evaluate (affects /titulo.php via TOPIC_CONTEXT)
+    - dificultad: {default|1|2|3|4} (affects text masking across screens)
+    - numeracion: {boolean} (affects /indice.php)
+    - apartado: {boolean} (affects /indice.php)
+    - ciclos: {boolean} (affects /justificacion.php)
+    - leyes: {boolean} (affects /justificacion.php)
+    - modulos: {boolean} (affects /justificacion.php)
+    - conceptoCita: {boolean} (affects /citas.php)
+    - autorCita: {boolean} (affects /citas.php)
+    - anyoCita: {boolean} (affects /citas.php)
+    - cita: {boolean} (affects /citas.php)
+    - numeracionCita: {boolean} (affects /citas.php)
+    - apartadoCita: {boolean} (affects /citas.php)
+    - herramienta: {boolean} (affects /herramientas.php)
+    - descripcionHerramienta: {boolean} (affects /herramientas.php)
+    - ensenyanza: {boolean} (affects /contextoEscolar.php)
+    - ciclosContexto: {boolean} (affects /contextoEscolar.php)
+    - modulosContexto: {boolean} (affects /contextoEscolar.php)
+    - conceptoContextoEscolar: {boolean} (affects /contextoEscolar.php)
+    - aplicacionContextoEscolar: {boolean} (affects /contextoEscolar.php)
+    - metodo: {boolean} (affects /contextoEscolar.php)
+    - campo: {boolean} (affects /contextoLaboral.php)
+    - profesional: {boolean} (affects /contextoLaboral.php) (label text mismatch: shows “Ciclos” in UI)
+    - conceptoContextoLaboral: {boolean} (affects /contextoLaboral.php)
+    - aplicacionContextoLaboral: {boolean} (affects /contextoLaboral.php)
+    - beneficio: {boolean} (affects /contextoLaboral.php)
+    - autorLibro: {boolean} (affects /bibliografia.php)
+    - anyoLibro: {boolean} (affects /bibliografia.php)
+    - tituloLibro: {boolean} (affects /bibliografia.php)
+    - editorial: {boolean} (affects /bibliografia.php)
+    - nombreWeb: {boolean} (affects /webgrafia.php)
+    - url: {boolean} (affects /webgrafia.php)
+
+- Form: "Cuánto sabes del tema"  wizard — step: Título
+  - View: /titulo.php
+  - Action: N/A (JS-driven navigation)
+  - Method: N/A (no HTTP submit)
+  - Trigger(s):
+    - Back button -> onclick -> irPantallaEjercicioCuantoSabesTema('menu.php', 'input')
+    - "Corregir" button -> onclick -> corregirEjercicioTitulo(); habilitarBotonContinuar();
+    - "Reiniciar" button -> onclick -> reiniciarEjercicioTitulo();
+    - "Solución" button -> onclick -> mostrarSolucionEjercicioTitulo();
+    - "Continuar" button -> onclick -> irPantallaEjercicioCuantoSabesTema('indice.php', 'input') (disabled until validation)
+  - Hidden fields (context/state carrier):
+    - Created by: /php/definirCamposOcultos.php (reads URL params and prints hidden inputs)
+    - Expected state carried:
+      - nombre: {user}
+      - oposicion: {oppositionId}
+      - tema: {topicOrder}
+      - dificultad: {1|2|3|4}
+      - plus EXERCISE_CONFIGURATION flags (booleans) for later screens
+  - Inputs (user editable):
+    - (text) input.rellenar.rellenarTitulo.tituloTitulo
+      - Meaning: user types the topic title (fill the blank)
+      - Placeholder: hint derived from `obtenerAyuda(titulo, dificultad, "letras")` when dificultad != 4
+  - Hidden inputs (solution/reference data):
+    - input[type=hidden].solucionTitulo = {topicTitle}
+  - Notes:
+    - Evaluation: client-side (JS) — `corregirEjercicioTitulo()` compares user input vs `.solucionTitulo`.
+    - Progress gating: "Continuar" button starts disabled and is enabled by `habilitarBotonContinuar()` after correction.
+
+- Form "Cuánto sabes del tema" wizard — step: Índice
+  - View: /indice.php
+  - Action: N/A (JS-driven navigation)
+  - Method: N/A (no HTTP submit)
+  - Trigger(s):
+    - Back button -> onclick -> irPantallaEjercicioCuantoSabesTema('titulo.php', 'input')
+    - "Corregir" button -> onclick -> corregirEjercicioIndice(); habilitarBotonContinuar();
+    - "Reiniciar" button -> onclick -> reiniciarEjercicioIndice();
+    - "Solución" button -> onclick -> mostrarSolucionEjercicioIndice();
+    - "Continuar" button -> onclick -> irPantallaEjercicioCuantoSabesTema('justificacion.php', 'input') (disabled until validation)
+  - Hidden fields (context/state carrier):
+    - Created by: /php/definirCamposOcultos.php (reads URL params and prints hidden inputs)
+    - Expected state carried:
+      - nombre: {user}
+      - oposicion: {oppositionId}
+      - tema: {topicOrder}
+      - dificultad: {1|2|3|4}
+      - numeracion: {boolean}
+      - apartado: {boolean}
+      - plus remaining EXERCISE_CONFIGURATION flags for later screens
+  - Inputs (user editable / depending on configuration):
+    - For each "apartado" row returned from DB:
+      - Numeración field:
+        - If numeracion == "true":
+          - input.indiceNumeracion = {orden} (readonly, prefilled)
+        - Else:
+          - input.rellenar.rellenarNumeracion.indiceNumeracion
+            - Meaning: user types section order (fill the blank)
+            - Placeholder: hint derived from `obtenerAyuda(fila['orden'], dificultad, "letras")` when dificultad != 4
+      - Apartado title field:
+        - If apartado == "true":
+          - input.indiceApartado = {titulo} (readonly, prefilled)
+        - Else:
+          - input.rellenar.rellenarApartado.indiceApartado
+            - Meaning: user types section title (fill the blank)
+            - Placeholder: hint derived from `obtenerAyuda(fila['titulo'], dificultad, "letras")` when dificultad != 4
+  - Hidden inputs (solution/reference data):
+    - For each row:
+      - input[type=hidden].solucionNumeracion = {orden}
+      - input[type=hidden].solucionApartado = {titulo}
+  - Notes:
+    - Data source: DB table `apartado` filtered by `codigo_oposicion` and `orden_tema`, ordered by `numeracion`.
+    - Evaluation: client-side (JS) — `corregirEjercicioIndice()` compares user inputs vs `.solucionNumeracion` / `.solucionApartado`.
+    - Progress gating: "Continuar" starts disabled and is enabled after correction via `habilitarBotonContinuar()`.
+
+- Form: "Cuánto sabes del tema"  wizard — step: Justificación
+  - View: /justificacion.php
+  - Action: N/A (JS-driven navigation)
+  - Method: N/A (no HTTP submit)
+  - Trigger(s):
+    - Back button -> onclick -> irPantallaEjercicioCuantoSabesTema('indice.php', 'input')
+    - "Corregir" button -> onclick -> corregirEjercicioJustificacion(); habilitarBotonContinuar();
+    - "Reiniciar" button -> onclick -> reiniciarEjercicioJustificacion();
+    - "Solución" button -> onclick -> mostrarSolucionEjercicioJustificacion();
+    - "Continuar" button -> onclick -> irPantallaEjercicioCuantoSabesTema('citas.php', 'input') (disabled until validation)
+  - Hidden fields (context/state carrier):
+    - Created by: /php/definirCamposOcultos.php (reads URL params and prints hidden inputs)
+    - Expected state carried:
+      - nombre: {user}
+      - oposicion: {oppositionId}
+      - tema: {topicOrder}
+      - dificultad: {1|2|3|4}
+      - ciclos: {boolean}
+      - leyes: {boolean}
+      - modulos: {boolean}
+      - plus remaining EXERCISE_CONFIGURATION flags for later screens
+  - Inputs (user editable / depending on configuration):
+    - For each cycle block:
+      - Cycle name:
+        - If ciclos == "true": rendered as plain text (no input)
+        - Else:
+          - input.rellenar.rellenarCiclo.justificacionCiclo
+            - Meaning: user types cycle name (fill the blank)
+            - Placeholder: hint derived from `obtenerAyuda(ciclo, dificultad, "letras")` when dificultad != 4
+      - Laws list:
+        - If leyes == "true": each law rendered as plain text
+        - Else:
+          - input.rellenar.rellenarLey.justificacionLey (one per law)
+            - Meaning: user types law name
+            - Placeholder: hint derived from `obtener
+
+- Form: "Cuánto sabes del tema"  wizard — step: Citas
+  - View: /citas.php
+  - Action: N/A (JS-driven navigation)
+  - Method: N/A (no HTTP submit)
+  - Trigger(s):
+    - Back button -> onclick -> irPantallaEjercicioCuantoSabesTema('justificacion.php', 'input')
+    - "Corregir" button -> onclick -> corregirEjercicioCitas(); habilitarBotonContinuar();
+    - "Reiniciar" button -> onclick -> reiniciarEjercicioCitas();
+    - "Solución" button -> onclick -> mostrarSolucionEjercicioCitas();
+    - "Continuar" button -> onclick -> irPantallaEjercicioCuantoSabesTema('herramientas.php', 'input') (disabled until validation)
+  - Hidden fields (context/state carrier):
+    - Created by: /php/definirCamposOcultos.php (reads URL params and prints hidden inputs)
+    - Expected state carried:
+      - nombre: {user}
+      - oposicion: {oppositionId}
+      - tema: {topicOrder}
+      - dificultad: {1|2|3|4}
+      - conceptoCita: {boolean}
+      - autorCita: {boolean}
+      - anyoCita: {boolean}
+      - cita: {boolean}
+      - numeracionCita: {boolean}
+      - apartadoCita: {boolean}
+      - plus remaining EXERCISE_CONFIGURATION flags for later screens
+  - Inputs (user editable / depending on configuration):
+    - For each quote block returned from DB:
+      - Quote concept:
+        - If conceptoCita == "true":
+          - input.citasConcepto = {concepto_cita} (readonly, prefilled)
+        - Else:
+          - input.rellenar.rellenarConcepto.citasConcepto (placeholder uses `obtenerAyuda(..., "letras")` when dificultad != 4)
+      - Quote author:
+        - If autorCita == "true":
+          - input.citasAutor = {autor_cita} (readonly, prefilled)
+        - Else:
+          - input.rellenar.rellenarAutor.citasAutor (placeholder uses `obtenerAyuda(..., "letras")` when dificultad != 4)
+      - Quote year:
+        - If anyoCita == "true":
+          - input.citasAnyo = {anyo_cita} (readonly, prefilled)
+        - Else:
+          - input.rellenar.rellenarAnyo.citasAnyo (placeholder uses `obtenerAyuda(..., "letras")` when dificultad != 4)
+      - Section reference (where the quote appears):
+        - Section order:
+          - If numeracionCita == "true":
+            - input.citasNumeracion = {apartado_orden} (readonly, prefilled)
+          - Else:
+            - input.rellenar.rellenarNumeracion.citasNumeracion (placeholder uses `obtenerAyuda(..., "letras")` when dificultad != 4)
+        - Section title:
+          - If apartadoCita == "true":
+            - input.citasApartado = {apartado_titulo} (readonly, prefilled)
+          - Else:
+            - input.rellenar.rellenarApartado.citasApartado (placeholder uses `obtenerAyuda(..., "letras")` when dificultad != 4)
+      - Quote content:
+        - If cita == "true":
+          - textarea.citasCita contains {contenido} (prefilled; no placeholder)
+        - Else:
+          - textarea.rellenar.rellenarCita.citasCita (placeholder uses `obtenerAyuda(..., "palabras")` when dificultad != 4)
+  - Hidden inputs (solution/reference data):
+    - Per quote block:
+      - input[type=hidden].solucion.solucionConcepto = {concepto_cita}
+      - input[type=hidden].solucion.solucionAutor = {autor_cita}
+      - input[type=hidden].solucion.solucionAnyo = {anyo_cita}
+      - input[type=hidden].solucion.solucionNumeracion = {apartado_orden}
+      - input[type=hidden].solucion.solucionApartado = {apartado_titulo}
+      - input[type=hidden].solucion.solucionCita = {contenido}
+  - Notes:
+    - Client-side libraries:
+      - Includes `string-similarity.min.js` in addition to `misScripts.js`, suggesting similarity-based evaluation is used for at least some fields (notably long text like quote content). :contentReference[oaicite:1]{index=1}
+    - Data source: SQL joins `apartado_tener_cita`, `cita`, and `apartado` filtered by `codigo_oposicion` and `orden_tema`. :contentReference[oaicite:2]{index=2}
+    - Evaluation: client-side (JS) — `corregirEjercicioCitas()` compares user inputs vs `.solucion*`.
+    - Progress gating: "Continuar" starts disabled and is enabled after correction via `habilitarBotonContinuar()`.
+
+- Form: "Cuánto sabes del tema"  wizard — step: Herramientas
+  - View: /herramientas.php
+  - Action: N/A (JS-driven navigation)
+  - Method: N/A (no HTTP submit)
+  - Trigger(s):
+    - Back button -> onclick -> irPantallaEjercicioCuantoSabesTema('citas.php', 'input')
+    - "Corregir" button -> onclick -> corregirEjercicioHerramientas(); habilitarBotonContinuar();
+    - "Reiniciar" button -> onclick -> reiniciarEjercicioHerramientas();
+    - "Solución" button -> onclick -> mostrarSolucionEjercicioHerramientas();
+    - "Continuar" button -> onclick -> irPantallaEjercicioCuantoSabesTema('contextoEscolar.php', 'input') (disabled until validation)
+  - Hidden fields (context/state carrier):
+    - Created by: /php/definirCamposOcultos.php (reads URL params and prints hidden inputs)
+    - Expected state carried:
+      - nombre: {user}
+      - oposicion: {oppositionId}
+      - tema: {topicOrder}
+      - dificultad: {1|2|3|4}
+      - herramienta: {boolean}
+      - descripcionHerramienta: {boolean}
+      - plus remaining EXERCISE_CONFIGURATION flags for later screens
+  - Inputs (user editable / depending on configuration):
+    - For each tool row returned from DB:
+      - Tool name:
+        - If herramienta == "true":
+          - input.herramientasNombre = {toolName} (readonly, prefilled)
+        - Else:
+          - input.rellenar.rellenarNombre.herramientasNombre
+            - Meaning: user types tool name (fill the blank)
+            - Placeholder: hint derived from `obtenerAyuda(nombre, dificultad, "letras")` when dificultad != 4
+      - Tool description (optional field):
+        - Only rendered when descripcion != "" (description may be null/empty in DB). 
+        - If descripcionHerramienta == "true":
+          - textarea.herramientasDescripcion contains {description} (prefilled)
+        - Else:
+          - textarea.rellenar.rellenarDescripcion.herramientasDescripcion
+            - Meaning: user types tool description (fill the blank)
+            - Placeholder: hint derived from `obtenerAyuda(descripcion, dificultad, "palabras")` when dificultad != 4
+  - Hidden inputs (solution/reference data):
+    - Per tool row:
+      - input[type=hidden].solucionNombre = {toolName}
+      - input[type=hidden].solucionDescripcion = {description} (may be empty)
+  - Notes:
+    - Client-side libraries:
+      - Includes `string-similarity.min.js`, likely to support similarity-based evaluation for longer text fields (e.g., descriptions). 
+    - Data source: SQL join between `tema_usar_herramienta` and `herramienta` filtered by `codigo_oposicion` and `orden_tema`. 
+    - Evaluation: client-side (JS) — `corregirEjercicioHerramientas()` compares user inputs vs `.solucionNombre` / `.solucionDescripcion`.
+    - Progress gating: "Continuar" starts disabled and is enabled after correction via `habilitarBotonContinuar()`.
+
+- Form: "Cuánto sabes del tema"  wizard — step: Contexto Escolar
+  - View: /contextoEscolar.php
+  - Action: N/A (JS-driven navigation)
+  - Method: N/A (no HTTP submit)
+  - Trigger(s):
+    - Back button -> onclick -> irPantallaEjercicioCuantoSabesTema('herramientas.php', 'input')
+    - "Corregir" button -> onclick -> corregirEjercicioContextoEscolar(); habilitarBotonContinuar();
+    - "Reiniciar" button -> onclick -> reiniciarEjercicioContextoEscolar();
+    - "Solución" button -> onclick -> mostrarSolucionEjercicioContextoEscolar();
+    - "Continuar" button -> onclick -> irPantallaEjercicioCuantoSabesTema('contextoLaboral.php', 'input') (disabled until validation)
+  - Hidden fields (context/state carrier):
+    - Created by: /php/definirCamposOcultos.php (reads URL params and prints hidden inputs)
+    - Expected state carried:
+      - nombre: {user}
+      - oposicion: {oppositionId}
+      - tema: {topicOrder}
+      - dificultad: {1|2|3|4}
+      - ensenyanza: {boolean}
+      - ciclosContexto: {boolean}
+      - modulosContexto: {boolean}
+      - conceptoContextoEscolar: {boolean}
+      - aplicacionContextoEscolar: {boolean}
+      - metodo: {boolean}
+      - plus remaining EXERCISE_CONFIGURATION flags for later screens
+  - Inputs (user editable / depending on configuration):
+    - For each row from `contexto_escolar`:
+      - Teaching (ensenyanza):
+        - If ensenyanza == "true":
+          - input.contextoEscolarEnsenyanza = {ensenyanza} (readonly, prefilled)
+        - Else:
+          - input.rellenar.rellenarEnsenyanza.contextoEscolarEnsenyanza
+            - Placeholder: `obtenerAyuda(ensenyanza, dificultad, "letras")` when dificultad != 4
+      - Cycle (ciclo) (optional):
+        - Only rendered when `fila['ciclo'] != ""`. :contentReference[oaicite:1]{index=1}
+        - If ciclosContexto == "true":
+          - input.contextoEscolarCiclos = {ciclo} (readonly, prefilled)
+        - Else:
+          - input.rellenar.rellenarCiclos.contextoEscolarCiclos
+            - Placeholder: `obtenerAyuda(ciclo, dificultad, "letras")` when dificultad != 4
+      - Module (modulo) (optional):
+        - Only rendered when `fila['modulo'] != ""`. :contentReference[oaicite:2]{index=2}
+        - If modulosContexto == "true":
+          - input.contextoEscolarModulos = {modulo} (readonly, prefilled)
+        - Else:
+          - input.rellenar.rellenarModulos.contextoEscolarModulos
+            - Placeholder: `obtenerAyuda(modulo, dificultad, "letras")` when dificultad != 4
+      - Concept (concepto):
+        - If conceptoContextoEscolar == "true":
+          - textarea.contextoEscolarConcepto contains {concepto} (prefilled)
+        - Else:
+          - textarea.rellenar.rellenarConcepto.contextoEscolarConcepto
+            - Placeholder: `obtenerAyuda(concepto, dificultad, "palabras")` when dificultad != 4
+      - Application (aplicacion):
+        - If aplicacionContextoEscolar == "true":
+          - textarea.contextoEscolarAplicacion contains {aplicacion} (prefilled)
+        - Else:
+          - textarea.rellenar.rellenarAplicacion.contextoEscolarAplicacion
+            - Placeholder: `obtenerAyuda(aplicacion, dificultad, "palabras")` when dificultad != 4
+      - Method (metodo) (optional):
+        - Only rendered when `fila['metodo'] != ""`. :contentReference[oaicite:3]{index=3}
+        - If metodo == "true":
+          - textarea.contextoEscolarMetodo contains {metodo} (prefilled)
+        - Else:
+          - textarea.rellenar.rellenarMetodo.contextoEscolarMetodo
+            - Placeholder: `obtenerAyuda(metodo, dificultad, "palabras")` when dificultad != 4
+  - Hidden inputs (solution/reference data):
+    - input[type=hidden].solucionEnsenyanza = {ensenyanza}
+    - input[type=hidden].solucionCiclos = {ciclo} (may be empty)
+    - input[type=hidden].solucionModulos = {modulo} (may be empty)
+    - input[type=hidden].solucionConcepto = {concepto}
+    - input[type=hidden].solucionAplicacion = {aplicacion}
+    - input[type=hidden].solucionMetodo = {metodo} (may be empty)
+  - Notes:
+    - Client-side libraries:
+      - Includes `string-similarity.min.js`, likely to support similarity-based evaluation for longer text fields (concept/application/method). :contentReference[oaicite:4]{index=4}
+    - Data source: DB table `contexto_escolar` filtered by `codigo_oposicion` and `orden_tema`. :contentReference[oaicite:5]{index=5}
+    - Evaluation: client-side (JS) — `corregirEjercicioContextoEscolar()` compares user inputs vs `.solucion*`.
+    - Progress gating: "Continuar" starts disabled and is enabled after correction via `habilitarBotonContinuar()`.
+
+- Form: "Cuánto sabes del tema"  wizard — step: Contexto Laboral
+  - View: /contextoLaboral.php
+  - Action: N/A (JS-driven navigation)
+  - Method: N/A (no HTTP submit)
+  - Trigger(s):
+    - Back button -> onclick -> irPantallaEjercicioCuantoSabesTema('contextoEscolar.php', 'input')
+    - "Corregir" button -> onclick -> corregirEjercicioContextoLaboral(); habilitarBotonContinuar();
+    - "Reiniciar" button -> onclick -> reiniciarEjercicioContextoLaboral();
+    - "Solución" button -> onclick -> mostrarSolucionEjercicioContextoLaboral();
+    - "Continuar" button -> onclick -> irPantallaEjercicioCuantoSabesTema('bibliografia.php', 'input') (disabled until validation)
+  - Hidden fields (context/state carrier):
+    - Created by: /php/definirCamposOcultos.php (reads URL params and prints hidden inputs)
+    - Expected state carried:
+      - nombre: {user}
+      - oposicion: {oppositionId}
+      - tema: {topicOrder}
+      - dificultad: {1|2|3|4}
+      - campo: {boolean}
+      - profesional: {boolean}
+      - conceptoContextoLaboral: {boolean}
+      - aplicacionContextoLaboral: {boolean}
+      - beneficio: {boolean}
+      - plus remaining EXERCISE_CONFIGURATION flags for later screens
+  - Inputs (user editable / depending on configuration):
+    - For each row from `contexto_laboral`:
+      - Field (campo):
+        - If campo == "true":
+          - input.contextoLaboralCampo = {campo} (readonly, prefilled)
+        - Else:
+          - input.rellenar.rellenarCampo.contextoLaboralCampo
+            - Placeholder: `obtenerAyuda(campo, dificultad, "letras")` when dificultad != 4
+      - Professional (profesional) (optional):
+        - Only rendered when `fila['profesional'] != ""` (may be null/empty). :contentReference[oaicite:1]{index=1}
+        - If profesional == "true":
+          - input.contextoLaboralProfesional = {profesional} (readonly, prefilled)
+        - Else:
+          - input.rellenar.rellenarProfesional.contextoLaboralProfesional
+            - Placeholder: `obtenerAyuda(profesional, dificultad, "letras")` when dificultad != 4
+      - Concept (concepto):
+        - If conceptoContextoLaboral == "true":
+          - textarea.contextoLaboralConcepto contains {concepto} (readonly)
+        - Else:
+          - textarea.rellenar.rellenarConcepto.contextoLaboralConcepto
+            - Placeholder: `obtenerAyuda(concepto, dificultad, "palabras")` when dificultad != 4
+      - Task / application (tarea) (note: stored as `tarea` in DB):
+        - If aplicacionContextoLaboral == "true":
+          - textarea.contextoLaboralAplicacion contains {tarea} (intended readonly; code has typo `readyonly`). :contentReference[oaicite:2]{index=2}
+        - Else:
+          - textarea.rellenar.rellenarAplicacion.contextoLaboralAplicacion
+            - Placeholder: `obtenerAyuda(tarea, dificultad, "palabras")` when dificultad != 4
+      - Benefit (beneficio):
+        - If beneficio == "true":
+          - textarea.contextoLaboralBeneficio contains {beneficio} (readonly)
+        - Else:
+          - textarea.rellenar.rellenarBeneficio.contextoLaboralBeneficio
+            - Placeholder: `obtenerAyuda(beneficio, dificultad, "palabras")` when dificultad != 4
+  - Hidden inputs (solution/reference data):
+    - input[type=hidden].solucionCampo = {campo}
+    - input[type=hidden].solucionProfesional = {profesional} (may be empty)
+    - input[type=hidden].solucionConcepto = {concepto}
+    - input[type=hidden].solucionAplicacion = {tarea}
+    - input[type=hidden].solucionBeneficio = {beneficio}
+  - Notes:
+    - Client-side libraries:
+      - Includes `string-similarity.min.js`, likely used for similarity-based evaluation on longer text fields. :contentReference[oaicite:3]{index=3}
+    - Data source: DB table `contexto_laboral` filtered by `codigo_oposicion` and `orden_tema`. :contentReference[oaicite:4]{index=4}
+    - Evaluation: client-side (JS) — `corregirEjercicioContextoLaboral()` compares user inputs vs `.solucion*`.
+    - Progress gating: "Continuar" starts disabled and is enabled after correction via `habilitarBotonContinuar()`.
+
+- Form: "Cuánto sabes del tema"  wizard — step: Bibliografía
+  - View: /bibliografia.php
+  - Action: N/A (JS-driven navigation)
+  - Method: N/A (no HTTP submit)
+  - Trigger(s):
+    - Back button -> onclick -> irPantallaEjercicioCuantoSabesTema('contextoLaboral.php', 'input')
+    - "Corregir" button -> onclick -> corregirEjercicioBibliografia(); habilitarBotonContinuar();
+    - "Reiniciar" button -> onclick -> reiniciarEjercicioBibliografia();
+    - "Solución" button -> onclick -> mostrarSolucionEjercicioBibliografia();
+    - "Continuar" button -> onclick -> irPantallaEjercicioCuantoSabesTema('webgrafia.php', 'input') (disabled until validation)
+  - Hidden fields (context/state carrier):
+    - Created by: /php/definirCamposOcultos.php (reads URL params and prints hidden inputs)
+    - Expected state carried:
+      - nombre: {user}
+      - oposicion: {oppositionId}
+      - tema: {topicOrder}
+      - dificultad: {1|2|3|4}
+      - autorLibro: {boolean}
+      - anyoLibro: {boolean}
+      - tituloLibro: {boolean}
+      - editorial: {boolean}
+      - plus remaining EXERCISE_CONFIGURATION flags for later screens
+  - Inputs (user editable / depending on configuration):
+    - For each book row returned from DB:
+      - Author:
+        - If autorLibro == "true":
+          - input.bibliografiaAutor = {author} (readonly, prefilled)
+        - Else:
+          - input.rellenar.rellenarAutor.bibliografiaAutor
+            - Placeholder: `obtenerAyuda(autor, dificultad, "letras")` when dificultad != 4
+      - Publication year:
+        - If anyoLibro == "true":
+          - input.bibliografiaAnyo = {year} (readonly, prefilled)
+        - Else:
+          - input.rellenar.rellenarAnyo.bibliografiaAnyo
+            - Placeholder: `obtenerAyuda(anyo, dificultad, "letras")` when dificultad != 4
+      - Title:
+        - If tituloLibro == "true":
+          - input.bibliografiaTitulo = {title} (readonly, prefilled)
+        - Else:
+          - input.rellenar.rellenarTitulo.bibliografiaTitulo
+            - Placeholder: `obtenerAyuda(titulo, dificultad, "letras")` when dificultad != 4
+      - Editorial:
+        - If editorial == "true":
+          - input.bibliografiaEditorial = {editorial} (readonly, prefilled)
+        - Else:
+          - input.rellenar.rellenarEditorial.bibliografiaEditorial
+            - Placeholder: `obtenerAyuda(editorial, dificultad, "letras")` when dificultad != 4
+  - Hidden inputs (solution/reference data):
+    - Per book row:
+      - input[type=hidden].solucionAutor = {author}
+      - input[type=hidden].solucionAnyo = {year}
+      - input[type=hidden].solucionTitulo = {title}
+      - input[type=hidden].solucionEditorial = {editorial}
+  - Notes:
+    - Client-side libraries:
+      - Includes `string-similarity.min.js` (likely not essential here since all fields are short, but present consistently in these steps). :contentReference[oaicite:1]{index=1}
+    - Data source:
+      - SQL join between `tema_referenciar_libro` and `libro` (joined by autor + titulo), filtered by `codigo_oposicion` and `orden_tema`. :contentReference[oaicite:2]{index=2}
+    - Evaluation: client-side (JS) — `corregirEjercicioBibliografia()` compares user inputs vs `.solucionAutor` / `.solucionAnyo` / `.solucionTitulo` / `.solucionEditorial`.
+    - Progress gating: "Continuar" starts disabled and is enabled after correction via `habilitarBotonContinuar()`.
+
+- Form: "Cuánto sabes del tema"  wizard — step: Webgrafía
+  - View: /webgrafia.php
+  - Action: N/A (JS-driven navigation)
+  - Method: N/A (no HTTP submit)
+  - Trigger(s):
+    - Back button -> onclick -> irPantallaEjercicioCuantoSabesTema('webgrafia.php', 'input')
+      - Note: back currently points to the same screen (likely intended to go to /bibliografia.php).
+    - "Corregir" button -> onclick -> corregirEjercicioWebgrafia(); habilitarBotonContinuar();
+    - "Reiniciar" button -> onclick -> reiniciarEjercicioWebgrafia();
+    - "Solución" button -> onclick -> mostrarSolucionEjercicioWebgrafia();
+    - "Fin" button -> onclick -> irPantallaEjercicioCuantoSabesTema('menu.php', 'input') (disabled until validation)
+  - Hidden fields (context/state carrier):
+    - Created by: /php/definirCamposOcultos.php (reads URL params and prints hidden inputs)
+    - Expected state carried:
+      - nombre: {user}
+      - oposicion: {oppositionId}
+      - tema: {topicOrder}
+      - dificultad: {1|2|3|4}
+      - nombreWeb: {boolean}
+      - url: {boolean}
+      - plus remaining EXERCISE_CONFIGURATION flags
+  - Inputs (user editable / depending on configuration):
+    - For each website row returned from DB:
+      - Website name:
+        - If nombreWeb == "true":
+          - input.webgrafiaNombre = {siteName} (readonly, prefilled)
+        - Else:
+          - input.rellenar.rellenarNombre.webgrafiaNombre
+            - Meaning: user types website name (fill the blank)
+            - Placeholder: `obtenerAyuda(nombre, dificultad, "letras")` when dificultad != 4
+      - Website URL:
+        - If url == "true":
+          - input.webgrafiaUrl = {siteUrl} (readonly, prefilled)
+        - Else:
+          - input.rellenar.rellenarUrl.webgrafiaUrl
+            - Meaning: user types website URL (fill the blank)
+            - Placeholder: `obtenerAyuda(url, dificultad, "letras")` when dificultad != 4
+  - Hidden inputs (solution/reference data):
+    - Per website row:
+      - input[type=hidden].solucionNombre = {siteName}
+      - input[type=hidden].solucionUrl = {siteUrl}
+  - Notes:
+    - Client-side libraries:
+      - Includes `string-similarity.min.js` (present consistently in later steps; may be useful for approximate matching, especially URLs).
+    - Data source:
+      - SQL join between `tema_referenciar_web` and `web` (joined by url), filtered by `codigo_oposicion` and `orden_tema`.
+    - Evaluation: client-side (JS) — `corregirEjercicioWebgrafia()` compares user inputs vs `.solucionNombre` / `.solucionUrl`.
+    - Progress gating: "Fin" starts disabled and is enabled after correction via `habilitarBotonContinuar()`.
+
+#### Wizard screens overview (Cuánto sabes del tema)
+
+| Screen | Purpose | Main configuration flags | Similarity lib | Gating |
+|------|--------|--------------------------|----------------|--------|
+| menu.php | Exercise configuration | dificultad + all boolean flags | ❌ | ❌ |
+| titulo.php | Topic title | dificultad | ❌ | ✅ |
+| indice.php | Sections index | numeracion, apartado, dificultad | ❌ | ✅ |
+| justificacion.php | Cycles, laws and modules | ciclos, leyes, modulos, dificultad | ❌ | ✅ |
+| citas.php | Quotes | conceptoCita, autorCita, anyoCita, cita, numeracionCita, apartadoCita | ✅ | ✅ |
+| herramientas.php | Teaching tools | herramienta, descripcionHerramienta | ✅ | ✅ |
+| contextoEscolar.php | School context | ensenyanza, ciclosContexto, modulosContexto, conceptoContextoEscolar, aplicacionContextoEscolar, metodo | ✅ | ✅ |
+| contextoLaboral.php | Professional context | campo, profesional, conceptoContextoLaboral, aplicacionContextoLaboral, beneficio | ✅ | ✅ |
+| bibliografia.php | Bibliography | autorLibro, anyoLibro, tituloLibro, editorial | (optional) | ✅ |
+| webgrafia.php | Webography | nombreWeb, url | (optional) | ✅ |
+
+**Notes**
+
+- All wizard steps (except menu.php) implement progress gating via a disabled "Continue/Fin" button.
+- Evaluation is performed client-side in all steps.
+- `string-similarity.min.js` is used mainly in steps with long text fields (quotes, descriptions, contexts).
+- Exercise state is propagated across screens via hidden inputs generated by `definirCamposOcultos.php`.
+
 
 ---
 
 ## 3. Legacy client-side controller (`misScripts.js`) — responsibilities and flow
 
-`/js/misScripts.js` acts as a client-side orchestration layer for legacy exercises. It concentrates responsibilities that, in an MVC design, would be split across Controllers (routing/flow), Domain Services (evaluation rules), and View/UI helpers. :contentReference[oaicite:1]{index=1}
+`/js/misScripts.js` acts as a client-side orchestration layer for legacy exercises. It concentrates responsibilities that, in an MVC design, would be split across Controllers (routing/flow), Domain Services (evaluation rules), and View/UI helpers.
 
 ### 3.1 Main responsibilities (current)
-- Navigation between legacy screens by building long query strings and redirecting via `document.location.href`. :contentReference[oaicite:2]{index=2}
+- Navigation between legacy screens by building long query strings and redirecting via `document.location.href`.
 - Reading exercise configuration from DOM inputs (both normal inputs and hidden inputs) and propagating it across screens (state carried in URL parameters). :contentReference[oaicite:3]{index=3}
-- Random topic selection when the user chooses a special option (topic=0 → pick random). :contentReference[oaicite:4]{index=4}
+- Random topic selection when the user chooses a special option (topic=0 → pick random).
 - In-screen evaluation logic:
   - Equality-based checks (`modo = "igualdad"`).
-  - Similarity-based checks (`modo = "similitud"`) using `string-similarity`. :contentReference[oaicite:5]{index=5}
+  - Similarity-based checks (`modo = "similitud"`) using `string-similarity`.
 - UI feedback helpers:
   - Mark inputs as correct/incorrect via CSS classes.
   - Reset inputs and clear visible solutions.
-  - Render “show solution” blocks by injecting DOM elements. :contentReference[oaicite:6]{index=6}
-- Gating progression: enable/disable “Continue” button based on correctness. :contentReference[oaicite:7]{index=7}
+  - Render “show solution” blocks by injecting DOM elements.
+- Gating progression: enable/disable “Continue” button based on correctness.
 
 ### 3.2 Navigation and state propagation
 The function `irPantallaEjercicioCuantoSabesTema(pantalla, from)` reads a large set of configuration flags (many booleans) from DOM inputs and constructs the next screen URL with all values appended as query parameters. This is the primary legacy mechanism to keep exercise state between screens. :contentReference[oaicite:8]{index=8}
