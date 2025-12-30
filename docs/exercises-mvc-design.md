@@ -3,6 +3,11 @@
 
 # Exercises — Legacy Flow Analysis & MVC High-Level Design
 
+## How to read this document
+- Sections 2–5: legacy analysis (what exists)
+- Sections 6–7: target MVC design (what we want)
+- Sections 7.10+: migration plan (how to get there)
+
 ## 1. Goal and non-goals
 
 ### Goal
@@ -90,7 +95,7 @@ For each form that affects exercises, record:
 
 **Forms found**
 
-- Form: "Simulacro examen teórico" - Configuración
+- Form: "Simulacro examen teórico" wizard — step: Configuración
   - Form tag: none (JS-driven UI)
   - View: /menu.php
   - Action: N/A (JS-driven navigation)
@@ -320,8 +325,8 @@ For each form that affects exercises, record:
       - input[type=hidden].solucion.solucionCita = {contenido}
   - Notes:
     - Client-side libraries:
-      - Includes `string-similarity.min.js` in addition to `misScripts.js`, suggesting similarity-based evaluation is used for at least some fields (notably long text like quote content). :contentReference[oaicite:1]{index=1}
-    - Data source: SQL joins `apartado_tener_cita`, `cita`, and `apartado` filtered by `codigo_oposicion` and `orden_tema`. :contentReference[oaicite:2]{index=2}
+      - Includes `string-similarity.min.js` in addition to `misScripts.js`, suggesting similarity-based evaluation is used for at least some fields (notably long text like quote content).
+    - Data source: SQL joins `apartado_tener_cita`, `cita`, and `apartado` filtered by `codigo_oposicion` and `orden_tema`.
     - Evaluation: client-side (JS) — `corregirEjercicioCitas()` compares user inputs vs `.solucion*`.
     - Progress gating: "Continuar" starts disabled and is enabled after correction via `habilitarBotonContinuar()`.
 
@@ -406,14 +411,14 @@ For each form that affects exercises, record:
           - input.rellenar.rellenarEnsenyanza.contextoEscolarEnsenyanza
             - Placeholder: `obtenerAyuda(ensenyanza, dificultad, "letras")` when dificultad != 4
       - Cycle (ciclo) (optional):
-        - Only rendered when `fila['ciclo'] != ""`. :contentReference[oaicite:1]{index=1}
+        - Only rendered when `fila['ciclo'] != ""`. 
         - If ciclosContexto == "true":
           - input.contextoEscolarCiclos = {ciclo} (readonly, prefilled)
         - Else:
           - input.rellenar.rellenarCiclos.contextoEscolarCiclos
             - Placeholder: `obtenerAyuda(ciclo, dificultad, "letras")` when dificultad != 4
       - Module (modulo) (optional):
-        - Only rendered when `fila['modulo'] != ""`. :contentReference[oaicite:2]{index=2}
+        - Only rendered when `fila['modulo'] != ""`. 
         - If modulosContexto == "true":
           - input.contextoEscolarModulos = {modulo} (readonly, prefilled)
         - Else:
@@ -432,8 +437,7 @@ For each form that affects exercises, record:
           - textarea.rellenar.rellenarAplicacion.contextoEscolarAplicacion
             - Placeholder: `obtenerAyuda(aplicacion, dificultad, "palabras")` when dificultad != 4
       - Method (metodo) (optional):
-        - Only rendered when `fila['metodo'] != ""`. :contentReference[oaicite:3]{index=3}
-        - If metodo == "true":
+        - Only rendered when `fila['metodo'] != ""`. 
           - textarea.contextoEscolarMetodo contains {metodo} (prefilled)
         - Else:
           - textarea.rellenar.rellenarMetodo.contextoEscolarMetodo
@@ -447,8 +451,8 @@ For each form that affects exercises, record:
     - input[type=hidden].solucionMetodo = {metodo} (may be empty)
   - Notes:
     - Client-side libraries:
-      - Includes `string-similarity.min.js`, likely to support similarity-based evaluation for longer text fields (concept/application/method). :contentReference[oaicite:4]{index=4}
-    - Data source: DB table `contexto_escolar` filtered by `codigo_oposicion` and `orden_tema`. :contentReference[oaicite:5]{index=5}
+      - Includes `string-similarity.min.js`, likely to support similarity-based evaluation for longer text fields (concept/application/method). 
+    - Data source: DB table `contexto_escolar` filtered by `codigo_oposicion` and `orden_tema`. 
     - Evaluation: client-side (JS) — `corregirEjercicioContextoEscolar()` compares user inputs vs `.solucion*`.
     - Progress gating: "Continuar" starts disabled and is enabled after correction via `habilitarBotonContinuar()`.
 
@@ -484,7 +488,7 @@ For each form that affects exercises, record:
           - input.rellenar.rellenarCampo.contextoLaboralCampo
             - Placeholder: `obtenerAyuda(campo, dificultad, "letras")` when dificultad != 4
       - Professional (profesional) (optional):
-        - Only rendered when `fila['profesional'] != ""` (may be null/empty). :contentReference[oaicite:1]{index=1}
+        - Only rendered when `fila['profesional'] != ""` (may be null/empty). 
         - If profesional == "true":
           - input.contextoLaboralProfesional = {profesional} (readonly, prefilled)
         - Else:
@@ -498,7 +502,7 @@ For each form that affects exercises, record:
             - Placeholder: `obtenerAyuda(concepto, dificultad, "palabras")` when dificultad != 4
       - Task / application (tarea) (note: stored as `tarea` in DB):
         - If aplicacionContextoLaboral == "true":
-          - textarea.contextoLaboralAplicacion contains {tarea} (intended readonly; code has typo `readyonly`). :contentReference[oaicite:2]{index=2}
+          - textarea.contextoLaboralAplicacion contains {tarea} (intended readonly; code has typo `readyonly`).
         - Else:
           - textarea.rellenar.rellenarAplicacion.contextoLaboralAplicacion
             - Placeholder: `obtenerAyuda(tarea, dificultad, "palabras")` when dificultad != 4
@@ -516,8 +520,8 @@ For each form that affects exercises, record:
     - input[type=hidden].solucionBeneficio = {beneficio}
   - Notes:
     - Client-side libraries:
-      - Includes `string-similarity.min.js`, likely used for similarity-based evaluation on longer text fields. :contentReference[oaicite:3]{index=3}
-    - Data source: DB table `contexto_laboral` filtered by `codigo_oposicion` and `orden_tema`. :contentReference[oaicite:4]{index=4}
+      - Includes `string-similarity.min.js`, likely used for similarity-based evaluation on longer text fields. 
+    - Data source: DB table `contexto_laboral` filtered by `codigo_oposicion` and `orden_tema`. 
     - Evaluation: client-side (JS) — `corregirEjercicioContextoLaboral()` compares user inputs vs `.solucion*`.
     - Progress gating: "Continuar" starts disabled and is enabled after correction via `habilitarBotonContinuar()`.
 
@@ -577,9 +581,9 @@ For each form that affects exercises, record:
       - input[type=hidden].solucionEditorial = {editorial}
   - Notes:
     - Client-side libraries:
-      - Includes `string-similarity.min.js` (likely not essential here since all fields are short, but present consistently in these steps). :contentReference[oaicite:1]{index=1}
+      - Includes `string-similarity.min.js` (likely not essential here since all fields are short, but present consistently in these steps). {index=1}
     - Data source:
-      - SQL join between `tema_referenciar_libro` and `libro` (joined by autor + titulo), filtered by `codigo_oposicion` and `orden_tema`. :contentReference[oaicite:2]{index=2}
+      - SQL join between `tema_referenciar_libro` and `libro` (joined by autor + titulo), filtered by `codigo_oposicion` and `orden_tema`. 
     - Evaluation: client-side (JS) — `corregirEjercicioBibliografia()` compares user inputs vs `.solucionAutor` / `.solucionAnyo` / `.solucionTitulo` / `.solucionEditorial`.
     - Progress gating: "Continuar" starts disabled and is enabled after correction via `habilitarBotonContinuar()`.
 
@@ -663,7 +667,7 @@ For each form that affects exercises, record:
 
 ### 3.1 Main responsibilities (current)
 - Navigation between legacy screens by building long query strings and redirecting via `document.location.href`.
-- Reading exercise configuration from DOM inputs (both normal inputs and hidden inputs) and propagating it across screens (state carried in URL parameters). :contentReference[oaicite:3]{index=3}
+- Reading exercise configuration from DOM inputs (both normal inputs and hidden inputs) and propagating it across screens (state carried in URL parameters). 
 - Random topic selection when the user chooses a special option (topic=0 → pick random).
 - In-screen evaluation logic:
   - Equality-based checks (`modo = "igualdad"`).
@@ -675,12 +679,12 @@ For each form that affects exercises, record:
 - Gating progression: enable/disable “Continue” button based on correctness.
 
 ### 3.2 Navigation and state propagation
-The function `irPantallaEjercicioCuantoSabesTema(pantalla, from)` reads a large set of configuration flags (many booleans) from DOM inputs and constructs the next screen URL with all values appended as query parameters. This is the primary legacy mechanism to keep exercise state between screens. :contentReference[oaicite:8]{index=8}
+The function `irPantallaEjercicioCuantoSabesTema(pantalla, from)` reads a large set of configuration flags (many booleans) from DOM inputs and constructs the next screen URL with all values appended as query parameters. This is the primary legacy mechanism to keep exercise state between screens. 
 
 ### 3.3 Evaluation model used in legacy
 Evaluation is performed in the browser by comparing user inputs with hidden “solution” inputs contained in each question container:
 - Equality comparison: case-insensitive string equality.
-- Similarity comparison: uses a threshold (currently 0.7) for approximate matching. :contentReference[oaicite:9]{index=9}
+- Similarity comparison: uses a threshold (currently 0.7) for approximate matching.
 
 ### 3.4 Implications for the MVC migration
 - The legacy system transports configuration through query string + hidden inputs; the MVC design should replace this with an `attemptId` / `ExerciseSession` persisted server-side to avoid huge URLs and duplicated state logic.
@@ -689,6 +693,7 @@ Evaluation is performed in the browser by comparing user inputs with hidden “s
   - (Controller) request/flow orchestration (server-side)
   - (Service) evaluators (server-side)
   - (View) minimal JS for UX (client-side)
+- In the initial MVC slices, the legacy JavaScript codebase remains in place and can coexist with the new MVC implementation. However, MVC exercise screens do not rely on legacy JS for flow control or evaluation logic.
 
 ---
 
@@ -721,118 +726,661 @@ For each legacy type:
 - Result format
 
 **Types found**
-- [ ] TODO: list here
+- Fill in the blanks (wizard-based, multi-step)
+- Free writing (single-step exercise)
 
 ---
 
 ## 5. Legacy flow map (current behavior)
 
-> Fill the real steps as you trace the code. This is the “truth table” of how the app currently works.
+### 5.1 Exercise: “Cuánto sabes del tema” (fill-the-blanks wizard)
 
-### 5.1 Flow: configuration → load → execution → results
+#### Step A — Configuration (menu.php)
+- Entry: `GET /menu.php?nombre={user}&oposicion={oppositionId}`
+- UI: user selects:
+  - `tema` (topic order; `0` = random)
+  - `dificultad` {1|2|3|4}
+  - multiple boolean flags controlling which fields are blank vs shown
+- State handling:
+  - `nombre` and `oposicion` are stored in hidden inputs (DOM).
+  - On “Comenzar”, JS reads all inputs and redirects to the first wizard screen (`titulo.php`) by building a long query string (state carried via URL parameters).
 
-#### Step A — Configuration
-- Entry: configuration page URL (GET)
-- Inputs: selected topic/exercise, difficulty, time, mode, etc.
-- Output: a “resolved config” (often stored in session or passed via query/post)
+#### Step B — Load data (server-side per screen)
+Each wizard screen:
+- Reads the state from URL parameters and creates hidden inputs via `/php/definirCamposOcultos.php`.
+- Loads exercise payload from DB (topic/title/sections/quotes/tools/contexts/books/webs).
+- Optionally computes “hints” via `obtenerAyuda(value, dificultad, mode)` when `dificultad != 4`.
+- Renders:
+  - user-editable inputs when the corresponding flag is disabled (blank must be filled),
+  - or readonly/pre-filled inputs when the corresponding flag is enabled (not evaluated).
 
-**Notes (legacy):**
-- [ ] TODO
+Wizard screens sequence (legacy):
+1) `titulo.php`
+2) `indice.php`
+3) `justificacion.php`
+4) `citas.php`
+5) `herramientas.php`
+6) `contextoEscolar.php`
+7) `contextoLaboral.php`
+8) `bibliografia.php`
+9) `webgrafia.php`
 
-#### Step B — Load data
-- Data source: DB / files / hardcoded arrays
-- What is loaded:
-  - Exercise metadata (title, instructions, type)
-  - Prompt content (text + blanks, statement)
-  - Solution data (expected text, answers)
-- Where it happens:
-  - In the same script as the view?
-  - In an included file?
-  - In a “model-like” function?
+#### Step C — Execution (user interaction in the browser)
+- User fills the editable fields (inputs/textarea).
+- Each screen displays:
+  - a “question” container with editable fields,
+  - and an invisible “solution” container with hidden inputs containing the expected values.
 
-**Notes (legacy):**
-- [ ] TODO
+#### Step D — Evaluation (client-side)
+- Trigger: user clicks “Corregir”.
+- Evaluation is executed in the browser (JS in `misScripts.js`):
+  - compares user input values with hidden solution values.
+  - marks fields as correct/incorrect via CSS classes (presentation feedback).
+  - for longer text fields, the app includes `string-similarity.min.js` on some screens (suggesting similarity-based matching).
+- There is no server-side submission for answers; no POST-based persistence is observed in this flow.
 
-#### Step C — Execution
-- Entry: execution page URL (GET)
-- Renders the exercise view
-- Common dependencies:
-  - Session (user, exercise state)
-  - Timer logic in JS or server
-  - Anti-refresh / attempt id
+#### Step E — Results + navigation (in-screen feedback + gated progression)
+- Results are immediate and local to the screen:
+  - incorrect/correct highlighting
+  - optional “Solución” action to reveal the expected answers
+  - “Reiniciar” to clear user inputs
+- Progress gating:
+  - “Continuar/Fin” button starts disabled and is enabled after correction (`habilitarBotonContinuar()`).
+- Navigation:
+  - “Continuar” redirects to the next screen via JS by rebuilding the URL query string (state carried forward).
+  - Final screen `webgrafia.php` ends by redirecting to `menu.php`.
 
-**Notes (legacy):**
-- [ ] TODO
 
-#### Step D — Submission
-- Entry: submission URL (POST)
-- Takes user answers and “evaluates”
-- Stores attempt:
-  - DB insert/update OR session only
-  - score, correct items, time, raw user input
+### 5.2 Observed state carriers (how legacy keeps state)
+- URL query string: the primary mechanism. Configuration flags + difficulty + topic selection are propagated across screens by JS redirects.
+- Hidden inputs injected server-side: `/php/definirCamposOcultos.php` prints hidden fields so JS can re-read state from the DOM on each screen.
+- Hidden “solution” fields per question: expected answers are embedded in the HTML as `<input type="hidden">` (solution container) and used by client-side evaluation.
 
-**Notes (legacy):**
-- [ ] TODO
+### 5.3 Risks / limitations of the legacy flow
+- Extremely large URLs: state is duplicated and transported on every navigation step, increasing fragility and making debugging harder.
+- Client-side evaluation only:
+  - answers are never submitted to the server (no POST/PRG), so results are not persisted and can be bypassed.
+  - correctness rules live in JS, making it harder to reuse the same logic on the server later.
+- Mixing concerns per screen: each PHP screen typically performs controller-like tasks (reading params, querying DB, deciding what is editable) and view rendering in the same file.
+- Duplication: the same rendering + evaluation pattern (inputs + hidden solutions + buttons) is repeated across many screens.
+- Security / integrity: solutions are shipped to the browser (hidden inputs), so users can inspect them.
+- Inconsistent navigation: some “Back” links can point to the same screen (potential bug), showing the fragility of manual URL wiring.
 
-#### Step E — Results
-- Entry: results page URL (GET) OR same POST renders results
-- Shows:
-  - Score / correctness breakdown
-  - Expected vs user
-  - Retry / next links
+### 5.4 Mapping legacy wizard steps to future MVC design
 
-**Notes (legacy):**
-- [ ] TODO
+The legacy wizard can be mapped to a single conceptual exercise flow in MVC, with clear separation between configuration, execution and evaluation.
+
+### 5.5 Known legacy bugs (documented, not fixed yet)
+- Back button points wrongly in `webgrafia.php`
+- Typo in `contextoLaboral.php` textarea.contextoLaboralAplicacion readyonly should be readonly
+- Label inconsistency in `menu.php` profesional tagged by Ciclos and should be Profesional
+
+
+#### Proposed MVC structure (high-level)
+
+- **GET /exercises/{exerciseType}/config**
+  - Replaces: `menu.php`
+  - Responsibility:
+    - Render exercise configuration UI (topic, difficulty, flags).
+  - Output:
+    - Exercise configuration form (no execution logic).
+
+- **POST /exercises/{exerciseType}/start**
+  - Replaces: JS redirect from `menu.php` to `titulo.php`
+  - Responsibility:
+    - Validate configuration.
+    - Create an `ExerciseSession` (server-side).
+    - Redirect to the first execution step.
+
+- **GET /exercises/{exerciseType}/sessions/{sessionId}/steps/{step}**
+  - Replaces:
+    - `titulo.php`
+    - `indice.php`
+    - `justificacion.php`
+    - `citas.php`
+    - `herramientas.php`
+    - `contextoEscolar.php`
+    - `contextoLaboral.php`
+    - `bibliografia.php`
+    - `webgrafia.php`
+  - Responsibility:
+    - Load domain data for the given step.
+    - Decide which fields are evaluable based on configuration flags.
+    - Render the step view.
+  - Notes:
+    - State is retrieved from the session (not from URL parameters).
+
+- **POST /exercises/{exerciseType}/sessions/{sessionId}/steps/{step}/evaluate**
+  - Replaces: client-side `corregirEjercicio*()` JS logic.
+  - Responsibility:
+    - Receive user answers.
+    - Evaluate correctness using domain rules.
+    - Return evaluation result (PRG pattern or JSON for progressive enhancement).
+
+- **POST /exercises/{exerciseType}/sessions/{sessionId}/steps/{step}/reset**
+  - Replaces: client-side “Reiniciar”.
+  - Responsibility:
+    - Clear user answers for the current step.
+
+- **GET /exercises/{exerciseType}/sessions/{sessionId}/summary**
+  - Replaces: implicit end of wizard (return to `menu.php`).
+  - Responsibility:
+    - Show final results and summary.
+    - Optionally persist attempt data.
+
+#### Key improvements over legacy
+- Exercise state lives server-side (`ExerciseSession`) instead of URL + hidden inputs.
+- Evaluation logic moves to domain services and can be reused/tested.
+- Views become pure rendering layers (no DB access, no flow decisions).
+- Navigation becomes explicit and declarative instead of JS-wired URLs.
+---
+
+## 6. Responsibility audit (legacy code)
+
+This section identifies where responsibilities live today (often mixed) and where they should move in the future MVC architecture.
+
+### 6.1 Responsibility categories used
+- **Domain (Model):** core concepts + rules (independent from web/UI).
+- **Controller-ish:** request flow, navigation, orchestration, decision-making.
+- **View:** HTML rendering / UI composition.
+- **Infrastructure:** DB access, IO, glue code.
+- **Assets / Libraries:** UI assets or third-party code.
+
+### 6.2 Entry points and screens (wizard)
+| File | Current responsibilities | Category (legacy) | MVC target |
+|------|--------------------------|-------------------|-----------|
+| /menu.php | Renders config UI; collects inputs; relies on JS to start wizard; holds hidden user context | View + Controller-ish | `ExercisesConfigController::show()` + `start()` |
+| /titulo.php | Reads state; queries DB; computes hints; renders inputs + hidden solutions; includes gating buttons | Mixed (Controller-ish + View) | `WizardStepController::show(step=title)` + step view |
+| /indice.php | Reads flags to decide readonly vs blanks; queries DB; renders list inputs + hidden solutions | Mixed | `WizardStepController::show(step=index)` + step view |
+| /justificacion.php | Builds nested structure (cycles/laws/modules); renders conditional blanks + hidden solutions | Mixed | `WizardStepController::show(step=justification)` + step view |
+| /citas.php | Queries quotes + apartado info; renders textareas; includes similarity lib; embeds hidden solutions | Mixed | `WizardStepController::show(step=quotes)` + step view |
+| /herramientas.php | Queries tools; renders optional description; includes similarity lib; embeds hidden solutions | Mixed | `WizardStepController::show(step=tools)` + step view |
+| /contextoEscolar.php | Queries school context; renders optional fields; includes similarity lib; embeds hidden solutions | Mixed | `WizardStepController::show(step=school-context)` + step view |
+| /contextoLaboral.php | Queries professional context; renders optional fields; includes similarity lib; embeds hidden solutions | Mixed | `WizardStepController::show(step=work-context)` + step view |
+| /bibliografia.php | Queries books; renders conditional blanks; embeds hidden solutions | Mixed | `WizardStepController::show(step=bibliography)` + step view |
+| /webgrafia.php | Queries websites; renders conditional blanks; embeds hidden solutions; end navigation | Mixed | `WizardStepController::show(step=webography)` + `summary()` |
+
+### 6.3 Shared PHP helpers (server-side)
+| File | Current responsibilities | Category (legacy) | MVC target |
+|------|--------------------------|-------------------|-----------|
+| /php/definirCamposOcultos.php | Reads URL params; creates hidden inputs; effectively carries state between screens | Controller-ish + View helper | Replace with server-side `ExerciseSession` + request DTO |
+| /php/db.php | DB connection / credentials / low-level access | Infrastructure | `Database` / repository layer |
+| /php/obtenerNombreTema.php | Builds `$sql` to fetch topic title/name (plus side effects) | Infrastructure + Domain-ish | `TopicRepository` + `Topic` model |
+| /php/utils.php | Domain-style logic: hints (`obtenerAyuda`) and masking based on difficulty | Domain (Model) | `HintService` / `MaskingService` (unit-testable) |
+
+### 6.4 Client-side orchestration (JS)
+| File | Current responsibilities | Category (legacy) | MVC target |
+|------|--------------------------|-------------------|-----------|
+| /js/misScripts.js | Navigation (build URLs); gating; evaluation; reset; show solution; DOM updates | Controller-ish + Domain-ish + View helper (mixed) | Split into: server Controllers + domain Evaluators + minimal UI JS |
+| /js/string-similarity.min.js | Similarity algorithm used by evaluation | Third-party library | Keep as library or replace with server-side equivalent |
+| /css/miEstilo.css | Presentation feedback (right/wrong, layout) | View asset | Reuse in MVC views (or replace gradually) |
+
+### 6.5 Key “mixing” hotspots (what to untangle first)
+- **Screens as “everything files”:** each `*.php` step performs state parsing, DB querying, rule decisions, and HTML rendering.
+- **State propagation:** URL params + hidden inputs are a cross-cutting concern spread everywhere.
+- **Evaluation logic:** lives in JS and depends on “solutions in HTML”, which is a major architectural constraint.
+
+### 6.6 MVC extraction plan (high-level)
+- Move **state** into `ExerciseSession` (server-side), referenced by `{sessionId}`.
+- Move **evaluation** into domain services (`Evaluator` + strategy per field/type).
+- Keep **views** responsible only for rendering:
+  - questions,
+  - current answers,
+  - evaluation feedback (from server result).
+- Keep minimal client-side JS only for UX (optional), not for correctness.
 
 ---
 
-## 6. Responsibility audit (what is Model vs Controller vs View today)
+## 7. Proposed MVC architecture for exercises (high level)
 
-> This is where we detect “controllers camuflados”.
+This section defines the target MVC design for exercises, preserving legacy behavior during transition while enabling incremental refactoring.
 
-### 6.1 Heuristics
-- **Model (domain logic):**
-  - Exercise evaluation algorithms
-  - Answer normalization
-  - Score computation
-  - Attempt persistence logic (conceptually)
-  - Data loading that is not presentation-specific
+### 7.0 Execution lifecycle: Session vs Attempt
 
-- **Controller (application flow):**
-  - Reads request (GET/POST)
-  - Validates input
-  - Chooses exercise type handler
-  - Orchestrates load → evaluate → persist
-  - Decides redirect vs render (PRG)
+The MVC design distinguishes two related but conceptually different lifecycle entities:
 
-- **View (presentation):**
-  - HTML templates
-  - Minimal conditional display logic
-  - No DB calls, no evaluation, no request branching
+- **ExerciseSession**
+  Represents the *interactive, in-progress execution* of an exercise.
+  It is created when the user starts an exercise and exists while the user navigates through its steps.
+  A session is mutable and may evolve over time as the user submits answers and progresses through the wizard.
 
-### 6.2 “Camouflaged controllers” patterns to look for
-- `if ($_POST ...) { ... } else { ... }` inside a view file
-- DB queries inside templates
-- `header("Location: ...")` in include files
-- Mixed rendering + evaluation in one script
+- **ExerciseAttempt**
+  Represents a *completed snapshot* of an exercise execution.
+  It is created when the exercise is finished (or explicitly submitted) and is suitable for long-term persistence, analytics or review.
 
-### 6.3 Findings (to fill)
-- [ ] TODO: list each legacy file and classify:
-  - Mostly Model / Controller / View / Mixed
-  - What must be extracted first during migration
+Key differences:
+
+| Aspect | ExerciseSession | ExerciseAttempt |
+|------|-----------------|-----------------|
+| Purpose | Drive live interaction | Persist final result |
+| Mutability | Mutable | Immutable |
+| Lifetime | Short-lived | Long-lived |
+| Persistence | Session storage / cache | Database |
+| Step-by-step state | Yes | No |
+| Final score / summary | Optional | Mandatory |
+
+In early migration slices, the system focuses exclusively on `ExerciseSession`.
+`ExerciseAttempt` is introduced only after server-side evaluation and result persistence are implemented.
+
+In early migration slices, step progression is explicitly stored in the
+ExerciseSession (`currentStep`) instead of being derived from previous
+evaluations. This keeps the control flow simple, predictable and easy to debug.
+
+### 7.1 Core concepts (Domain model)
+- **ExerciseType**
+  - A semantic identifier (slug) for each exercise family (e.g., `fill-the-blanks`, `mock-exam`).
+- **ExerciseConfig**
+  - Immutable configuration chosen by the user before starting (topic selection, difficulty, boolean flags).
+  - Example fields:
+    - `topicOrder`, `difficulty`
+    - `flags` (map/DTO): `numeracion`, `apartado`, `ciclos`, `leyes`, `modulos`, etc.
+- **ExerciseSession**
+  - Server-side state container created when the exercise starts.
+  - Holds:
+    - `sessionId`
+    - `userContext` (user + opposition)
+    - `config` (ExerciseConfig)
+    - `currentStep`
+    - optional: `answersByStep`, `evaluationByStep`, timestamps
+- **ExerciseStep**
+  - Enumeration of wizard steps (for `fill-the-blanks`):
+    - `title`, `index`, `justification`, `quotes`, `tools`, `schoolContext`, `workContext`, `bibliography`, `webography`
+- **StepPayload**
+  - Data needed to render a given step (loaded from repositories).
+  - Does not include HTML; pure data structures (lists, nested structures).
+  - MUST NOT be exposed to the view layer under any circumstance.
+- **StepAnswer**
+  - User-submitted values for a step (DTO).
+- **StepEvaluation**
+  - Evaluation result (per field correctness + optional similarity score + messages).
+
+### 7.2 Domain services
+- **HintService / MaskingService**
+  - Implements the legacy behavior of generating hints based on difficulty:
+    - `getHint(value, difficulty, mode)` where mode is `letters|words`.
+- **Evaluator**
+  - Evaluates a step by comparing `StepAnswer` vs expected values from payload.
+  - Uses strategies:
+    - `EqualityEvaluator` (case-insensitive exact match)
+    - `SimilarityEvaluator` (threshold-based for longer texts)
+  - Output: `StepEvaluation` (field-level correctness + overall status).
+- **StepBuilder**
+  - Builds `StepPayload` for a given step using repositories.
+
+### 7.3 Persistence / Infrastructure
+- **Repositories (read models)**
+  - `TopicRepository`
+  - `ApartadoRepository`
+  - `QuoteRepository`
+  - `ToolRepository`
+  - `SchoolContextRepository`
+  - `WorkContextRepository`
+  - `BookRepository`
+  - `WebRepository`
+- **Session storage**
+  - Phase 1 (simple): store `ExerciseSession` in PHP session (`$_SESSION`) keyed by `sessionId`.
+  - Phase 2 (robust): persist sessions/attempts in DB (`exercise_attempt`, `exercise_answer`, etc.).
+
+### 7.4 Controllers (MVC)
+#### Configuration / start
+- `ExercisesConfigController`
+  - `GET /exercises/{exerciseType}/config`
+  - `POST /exercises/{exerciseType}/start`
+  - Responsibilities:
+    - render config form
+    - validate config
+    - create `ExerciseSession`
+    - redirect to first step
+
+#### Wizard steps
+- `ExerciseWizardController`
+  - `GET /exercises/{exerciseType}/sessions/{sessionId}/steps/{step}`
+  - `POST /exercises/{exerciseType}/sessions/{sessionId}/steps/{step}/evaluate`
+  - `POST /exercises/{exerciseType}/sessions/{sessionId}/steps/{step}/reset`
+  - `GET /exercises/{exerciseType}/sessions/{sessionId}/summary`
+  - Responsibilities:
+    - load session + enforce step order (gating)
+    - build payload for the step
+    - render step view
+    - evaluate posted answers (PRG)
+    - store evaluation results (session or DB)
+    - decide next step
+
+### 7.5 Views (per exercise type)
+- `views/exercises/{exerciseType}/config.php`
+- `views/exercises/{exerciseType}/steps/{step}.php`
+- `views/exercises/{exerciseType}/summary.php`
+
+Views should be dumb:
+- render payload + input fields
+- display evaluation feedback
+- no DB access
+- no navigation logic beyond linking to controller routes
+
+### 7.6 Routes summary (initial)
+- `GET  /exercises/fill-the-blanks/config`
+- `POST /exercises/fill-the-blanks/start`
+- `GET  /exercises/fill-the-blanks/sessions/{sessionId}/steps/{step}`
+- `POST /exercises/fill-the-blanks/sessions/{sessionId}/steps/{step}/evaluate`
+- `POST /exercises/fill-the-blanks/sessions/{sessionId}/steps/{step}/reset`
+- `GET  /exercises/fill-the-blanks/sessions/{sessionId}/summary`
+
+### 7.7 Transition strategy (compatibility with legacy)
+- Keep legacy scripts working as-is under existing URLs.
+- Introduce MVC routes under a new prefix (`/exercises/...`) to avoid collisions.
+- Start with one step migrated (recommended: `titulo` or `indice`) to validate:
+  - session state handling
+  - step payload building
+  - evaluator correctness
+- During transition:
+  - reuse legacy CSS (`miEstilo.css`) for consistent UI
+  - keep client-side JS minimal (optional), do not embed solutions in HTML for MVC screens
+- Add feature flags:
+  - per exercise type or per step: legacy vs MVC rendering.
+
+### 7.8 Folder / class layout proposal
+
+```
+/public
+  index.php
+
+/legacy
+  menu.php
+  titulo.php
+  indice.php
+  justificacion.php
+  citas.php
+  herramientas.php
+  contextoEscolar.php
+  contextoLaboral.php
+  bibliografia.php
+  webgrafia.php
+
+/src
+  /Controllers
+    ExercisesConfigController.php
+    ExerciseWizardController.php
+
+  /Domain
+    /Exercise
+      ExerciseType.php
+      ExerciseStep.php
+      ExerciseConfig.php
+      ExerciseSession.php
+      StepPayload.php
+      StepAnswer.php
+      StepEvaluation.php
+
+    /Services
+      HintService.php
+      Evaluator.php
+      /Evaluation
+        EqualityEvaluator.php
+        SimilarityEvaluator.php
+
+  /Infrastructure
+    /Persistence
+      DbConnection.php
+      /Repositories
+        TopicRepository.php
+        ApartadoRepository.php
+        QuoteRepository.php
+        ToolRepository.php
+        SchoolContextRepository.php
+        WorkContextRepository.php
+        BookRepository.php
+        WebRepository.php
+
+    /Session
+      ExerciseSessionStore.php
+
+  /Routing
+    Router.php
+    Routes.php
+
+/views
+  /exercises
+    /fill-the-blanks
+      config.php
+      summary.php
+      /steps
+        title.php
+        index.php
+        justification.php
+        quotes.php
+        tools.php
+        school-context.php
+        work-context.php
+        bibliography.php
+        webography.php
+
+/docs
+  exercises-mvc-design.md
+
+```
+
+### 7.9 Minimal data structures (DTOs / shapes)
+
+The following DTO shapes capture the minimum data needed for the MVC flow.
+
+#### ExerciseType
+- `slug: string` (e.g., `fill-the-blanks`)
+- `name: string`
+
+#### ExerciseConfig
+- `topicOrder: int | 0` (0 = random)
+- `difficulty: int` (1..4)
+- `flags: map<string, bool>`
+  - Example keys:
+    - `numeracion`, `apartado`, `ciclos`, `leyes`, `modulos`
+    - `conceptoCita`, `autorCita`, `anyoCita`, `cita`, `numeracionCita`, `apartadoCita`
+    - `herramienta`, `descripcionHerramienta`
+    - `ensenyanza`, `ciclosContexto`, `modulosContexto`, `conceptoContextoEscolar`, `aplicacionContextoEscolar`, `metodo`
+    - `campo`, `profesional`, `conceptoContextoLaboral`, `aplicacionContextoLaboral`, `beneficio`
+    - `autorLibro`, `anyoLibro`, `tituloLibro`, `editorial`
+    - `nombreWeb`, `url`
+
+#### ExerciseSession
+- `sessionId: string`
+- `exerciseType: ExerciseType`
+- `userContext`
+  - `userName: string`
+  - `oppositionId: string`
+- `config: ExerciseConfig`
+- `currentStep: ExerciseStep`
+- `answersByStep: map<ExerciseStep, StepAnswer>` (optional)
+- `evaluationByStep: map<ExerciseStep, StepEvaluation>` (optional)
+- `createdAt: datetime`
+- `updatedAt: datetime`
+
+#### ExerciseStep (enum)
+- `title`
+- `index`
+- `justification`
+- `quotes`
+- `tools`
+- `schoolContext`
+- `workContext`
+- `bibliography`
+- `webography`
+
+#### StepPayload (generic wrapper)
+- `step: ExerciseStep`
+- `items: list` (step-specific)
+- `meta`
+  - `topicOrder: int`
+  - `topicTitle: string`
+  - `difficulty: int`
+  - `flags: map<string, bool>`
+  - `hintMode: "letters" | "words"` (optional by field)
+- `expected: list` (server-only; not rendered into HTML in MVC)
+
+Step-specific `items` examples:
+
+- **Title step**
+  - items: `[ { key: "topicTitle", label: "Título", hint, expectedValue } ]`
+
+- **Index step**
+  - items: `[ { sectionOrder, sectionTitle, evaluable: { order: bool, title: bool }, hints } ]`
+
+- **Justification step**
+  - items: `[ { cycleName, laws: [...], modules: [...], evaluable: {...}, hints } ]`
+
+- **Quotes step**
+  - items: `[ { concept, author, year, sectionOrder, sectionTitle, content, evaluable: {...}, hints } ]`
+
+- **Tools step**
+  - items: `[ { toolName, description?, evaluable: {...}, hints } ]`
+
+- **Contexts**
+  - items: `[ { teaching, cycle?, module?, concept, application, method?, evaluable: {...}, hints } ]` (school)
+  - items: `[ { field, professional?, concept, task, benefit, evaluable: {...}, hints } ]` (work)
+
+- **Bibliography**
+  - items: `[ { author, year, title, editorial, evaluable: {...}, hints } ]`
+
+- **Webography**
+  - items: `[ { name, url, evaluable: {...}, hints } ]`
+
+#### StepAnswer
+- `step: ExerciseStep`
+- `values: map<string, string>`
+  - Key format recommendation:
+    - include row index + field name, e.g. `item0.title`, `item3.author`, `item2.url`
+  - For nested steps (justification):
+    - include path: `cycle0.law1.name`, `cycle0.module2.name`
+
+#### StepEvaluation
+- `step: ExerciseStep`
+- `fieldResults: map<string, FieldResult>`
+- `isStepCorrect: bool`
+- `score: float` (optional)
+- `createdAt: datetime`
+
+#### FieldResult
+- `isCorrect: bool`
+- `expected: string` (optional; show only after “Solución” or teacher mode)
+- `actual: string`
+- `strategy: "equality" | "similarity"`
+- `similarityScore: float | null`
+- `message: string | null`
+
+### 7.10 First MVC slice (incremental migration plan)
+
+Goal: migrate a single wizard step end-to-end (MVC route → controller → view → evaluation → gating) while keeping the legacy flow untouched.
+
+#### Recommended first step: `title` (topic title)
+Rationale:
+- Minimal UI: one user input.
+- Minimal payload: topic title.
+- Validates the full MVC pipeline: session, payload building, evaluation, PRG/gating, view feedback.
 
 ---
 
-## 7. Proposed MVC high-level architecture (target design)
+## Slice 1 — Routes
 
-### 7.1 Key principles
-- **Typed exercise domain:** each exercise type has:
-  - A configuration object
-  - A data loader
-  - A renderer (view)
-  - An evaluator (domain service)
-- **PRG pattern:** POST evaluates and redirects to GET results to avoid resubmission.
-- **Compatibility during migration:** legacy remains accessible; MVC can wrap/bridge legacy data sources.
+- `GET  /exercises/fill-the-blanks/config`
+- `POST /exercises/fill-the-blanks/start`
+- `GET  /exercises/fill-the-blanks/sessions/{sessionId}/steps/title`
+- `POST /exercises/fill-the-blanks/sessions/{sessionId}/steps/title/evaluate`
+
+Notes:
+- Legacy URLs remain available and unchanged.
+- New MVC endpoints live under `/exercises/...` prefix.
+- The reset endpoint is intentionally deferred to a later slice to keep the initial migration scope minimal.
+
+---
+
+## Slice 2 — Controllers (minimal methods)
+
+### `ExercisesConfigController`
+- `show()` → renders config page (topic, difficulty, flags)
+- `start()` → validates input, creates `ExerciseSession`, redirects to step `title`
+
+### `ExerciseWizardController`
+- `showStep(sessionId, step)` → renders the step view with payload + prior evaluation (if any)
+- `evaluateStep(sessionId, step)` → evaluates answers, stores evaluation in session, redirects back to `showStep` (PRG)
+
+---
+
+## Slice 3 — Session state (Phase 1)
+- Implement `ExerciseSessionStore` using `$_SESSION`:
+  - `createSession(config, userContext) -> sessionId`
+  - `get(sessionId) -> ExerciseSession`
+  - `save(session)`
+
+Store only what you need:
+- `sessionId`
+- `exerciseType`
+- `config` (topicOrder, difficulty, flags)
+- `currentStep` (start at `title`)
+- `evaluationByStep['title']` (after evaluate)
+
+---
+
+## Slice 4 — Payload building
+
+Implement `StepBuilder::buildTitlePayload(session)`:
+- Determine topic:
+  - If `topicOrder == 0` → pick random topic order from DB.
+- Load:
+  - topic title (expected answer)
+  - topic display header (optional)
+- Build payload:
+  - `items[0] = { key: "topicTitle", label: "Título", hint }`
+- DO NOT embed expected values in HTML.
+
+---
+
+## Slice 5 — Evaluation
+
+Implement `Evaluator::evaluateTitle(payload, answer)`:
+- Strategy: equality (case-insensitive).
+- Output:
+  - `FieldResult` for `topicTitle`
+  - `isStepCorrect = true/false`
+
+Optional later:
+- add similarity strategy for long text fields (quotes/contexts).
+
+---
+
+## Slice 6 — Views (minimal)
+
+### `views/exercises/fill-the-blanks/config.php`
+- Form fields:
+  - topic selector (including “random”)
+  - difficulty selector
+  - flags checkboxes (optional in slice 1: you can start with a reduced set)
+
+### `views/exercises/fill-the-blanks/steps/title.php`
+- Render:
+  - step header (topic info)
+  - one input: `name="topicTitle"`
+  - “Check” submit button (POST evaluate)
+- Render feedback:
+  - field-level correct/incorrect styling (reuse CSS)
+  - show “Continue” link/button only when `isStepCorrect == true`
+
+---
+
+## Slice 7 — Gating behavior (server-driven)
+Legacy gating is client-side. In MVC slice:
+- The step page should render “Continue” only if evaluation is correct.
+- Otherwise, no continue link is shown (or keep it disabled).
+
+---
+
+## Definition of Done (Slice 1)
+- User can:
+  - open MVC config
+  - start a session
+  - see title step
+  - submit an answer
+  - receive correctness feedback
+  - continue only when correct
+- No legacy script is modified.
+- No solutions are shipped to the browser as hidden inputs.
 
 ---
 
@@ -1008,4 +1556,3 @@ For each legacy exercise type:
 - Result format:
 - Side effects (session/db):
 - Problems detected (mixing concerns, duplication, etc.):
-
