@@ -5,7 +5,6 @@ use App\Helpers\Router;
 use App\Core\CanonizadorRuta;
 use App\Core\Routes\RutasApp;
 use App\Core\Routes\RutasCuantoSabesTema;
-use App\Helpers\Auth;
 
 $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
 session_set_cookie_params([
@@ -30,7 +29,6 @@ $dotenv->load();
 
 $ruta = Router::obtenerRuta();
 [$rutaCanonica, $params] = CanonizadorRuta::canonizar($ruta, RutasApp::patrones());
-$metodo = Router::obtenerMetodo(); 
 
 switch ($rutaCanonica) {
     case 'login':
