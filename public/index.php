@@ -2,6 +2,9 @@
 declare(strict_types=1);
 
 use App\Helpers\Router;
+use App\Core\CanonizadorRuta;
+use App\Core\Routes\RutasApp;
+use App\Core\Routes\RutasCuantoSabesTema;
 use App\Helpers\Auth;
 
 $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
@@ -26,9 +29,10 @@ $dotenv = Dotenv\Dotenv::createImmutable(__DIR__.'/../');
 $dotenv->load();
 
 $ruta = Router::obtenerRuta();
+[$rutaCanonica, $params] = CanonizadorRuta::canonizar($ruta, RutasApp::patrones());
 $metodo = Router::obtenerMetodo(); 
 
-switch ($ruta) {
+switch ($rutaCanonica) {
     case 'login':
         $controlador = new App\Controllers\LoginController();
         if (Router::esGet()) {
@@ -44,6 +48,35 @@ switch ($ruta) {
         break;
     case 'panel-control-ejercicios':
         (new App\Controllers\PanelControlEjerciciosController())->mostrar();
+        break;
+    case RutasCuantoSabesTema::CONFIG:
+        if (!Router::esGet()) {
+            http_response_code(405);
+            break;
+        }
+        echo "TODO: Configuración ejercicio Cuánto sabes del tema";
+        break;
+    case RutasCuantoSabesTema::INICIO:
+        if (!Router::esPost()) {
+            http_response_code(405);
+            break;
+        }
+        echo "TODO: Iniciar ejercicio Cuánto sabes del tema";
+    case RutasCuantoSabesTema::PASO_TITULO:
+        if (!Router::esGet()) {
+            http_response_code(405);
+            break;
+        }
+        $sesionId = $params['sesionId'] ?? '';
+        echo "TODO: Paso Título, sesionId=" . htmlspecialchars($sesionId, ENT_QUOTES, 'UTF-8');
+        break;
+    case RutasCuantoSabesTema::EVAL_TITULO:
+        if (!Router::esPost()) {
+            http_response_code(405);
+            break;
+        }
+        $sesionId = $params['sesionId'] ?? '';
+        echo "TODO: Evaluar paso Título, sesionId=" . htmlspecialchars($sesionId, ENT_QUOTES, 'UTF-8');
         break;
     default:
         http_response_code(404);
