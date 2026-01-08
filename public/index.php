@@ -5,6 +5,7 @@ use App\Helpers\Router;
 use App\Core\CanonizadorRuta;
 use App\Core\Routes\RutasApp;
 use App\Core\Routes\RutasCuantoSabesTema;
+use App\Core\Routes\Dev\RutasDevSesionEjercicio;
 
 $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
 session_set_cookie_params([
@@ -28,6 +29,13 @@ $dotenv = Dotenv\Dotenv::createImmutable(__DIR__.'/../');
 $dotenv->load();
 
 $ruta = Router::obtenerRuta();
+$entorno = $_ENV['APP_ENV'] ?? getenv('APP_ENV') ?: 'prod';
+
+if (str_starts_with($ruta, 'dev/') && $entorno !== 'dev') {
+    http_response_code(404);
+    exit;
+}
+
 [$rutaCanonica, $params] = CanonizadorRuta::canonizar($ruta, RutasApp::patrones());
 
 switch ($rutaCanonica) {
@@ -75,6 +83,33 @@ switch ($rutaCanonica) {
         }
         $sesionId = $params['sesionId'] ?? '';
         echo "TODO: Evaluar paso Título, sesionId=" . htmlspecialchars($sesionId, ENT_QUOTES, 'UTF-8');
+        break;
+    case RutasDevSesionEjercicio::BASE:
+        if (!Router::esGet()) {
+            http_response_code(405);
+            break;
+        }
+        $almacen = new \App\Infrastructure\Session\AlmacenSesionEjercicio();
+        (new \App\Controllers\Dev\DevSesionEjercicioController($almacen))->mostrar();
+        break;
+    // ======================
+    // DEV ROUTES (dev-only)
+    // ======================
+    case RutasDevSesionEjercicio::SIGUIENTE:
+        if (!Router::esPost()) {
+            http_response_code(405);
+            break;
+        }
+        $almacen = new \App\Infrastructure\Session\AlmacenSesionEjercicio();
+        (new \App\Controllers\Dev\DevSesionEjercicioController($almacen))->siguiente();
+        break;
+    case RutasDevSesionEjercicio::RESET:
+        if (!Router::esPost()) {
+            http_response_code(405);
+            break;
+        }
+        $almacen = new \App\Infrastructure\Session\AlmacenSesionEjercicio();
+        (new \App\Controllers\Dev\DevSesionEjercicioController($almacen))->reset();
         break;
     default:
         http_response_code(404);

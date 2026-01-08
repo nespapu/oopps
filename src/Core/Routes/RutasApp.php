@@ -2,6 +2,8 @@
 
 namespace App\Core\Routes;
 
+use App\Core\Routes\Dev\RutasDevSesionEjercicio;
+
 final class RutasApp {
     /**
      * @return array<int, string>
@@ -9,7 +11,8 @@ final class RutasApp {
     public static function patrones(): array
     {
         return array_merge(
-            RutasCuantoSabesTema::patrones()
+            RutasCuantoSabesTema::patrones(),
+            RutasDevSesionEjercicio::patrones(),
             // Later:
             // OtherExerciseRoutes::patterns(),
             // AuthRoutes::patterns(),

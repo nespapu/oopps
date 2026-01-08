@@ -15,6 +15,20 @@ class Router {
         return $ruta === '' ? 'panel-control-ejercicios' : $ruta;
     }
 
+    public static function url(string $ruta = ''): string
+    {
+        $ruta = trim($ruta, '/');
+
+        $basePath = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/'); // e.g. /oopps/public
+        if ($basePath === '' || $basePath === '.') {
+            $basePath = '';
+        }
+
+        return $ruta === ''
+            ? ($basePath !== '' ? $basePath . '/' : '/')
+            : ($basePath !== '' ? $basePath . '/' . $ruta : '/' . $ruta);
+    }
+
     public static function obtenerMetodo(): string {
         return $_SERVER['REQUEST_METHOD'] ?? 'GET';
     }
