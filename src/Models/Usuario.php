@@ -1,10 +1,11 @@
 <?php
 namespace App\Models;
-use App\Database\Connection;
+
+use App\Infrastructure\Persistence\ConexionBD;
 
 final class Usuario {
     public static function buscarPorNombre ($nombre) : ?array {
-        $pdo = Connection::get();
+        $pdo = ConexionBD::obtener();
         $sentencia = $pdo->prepare("SELECT * FROM usuario WHERE nombre = :nombre");
         $sentencia->execute(['nombre' => $nombre]);
         $fila = $sentencia->fetch();
