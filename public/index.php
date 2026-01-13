@@ -60,21 +60,20 @@ switch ($rutaCanonica) {
             http_response_code(405);
             break;
         }
-        echo "TODO: Configuración ejercicio Cuánto sabes del tema";
+        (new App\Controllers\CuantoSabesTemaConfigController())->mostrar();
         break;
     case RutasCuantoSabesTema::INICIO:
         if (!Router::esPost()) {
             http_response_code(405);
             break;
         }
-        echo "TODO: Iniciar ejercicio Cuánto sabes del tema";
+        (new App\Controllers\CuantoSabesTemaConfigController())->comprobar();
     case RutasCuantoSabesTema::PASO_TITULO:
         if (!Router::esGet()) {
             http_response_code(405);
             break;
         }
-        $sesionId = $params['sesionId'] ?? '';
-        echo "TODO: Paso Título, sesionId=" . htmlspecialchars($sesionId, ENT_QUOTES, 'UTF-8');
+        (new App\Controllers\CuantoSabesTemaTituloController())->mostrar();
         break;
     case RutasCuantoSabesTema::EVAL_TITULO:
         if (!Router::esPost()) {

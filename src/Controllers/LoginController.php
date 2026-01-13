@@ -27,8 +27,15 @@ final class LoginController {
             Http::redirigir('login');
         }
         
+        $codigoOposicion = trim((string)($usuario['codigo_oposicion'] ?? ''));
+        if ($codigoOposicion === '') {
+            Flash::set('error', 'No tienes una oposición activa configurada.');
+            Http::redirigir('login');
+        }
+
         session_regenerate_id(true);
         $_SESSION['usuario'] = $usuario['nombre'];
+        $_SESSION['codigoOposicion'] = $codigoOposicion;
         
         $redireccion = $_SESSION['siguiente_url'] ?? 'panel-control-ejercicios';
         unset($_SESSION['siguiente_url']);

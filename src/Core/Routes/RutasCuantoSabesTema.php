@@ -20,4 +20,34 @@ final class RutasCuantoSabesTema {
             self::EVAL_TITULO,
         ];
     }
+
+    public static function pasoTitulo(string $sesionId): string
+    {
+        return self::rellenar(self::PASO_TITULO, [
+            'sesionId' => $sesionId,
+        ]);
+    }
+
+    public static function evaluarTitulo(string $sesionId): string
+    {
+        return self::rellenar(self::EVAL_TITULO, [
+            'sesionId' => $sesionId,
+        ]);
+    }
+
+    /**
+     * @param array<string, string> $parametros
+     */
+    private static function rellenar(string $ruta, array $parametros): string
+    {
+        foreach ($parametros as $clave => $valor) {
+            $ruta = str_replace(
+                '{' . $clave . '}',
+                rawurlencode($valor),
+                $ruta
+            );
+        }
+
+        return $ruta;
+    }
 }
