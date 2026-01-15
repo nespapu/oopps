@@ -9,6 +9,8 @@ final class RutasCuantoSabesTema {
     public const PASO_TITULO = 'ejercicios/cuanto-sabes-tema/sesiones/{sesionId}/pasos/titulo';
     public const EVAL_TITULO = 'ejercicios/cuanto-sabes-tema/sesiones/{sesionId}/pasos/titulo/evaluar';
 
+    public const PASO_INDICE = 'ejercicios/cuanto-sabes-tema/sesiones/{sesionId}/pasos/indice';
+
     /**
      * @return array<int, string>
      */
@@ -18,12 +20,20 @@ final class RutasCuantoSabesTema {
             self::INICIO,
             self::PASO_TITULO,
             self::EVAL_TITULO,
+            self::PASO_INDICE
         ];
     }
 
     public static function pasoTitulo(string $sesionId): string
     {
         return self::rellenar(self::PASO_TITULO, [
+            'sesionId' => $sesionId,
+        ]);
+    }
+
+    public static function pasoIndice(string $sesionId): string
+    {
+        return self::rellenar(self::PASO_INDICE, [
             'sesionId' => $sesionId,
         ]);
     }

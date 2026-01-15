@@ -68,6 +68,7 @@ switch ($rutaCanonica) {
             break;
         }
         (new App\Controllers\CuantoSabesTemaConfigController())->comprobar();
+        break;
     case RutasCuantoSabesTema::PASO_TITULO:
         if (!Router::esGet()) {
             http_response_code(405);
@@ -80,8 +81,14 @@ switch ($rutaCanonica) {
             http_response_code(405);
             break;
         }
-        $sesionId = $params['sesionId'] ?? '';
-        echo "TODO: Evaluar paso Título, sesionId=" . htmlspecialchars($sesionId, ENT_QUOTES, 'UTF-8');
+        (new App\Controllers\CuantoSabesTemaTituloController())->evaluar();
+        break;
+    case RutasCuantoSabesTema::PASO_INDICE:
+        if (!Router::esGet()) {
+            http_response_code(405);
+            break;
+        }
+        echo "Paso índice. Próximamente...";
         break;
     case RutasDevSesionEjercicio::BASE:
         if (!Router::esGet()) {
