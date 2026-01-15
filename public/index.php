@@ -90,6 +90,9 @@ switch ($rutaCanonica) {
         }
         echo "Paso índice. Próximamente...";
         break;
+    // ======================
+    // DEV ROUTES (dev-only)
+    // ======================
     case RutasDevSesionEjercicio::BASE:
         if (!Router::esGet()) {
             http_response_code(405);
@@ -98,9 +101,6 @@ switch ($rutaCanonica) {
         $almacen = new \App\Infrastructure\Session\AlmacenSesionEjercicio();
         (new \App\Controllers\Dev\DevSesionEjercicioController($almacen))->mostrar();
         break;
-    // ======================
-    // DEV ROUTES (dev-only)
-    // ======================
     case RutasDevSesionEjercicio::SIGUIENTE:
         if (!Router::esPost()) {
             http_response_code(405);

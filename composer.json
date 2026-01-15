@@ -1,6 +1,6 @@
 {
     "name": "nespapu/oopps",
-    "description": "Una aplicación para ayudar al opostitor a memorizar sus temas",
+    "description": "Una aplicación para ayudar al opositor a memorizar sus temas",
     "type": "project",
     "require": {
         "vlucas/phpdotenv": "^5.6"
