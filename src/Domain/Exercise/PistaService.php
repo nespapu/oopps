@@ -40,6 +40,25 @@ final class PistaService
 
             return implode(' ', $palabras);
         }
+
+        if ($modo === ModoPista::PALABRAS && $dificultad === Dificultad::FACIL) {
+            $contador = count($indicesPalabrasContenidoSemantico);
+
+            if ($contador < 2) {
+                return $valor; // No hay suficientes palabras con contenido semántico para enmascarar dos
+            }
+
+            // Opción determinista: elegimos las dos palabras de contenido semánticas más centradas
+            // Para un número par (e.g., 4) -> elegimos las posiciones 1 y 2
+            // Para un número impar (e.g., 5) -> elegimos las posiciones 2 y 3
+            $posicionIzq = intdiv($contador - 1, 2);
+            $posicionDcha = $posicionIzq + 1;
+
+            $palabras[$indicesPalabrasContenidoSemantico[$posicionIzq]] = '____';
+            $palabras[$indicesPalabrasContenidoSemantico[$posicionDcha]] = '____';
+
+            return implode(' ', $palabras);
+        }
         return $valor;
     }
 
