@@ -81,6 +81,26 @@ final class PistaService
             return implode(' ', $palabras);
         }
 
+        if ($modo === ModoPista::PALABRAS && $dificultad === Dificultad::DIFICIL) {
+            $contador = count($indicesPalabrasContenidoSemantico);
+
+            if ($contador <= 1) {
+                return $valor; // nada que enmascarar
+            }
+
+            // Opción determinista: Sólo dejar visible la primera palabra semántica significativa
+            $indicePrimeraPalabra = $indicesPalabrasContenidoSemantico[0];
+
+            foreach ($indicesPalabrasContenidoSemantico as $indice) {
+                if ($indice === $indicePrimeraPalabra) {
+                    continue;
+                }
+                $palabras[$indice] = '____';
+            }
+
+            return implode(' ', $palabras);
+        }
+
         return $valor;
     }
 
@@ -131,7 +151,6 @@ final class PistaService
     {
         $palabra = mb_strtolower($palabra, 'UTF-8');
 
-        // Remove punctuation at the edges (keeps inner punctuation)
         $palabra = preg_replace('/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/u', '', $palabra);
 
         return $palabra ?? '';

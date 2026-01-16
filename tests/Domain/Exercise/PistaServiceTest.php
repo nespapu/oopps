@@ -62,8 +62,9 @@ final class PistaServiceTest extends TestCase
             'MUY_FACIL' => [$valor, Dificultad::MUY_FACIL, 'Diseño de bases de ____ relacionales'],
             'FACIL'     => [$valor, Dificultad::FACIL,     'Diseño de ____ de ____ relacionales'],
             'MEDIA'     => [$valor, Dificultad::MEDIA,     'Diseño de ____ de ____ relacionales'],
-            'MEDIA_distinto' => ['Lenguajes para la definición y manipulación de datos', Dificultad::MEDIA, 'Lenguajes para la ____ y ____ de datos',],
-            'DIFICIL'   => [$valor, Dificultad::DIFICIL,   'Diseño ____ ____ ____ ____'],
+            'MEDIA_distinto' => ['Lenguajes para la definición y manipulación de datos', Dificultad::MEDIA, 'Lenguajes para la ____ y ____ de datos'],
+            'DIFICIL'   => [$valor, Dificultad::DIFICIL,   'Diseño de ____ de ____ ____'],
+            'DIFICIL_distinct' => ['Lenguajes para la definición y manipulación de datos', Dificultad::DIFICIL, 'Lenguajes para la ____ y ____ de ____']
         ];
     }
 }
