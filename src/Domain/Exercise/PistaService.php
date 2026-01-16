@@ -59,6 +59,28 @@ final class PistaService
 
             return implode(' ', $palabras);
         }
+
+        if ($modo === ModoPista::PALABRAS && $dificultad === Dificultad::MEDIA) {
+            $contador = count($indicesPalabrasContenidoSemantico);
+
+            if ($contador <= 2) {
+                return $valor; // nada o casi nada para enmascarar
+            }
+
+            // Opción determinista: Mantener visibles la primera y última palabra
+            $indicePrimeraPalabra = $indicesPalabrasContenidoSemantico[0];
+            $indiceUltimaPalabra  = $indicesPalabrasContenidoSemantico[$contador - 1];
+
+            foreach ($indicesPalabrasContenidoSemantico as $indice) {
+                if ($indice === $indicePrimeraPalabra || $indice === $indiceUltimaPalabra) {
+                    continue;
+                }
+                $palabras[$indice] = '____';
+            }
+
+            return implode(' ', $palabras);
+        }
+
         return $valor;
     }
 
