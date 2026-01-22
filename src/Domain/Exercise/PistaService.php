@@ -75,9 +75,9 @@ final class PistaService
         }
 
         $posicionMedia = intdiv($total, 2);
-        $indicePalabraAEnmascarar = $indicesContenido[$posicionMedia];
+        $indice = $indicesContenido[$posicionMedia];
 
-        $palabras[$indicePalabraAEnmascarar] = self::MASCARA_PALABRA;
+        $palabras[$indice] = $this->enmascararNucleoParaPalabras($palabras[$indice]);
 
         return implode(' ', $palabras);
     }
@@ -95,8 +95,11 @@ final class PistaService
         $posicionIzq = intdiv($total - 1, 2);
         $posicionDcha = $posicionIzq + 1;
 
-        $palabras[$indicesContenido[$posicionIzq]] = self::MASCARA_PALABRA;
-        $palabras[$indicesContenido[$posicionDcha]] = self::MASCARA_PALABRA;
+        $indiceIzq = $indicesContenido[$posicionIzq];
+        $indiceDcha = $indicesContenido[$posicionDcha];
+
+        $palabras[$indiceIzq] = $this->enmascararNucleoParaPalabras($palabras[$indiceIzq]);
+        $palabras[$indiceDcha] = $this->enmascararNucleoParaPalabras($palabras[$indiceDcha]);
 
         return implode(' ', $palabras);
     }
@@ -118,7 +121,7 @@ final class PistaService
             if ($indice === $indicePrimera || $indice === $indiceUltima) {
                 continue;
             }
-            $palabras[$indice] = self::MASCARA_PALABRA;
+            $palabras[$indice] = $this->enmascararNucleoParaPalabras($palabras[$indice]);
         }
 
         return implode(' ', $palabras);
@@ -140,7 +143,7 @@ final class PistaService
             if ($indice === $indicePrimera) {
                 continue;
             }
-            $palabras[$indice] = self::MASCARA_PALABRA;
+            $palabras[$indice] = $this->enmascararNucleoParaPalabras($palabras[$indice]);
         }
 
         return implode(' ', $palabras);
@@ -160,7 +163,7 @@ final class PistaService
         };
 
         foreach ($indicesContenido as $indice) {
-            $palabras[$indice] = $enmascarador($palabras[$indice]);
+            $palabras[$indice] = $this->enmascararNucleoParaLetras($palabras[$indice], $enmascarador);
         }
 
         return implode(' ', $palabras);
@@ -269,5 +272,39 @@ final class PistaService
 
         return $primera . str_repeat(self::MASCARA_LETRA, $longitud - 1);
     }
+
+    private function enmascararNucleoParaLetras(string $palabra, callable $enmascarador): string
+    {
+        [$prefijo, $nucleo, $sufijo] = $this->dividirPalabra($palabra);
+
+        $nucleoEnmascarado = $enmascarador($nucleo);
+
+        return $prefijo . $nucleoEnmascarado . $sufijo;
+    }
+
+    private function enmascararNucleoParaPalabras(string $palabra): string
+    {
+        [$prefijo, $nucleo, $sufijo] = $this->dividirPalabra($palabra);
+
+        // Enmascar solo si hay un núcleo significativo
+        if ($nucleo === '' || !preg_match('/[\p{L}\p{N}]/u', $nucleo)) {
+            return $palabra;
+        }
+
+        return $prefijo . self::MASCARA_PALABRA . $sufijo;
+    }
+
+    private function dividirPalabra(string $palabra): array
+    {
+        // prefijo: caracter no alfanumérico al principio
+        // núcleo:    caracteres alfanuméricos
+        // sufijo: ncaracter no alfanumérico al final
+        if (preg_match('/^([^\p{L}\p{N}]*)([\p{L}\p{N}]+)([^\p{L}\p{N}]*)$/u', $palabra, $m) !== 1) {
+            return ['', $palabra, ''];
+        }
+
+        return [$m[1], $m[2], $m[3]];
+    }
+
 }
 ?>

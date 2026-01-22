@@ -44,6 +44,7 @@ final class PistaServiceTest extends TestCase
             'MEDIA'     => [$valor, Dificultad::MEDIA,     'D____o de b___s de d___s r__________s'],
             'DIFICIL'   => [$valor, Dificultad::DIFICIL,   'D_____ de b____ de d____ r___________'],
             'MUY_FACIL_link_words' => ['Sistemas de gestión de archivos y dispositivos', Dificultad::MUY_FACIL, 'Sistema_ de gestió_ de archivo_ y dispositivo_'],
+            'MEDIA_puntuacion' => ['Diseño de bases, de datos relacionales.', Dificultad::MEDIA, 'D____o de b___s, de d___s r__________s.'],
         ];
     }
 
@@ -65,7 +66,9 @@ final class PistaServiceTest extends TestCase
             'MEDIA'     => [$valor, Dificultad::MEDIA,     'Diseño de ____ de ____ relacionales'],
             'MEDIA_distinto' => ['Lenguajes para la definición y manipulación de datos', Dificultad::MEDIA, 'Lenguajes para la ____ y ____ de datos'],
             'DIFICIL'   => [$valor, Dificultad::DIFICIL,   'Diseño de ____ de ____ ____'],
-            'DIFICIL_distinct' => ['Lenguajes para la definición y manipulación de datos', Dificultad::DIFICIL, 'Lenguajes para la ____ y ____ de ____']
+            'DIFICIL_distinct' => ['Lenguajes para la definición y manipulación de datos', Dificultad::DIFICIL, 'Lenguajes para la ____ y ____ de ____'],
+            'MUY_FACIL_puntuacion' => ['Diseño de bases, de datos relacionales.', Dificultad::MUY_FACIL, 'Diseño de bases, de ____ relacionales.'],
+            'MUY_FACIL_puntuacion_en_palabra_enmascarada' => ['Diseño de bases de datos, relacionales', Dificultad::MUY_FACIL, 'Diseño de bases de ____, relacionales'],
         ];
     }
 }
