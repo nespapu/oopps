@@ -65,15 +65,6 @@ $action = Router::url(RutasCuantoSabesTema::evaluarTitulo($sesionId));
     <div class="card shadow-sm">
       <div class="card-body">
 
-        <div class="mb-3">
-          <div class="small text-muted mb-1">Tema seleccionado</div>
-          <div class="fs-5 fw-semibold">
-            <?= htmlspecialchars((string)$tituloTema, ENT_QUOTES, 'UTF-8') ?>
-          </div>
-        </div>
-
-        <hr class="my-4">
-
         <form method="post" action="<?= htmlspecialchars($action, ENT_QUOTES, 'UTF-8') ?>">
           <div class="mb-3">
             <label for="<?= htmlspecialchars($fieldName, ENT_QUOTES, 'UTF-8') ?>" class="form-label fw-semibold">
