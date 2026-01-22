@@ -101,6 +101,38 @@ final class PistaService
             return implode(' ', $palabras);
         }
 
+        if ($modo === ModoPista::LETRAS && $dificultad === Dificultad::MUY_FACIL) {
+            foreach ($indicesPalabrasContenidoSemantico as $indice) {
+                $palabras[$indice] = $this->enmascarUltimaLetra($palabras[$indice]);
+            }
+
+            return implode(' ', $palabras);
+        }
+
+        if ($modo === ModoPista::LETRAS && $dificultad === Dificultad::FACIL) {
+            foreach ($indicesPalabrasContenidoSemantico as $indice) {
+                $palabras[$indice] = $this->enmascarLetrasSegundaMitad($palabras[$indice]);
+            }
+
+            return implode(' ', $palabras);
+        }
+
+        if ($modo === ModoPista::LETRAS && $dificultad === Dificultad::MEDIA) {
+            foreach ($indicesPalabrasContenidoSemantico as $indice) {
+                $palabras[$indice] = $this->enmascararPrimeraUltimaLetra($palabras[$indice]);
+            }
+
+            return implode(' ', $palabras);
+        }
+
+        if ($modo === ModoPista::LETRAS && $dificultad === Dificultad::DIFICIL) {
+            foreach ($indicesPalabrasContenidoSemantico as $indice) {
+                $palabras[$indice] = $this->enmascarTodasLetrasSalvoPrimera($palabras[$indice]);
+            }
+
+            return implode(' ', $palabras);
+        }
+
         return $valor;
     }
 
@@ -154,5 +186,57 @@ final class PistaService
         $palabra = preg_replace('/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/u', '', $palabra);
 
         return $palabra ?? '';
+    }
+
+    private function enmascarUltimaLetra(string $palabra): string
+    {
+        if (mb_strlen($palabra, 'UTF-8') <= 1) {
+            return $palabra;
+        }
+
+        $logitud = mb_strlen($palabra, 'UTF-8');
+
+        return mb_substr($palabra, 0, $logitud - 1, 'UTF-8') . '_';
+    }
+
+    private function enmascarLetrasSegundaMitad(string $palabra): string
+    {
+        $longitud = mb_strlen($palabra, 'UTF-8');
+
+        if ($longitud <= 1) {
+            return $palabra;
+        }
+
+        $contadorVisibles = intdiv($longitud + 1, 2); // ceil($len / 2) without floats
+        $contadorEnmascaradas  = $longitud - $contadorVisibles;
+
+        return mb_substr($palabra, 0, $contadorVisibles, 'UTF-8') . str_repeat('_', $contadorEnmascaradas);
+    }
+
+    private function enmascararPrimeraUltimaLetra(string $palabra): string
+    {
+        $longitud = mb_strlen($palabra, 'UTF-8');
+
+        if ($longitud <= 2) {
+            return $palabra;
+        }
+
+        $primera = mb_substr($palabra, 0, 1, 'UTF-8');
+        $ultima  = mb_substr($palabra, $longitud - 1, 1, 'UTF-8');
+
+        return $primera . str_repeat('_', $longitud - 2) . $ultima;
+    }
+
+    private function enmascarTodasLetrasSalvoPrimera(string $palabra): string
+    {
+        $longitud = mb_strlen($palabra, 'UTF-8');
+
+        if ($longitud <= 1) {
+            return $palabra;
+        }
+
+        $primera = mb_substr($palabra, 0, 1, 'UTF-8');
+
+        return $primera . str_repeat('_', $longitud - 1);
     }
 }

@@ -39,10 +39,11 @@ final class PistaServiceTest extends TestCase
         $valor = 'Diseño de bases de datos relacionales';
 
         return [
-            'MUY_FACIL' => [$valor, Dificultad::MUY_FACIL, 'Diseñ_ de bas_s de dato_ relacionale_'],
-            'FACIL'     => [$valor, Dificultad::FACIL,     'Di____ de ba___ de da___ re___________'],
-            'MEDIA'     => [$valor, Dificultad::MEDIA,     'D____o d_ b___s d_ d___s r_________s'],
-            'DIFICIL'   => [$valor, Dificultad::DIFICIL,   'D_____ d_ b____ d_ d____ r___________'],
+            'MUY_FACIL' => [$valor, Dificultad::MUY_FACIL, 'Diseñ_ de base_ de dato_ relacionale_'],
+            'FACIL'     => [$valor, Dificultad::FACIL,     'Dis___ de bas__ de dat__ relaci______'],
+            'MEDIA'     => [$valor, Dificultad::MEDIA,     'D____o de b___s de d___s r__________s'],
+            'DIFICIL'   => [$valor, Dificultad::DIFICIL,   'D_____ de b____ de d____ r___________'],
+            'MUY_FACIL_link_words' => ['Sistemas de gestión de archivos y dispositivos', Dificultad::MUY_FACIL, 'Sistema_ de gestió_ de archivo_ y dispositivo_'],
         ];
     }
 
