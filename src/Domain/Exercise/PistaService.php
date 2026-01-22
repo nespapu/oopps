@@ -1,10 +1,16 @@
 <?php
+declare(strict_types=1);
+
 namespace App\Domain\Exercise;
 
 final class PistaService
 {
+    private const CHARSET = 'UTF-8';
+    private const MASCARA_PALABRA = '____';
+    private const MASCARA_LETRA = '_';
+
     /**
-     * Regla de dominio: Las palabras de enlace (articulos, preposiciones, conjunciones)
+     * Regla de dominio: Las palabras de enlace (artículos, preposiciones, conjunciones)
      * nunca son enmascaradas ni se tienen en cuenta como palabras con contenido semántico significativo.
      */
     private const PALABRAS_DE_ENLACE = [
@@ -17,126 +23,150 @@ final class PistaService
         Dificultad $dificultad,
         ModoPista $modo
     ): string {
-        if(trim($valor) === '')
-        {
+        if (trim($valor) === '') {
             return '';
         }
 
-        $valor = preg_replace('/\s+/', ' ', trim($valor));
+        $valor = $this->normalizarEspacios($valor);
 
         $palabras = explode(' ', $valor);
-        $indicesPalabrasContenidoSemantico = $this->getIndicesPalabrasContenidoSemantico($palabras);
+        $indicesContenido = $this->getIndicesPalabrasContenidoSemantico($palabras);
 
-        if ($modo === ModoPista::PALABRAS && $dificultad === Dificultad::MUY_FACIL) {
-            if (count($indicesPalabrasContenidoSemantico) === 0) {
-                return $valor;
-            }
-
-            // Opción determinista: palabra de contenido que se encuentra en el medio
-            $posicionMedia = intdiv(count($indicesPalabrasContenidoSemantico), 2);
-            $indicePalabraEnmascar = $indicesPalabrasContenidoSemantico[$posicionMedia];
-
-            $palabras[$indicePalabraEnmascar] = '____';
-
-            return implode(' ', $palabras);
-        }
-
-        if ($modo === ModoPista::PALABRAS && $dificultad === Dificultad::FACIL) {
-            $contador = count($indicesPalabrasContenidoSemantico);
-
-            if ($contador < 2) {
-                return $valor; // No hay suficientes palabras con contenido semántico para enmascarar dos
-            }
-
-            // Opción determinista: elegimos las dos palabras de contenido semánticas más centradas
-            // Para un número par (e.g., 4) -> elegimos las posiciones 1 y 2
-            // Para un número impar (e.g., 5) -> elegimos las posiciones 2 y 3
-            $posicionIzq = intdiv($contador - 1, 2);
-            $posicionDcha = $posicionIzq + 1;
-
-            $palabras[$indicesPalabrasContenidoSemantico[$posicionIzq]] = '____';
-            $palabras[$indicesPalabrasContenidoSemantico[$posicionDcha]] = '____';
-
-            return implode(' ', $palabras);
-        }
-
-        if ($modo === ModoPista::PALABRAS && $dificultad === Dificultad::MEDIA) {
-            $contador = count($indicesPalabrasContenidoSemantico);
-
-            if ($contador <= 2) {
-                return $valor; // nada o casi nada para enmascarar
-            }
-
-            // Opción determinista: Mantener visibles la primera y última palabra
-            $indicePrimeraPalabra = $indicesPalabrasContenidoSemantico[0];
-            $indiceUltimaPalabra  = $indicesPalabrasContenidoSemantico[$contador - 1];
-
-            foreach ($indicesPalabrasContenidoSemantico as $indice) {
-                if ($indice === $indicePrimeraPalabra || $indice === $indiceUltimaPalabra) {
-                    continue;
-                }
-                $palabras[$indice] = '____';
-            }
-
-            return implode(' ', $palabras);
-        }
-
-        if ($modo === ModoPista::PALABRAS && $dificultad === Dificultad::DIFICIL) {
-            $contador = count($indicesPalabrasContenidoSemantico);
-
-            if ($contador <= 1) {
-                return $valor; // nada que enmascarar
-            }
-
-            // Opción determinista: Sólo dejar visible la primera palabra semántica significativa
-            $indicePrimeraPalabra = $indicesPalabrasContenidoSemantico[0];
-
-            foreach ($indicesPalabrasContenidoSemantico as $indice) {
-                if ($indice === $indicePrimeraPalabra) {
-                    continue;
-                }
-                $palabras[$indice] = '____';
-            }
-
-            return implode(' ', $palabras);
-        }
-
-        if ($modo === ModoPista::LETRAS && $dificultad === Dificultad::MUY_FACIL) {
-            foreach ($indicesPalabrasContenidoSemantico as $indice) {
-                $palabras[$indice] = $this->enmascarUltimaLetra($palabras[$indice]);
-            }
-
-            return implode(' ', $palabras);
-        }
-
-        if ($modo === ModoPista::LETRAS && $dificultad === Dificultad::FACIL) {
-            foreach ($indicesPalabrasContenidoSemantico as $indice) {
-                $palabras[$indice] = $this->enmascarLetrasSegundaMitad($palabras[$indice]);
-            }
-
-            return implode(' ', $palabras);
-        }
-
-        if ($modo === ModoPista::LETRAS && $dificultad === Dificultad::MEDIA) {
-            foreach ($indicesPalabrasContenidoSemantico as $indice) {
-                $palabras[$indice] = $this->enmascararPrimeraUltimaLetra($palabras[$indice]);
-            }
-
-            return implode(' ', $palabras);
-        }
-
-        if ($modo === ModoPista::LETRAS && $dificultad === Dificultad::DIFICIL) {
-            foreach ($indicesPalabrasContenidoSemantico as $indice) {
-                $palabras[$indice] = $this->enmascarTodasLetrasSalvoPrimera($palabras[$indice]);
-            }
-
-            return implode(' ', $palabras);
-        }
-
-        return $valor;
+        return match ($modo) {
+            ModoPista::PALABRAS => $this->generarPistaPorPalabras($palabras, $indicesContenido, $dificultad, $valor),
+            ModoPista::LETRAS   => $this->generarPistaPorLetras($palabras, $indicesContenido, $dificultad),
+        };
     }
 
-     /**
+    private function normalizarEspacios(string $valor): string
+    {
+        $valor = trim($valor);
+        return preg_replace('/\s+/', ' ', $valor) ?? $valor;
+    }
+
+    /**
+     * @param string[] $palabras
+     * @param int[] $indicesContenido
+     */
+    private function generarPistaPorPalabras(
+        array $palabras,
+        array $indicesContenido,
+        Dificultad $dificultad,
+        string $valorOriginal
+    ): string {
+        $total = count($indicesContenido);
+
+        return match ($dificultad) {
+            Dificultad::MUY_FACIL => $this->palabrasMuyFacil($palabras, $indicesContenido, $total, $valorOriginal),
+            Dificultad::FACIL     => $this->palabrasFacil($palabras, $indicesContenido, $total, $valorOriginal),
+            Dificultad::MEDIA     => $this->palabrasMedia($palabras, $indicesContenido, $total, $valorOriginal),
+            Dificultad::DIFICIL   => $this->palabrasDificil($palabras, $indicesContenido, $total, $valorOriginal),
+        };
+    }
+
+    /**
+     * @param string[] $palabras
+     * @param int[] $indicesContenido
+     */
+    private function palabrasMuyFacil(array $palabras, array $indicesContenido, int $total, string $valorOriginal): string
+    {
+        if ($total === 0) {
+            return $valorOriginal;
+        }
+
+        $posicionMedia = intdiv($total, 2);
+        $indicePalabraAEnmascarar = $indicesContenido[$posicionMedia];
+
+        $palabras[$indicePalabraAEnmascarar] = self::MASCARA_PALABRA;
+
+        return implode(' ', $palabras);
+    }
+
+    /**
+     * @param string[] $palabras
+     * @param int[] $indicesContenido
+     */
+    private function palabrasFacil(array $palabras, array $indicesContenido, int $total, string $valorOriginal): string
+    {
+        if ($total < 2) {
+            return $valorOriginal;
+        }
+
+        $posicionIzq = intdiv($total - 1, 2);
+        $posicionDcha = $posicionIzq + 1;
+
+        $palabras[$indicesContenido[$posicionIzq]] = self::MASCARA_PALABRA;
+        $palabras[$indicesContenido[$posicionDcha]] = self::MASCARA_PALABRA;
+
+        return implode(' ', $palabras);
+    }
+
+    /**
+     * @param string[] $palabras
+     * @param int[] $indicesContenido
+     */
+    private function palabrasMedia(array $palabras, array $indicesContenido, int $total, string $valorOriginal): string
+    {
+        if ($total <= 2) {
+            return $valorOriginal;
+        }
+
+        $indicePrimera = $indicesContenido[0];
+        $indiceUltima  = $indicesContenido[$total - 1];
+
+        foreach ($indicesContenido as $indice) {
+            if ($indice === $indicePrimera || $indice === $indiceUltima) {
+                continue;
+            }
+            $palabras[$indice] = self::MASCARA_PALABRA;
+        }
+
+        return implode(' ', $palabras);
+    }
+
+    /**
+     * @param string[] $palabras
+     * @param int[] $indicesContenido
+     */
+    private function palabrasDificil(array $palabras, array $indicesContenido, int $total, string $valorOriginal): string
+    {
+        if ($total <= 1) {
+            return $valorOriginal;
+        }
+
+        $indicePrimera = $indicesContenido[0];
+
+        foreach ($indicesContenido as $indice) {
+            if ($indice === $indicePrimera) {
+                continue;
+            }
+            $palabras[$indice] = self::MASCARA_PALABRA;
+        }
+
+        return implode(' ', $palabras);
+    }
+
+    /**
+     * @param string[] $palabras
+     * @param int[] $indicesContenido
+     */
+    private function generarPistaPorLetras(array $palabras, array $indicesContenido, Dificultad $dificultad): string
+    {
+        $enmascarador = match ($dificultad) {
+            Dificultad::MUY_FACIL => fn(string $p): string => $this->enmascararUltimaLetra($p),
+            Dificultad::FACIL     => fn(string $p): string => $this->enmascararLetrasSegundaMitad($p),
+            Dificultad::MEDIA     => fn(string $p): string => $this->enmascararPrimeraUltimaLetra($p),
+            Dificultad::DIFICIL   => fn(string $p): string => $this->enmascararTodasLetrasSalvoPrimera($p),
+        };
+
+        foreach ($indicesContenido as $indice) {
+            $palabras[$indice] = $enmascarador($palabras[$indice]);
+        }
+
+        return implode(' ', $palabras);
+    }
+
+    /**
      * Devuelve el índice de las palabras consideradas como semánticamente significativas,
      * excluyendo las palabras de enlace de ser enmascaradas o contadas.
      *
@@ -176,67 +206,68 @@ final class PistaService
     /**
      * Normaliza una palabra para ser comparada con las palabras de enlace:
      * - Convierte a minúsculas
-     * - Quita símbolos de puntuación inciales o finales, mantiene los de en medio
+     * - Quita símbolos de puntuación iniciales o finales, mantiene los de en medio
      * - Conserva los acentos
      */
     private function normalizarPalabraParaComparacion(string $palabra): string
     {
-        $palabra = mb_strtolower($palabra, 'UTF-8');
-
+        $palabra = mb_strtolower($palabra, self::CHARSET);
         $palabra = preg_replace('/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/u', '', $palabra);
 
         return $palabra ?? '';
     }
 
-    private function enmascarUltimaLetra(string $palabra): string
+    private function enmascararUltimaLetra(string $palabra): string
     {
-        if (mb_strlen($palabra, 'UTF-8') <= 1) {
-            return $palabra;
-        }
-
-        $logitud = mb_strlen($palabra, 'UTF-8');
-
-        return mb_substr($palabra, 0, $logitud - 1, 'UTF-8') . '_';
-    }
-
-    private function enmascarLetrasSegundaMitad(string $palabra): string
-    {
-        $longitud = mb_strlen($palabra, 'UTF-8');
+        $longitud = mb_strlen($palabra, self::CHARSET);
 
         if ($longitud <= 1) {
             return $palabra;
         }
 
-        $contadorVisibles = intdiv($longitud + 1, 2); // ceil($len / 2) without floats
-        $contadorEnmascaradas  = $longitud - $contadorVisibles;
+        return mb_substr($palabra, 0, $longitud - 1, self::CHARSET) . self::MASCARA_LETRA;
+    }
 
-        return mb_substr($palabra, 0, $contadorVisibles, 'UTF-8') . str_repeat('_', $contadorEnmascaradas);
+    private function enmascararLetrasSegundaMitad(string $palabra): string
+    {
+        $longitud = mb_strlen($palabra, self::CHARSET);
+
+        if ($longitud <= 1) {
+            return $palabra;
+        }
+
+        $contadorVisibles = intdiv($longitud + 1, 2);
+        $contadorEnmascaradas = $longitud - $contadorVisibles;
+
+        return mb_substr($palabra, 0, $contadorVisibles, self::CHARSET)
+            . str_repeat(self::MASCARA_LETRA, $contadorEnmascaradas);
     }
 
     private function enmascararPrimeraUltimaLetra(string $palabra): string
     {
-        $longitud = mb_strlen($palabra, 'UTF-8');
+        $longitud = mb_strlen($palabra, self::CHARSET);
 
         if ($longitud <= 2) {
             return $palabra;
         }
 
-        $primera = mb_substr($palabra, 0, 1, 'UTF-8');
-        $ultima  = mb_substr($palabra, $longitud - 1, 1, 'UTF-8');
+        $primera = mb_substr($palabra, 0, 1, self::CHARSET);
+        $ultima  = mb_substr($palabra, $longitud - 1, 1, self::CHARSET);
 
-        return $primera . str_repeat('_', $longitud - 2) . $ultima;
+        return $primera . str_repeat(self::MASCARA_LETRA, $longitud - 2) . $ultima;
     }
 
-    private function enmascarTodasLetrasSalvoPrimera(string $palabra): string
+    private function enmascararTodasLetrasSalvoPrimera(string $palabra): string
     {
-        $longitud = mb_strlen($palabra, 'UTF-8');
+        $longitud = mb_strlen($palabra, self::CHARSET);
 
         if ($longitud <= 1) {
             return $palabra;
         }
 
-        $primera = mb_substr($palabra, 0, 1, 'UTF-8');
+        $primera = mb_substr($palabra, 0, 1, self::CHARSET);
 
-        return $primera . str_repeat('_', $longitud - 1);
+        return $primera . str_repeat(self::MASCARA_LETRA, $longitud - 1);
     }
 }
+?>
