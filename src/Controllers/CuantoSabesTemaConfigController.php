@@ -5,7 +5,7 @@ use App\Core\View;
 use App\Helpers\Auth;
 use App\Helpers\Flash;
 use App\Helpers\Http;
-use App\Infrastructure\Persistence\Repositories\TemaRepositorio;
+use App\Infrastructure\Persistence\Repositories\TemaRepositorySQL;
 use App\Application\Exercises\CuantoSabesTemaConfigPayloadBuilder;
 use App\Core\Routes\RutasCuantoSabesTema;
 use App\Domain\Exercise\ConfigEjercicio;
@@ -13,6 +13,7 @@ use App\Domain\Exercise\Dificultad;
 use App\Domain\Exercise\PasoEjercicio;
 use App\Domain\Exercise\TipoEjercicio;
 use App\Infrastructure\Session\AlmacenSesionEjercicio;
+use App\Infrastructure\Wiring\CuantoSabesTemaConfigFactory;
 
 final class CuantoSabesTemaConfigController
 {
@@ -23,8 +24,8 @@ final class CuantoSabesTemaConfigController
         $error = Flash::get('error');
         $contextoUsuario = Auth::contextoUsuario();
 
-        $temaRepositorio = new TemaRepositorio();
-        $payloadBuilder = new CuantoSabesTemaConfigPayloadBuilder($temaRepositorio);
+        $factoria = new CuantoSabesTemaConfigFactory();
+        $payloadBuilder = $factoria->createPayloadBuilder();
 
         $payload = $payloadBuilder->construir($contextoUsuario);
         $payload['error'] = $error;
@@ -57,7 +58,7 @@ final class CuantoSabesTemaConfigController
             Http::redirigir(RutasCuantoSabesTema::CONFIG);
         }
 
-         $temaRepositorio = new TemaRepositorio();
+         $temaRepositorio = new TemaRepositorySQL();
 
         if ($numeracion === 0) {
             $numeracionAleatoria = $temaRepositorio->buscarOrdenAleatorioPorCodigoOposicion($codigoOposicion);

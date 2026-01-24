@@ -4,12 +4,12 @@ namespace App\Application\Exercises;
 
 use App\Domain\Auth\ContextoUsuario;
 use App\Domain\Exercise\Dificultad;
-use App\Infrastructure\Persistence\Repositories\TemaRepositorio;
+use App\Domain\Temas\TemaRepository;
 
 final class CuantoSabesTemaConfigPayloadBuilder
 {
     public function __construct(
-        private TemaRepositorio $temaRepositorio
+        private TemaRepository $temaRepositorio
     ) {}
 
     public function construir(ContextoUsuario $ctx): array

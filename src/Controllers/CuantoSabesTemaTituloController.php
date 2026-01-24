@@ -2,14 +2,14 @@
 namespace App\Controllers;
 
 use App\Application\Exercises\Evaluation\CuantoSabesTemaTituloEvaluationService;
-use App\Application\Exercises\StepBuilder\CuantoSabesTemaTituloPayloadBuilder;
 use App\Core\Routes\RutasCuantoSabesTema;
 use App\Core\View;
 use App\Domain\Exercise\PasoEjercicio;
 use App\Helpers\Auth;
 use App\Helpers\Http;
-use App\Infrastructure\Persistence\Repositories\TemaRepositorio;
+use App\Infrastructure\Persistence\Repositories\TemaRepositorySQL;
 use App\Infrastructure\Session\AlmacenSesionEjercicio;
+use App\Infrastructure\Wiring\CuantoSabesTemaTituloFactory;
 
 final class CuantoSabesTemaTituloController
 {
@@ -20,8 +20,8 @@ final class CuantoSabesTemaTituloController
         $almacenSesionEjercicio = new AlmacenSesionEjercicio();
         $sesion = $almacenSesionEjercicio->getSesionActual();
 
-        $temaRepositorio = new TemaRepositorio();
-        $payloadBuilder = new CuantoSabesTemaTituloPayloadBuilder($temaRepositorio);
+        $factoria = new CuantoSabesTemaTituloFactory();
+        $payloadBuilder = $factoria->createPayloadBuilder();
 
         $payload = $payloadBuilder->construir($sesion);
 
@@ -44,7 +44,7 @@ final class CuantoSabesTemaTituloController
         $codigoOposicion = $sesion->contextoUsuario()['oposicionId'];
         $numeracion = $sesion->config()->tema();
 
-        $temaRepositorio = new TemaRepositorio();
+        $temaRepositorio = new TemaRepositorySQL();
              
         $respuesta = trim($_POST['titulo'] ?? '');
         $solucion = $temaRepositorio->buscarTituloPorCodigoOposicionYOrden($codigoOposicion, $numeracion);

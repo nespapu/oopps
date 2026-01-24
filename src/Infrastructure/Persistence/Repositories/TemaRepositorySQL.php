@@ -2,10 +2,11 @@
 
 namespace App\Infrastructure\Persistence\Repositories;
 
-use PDO;
+use App\Domain\Temas\TemaRepository;
 use App\Infrastructure\Persistence\ConexionBD;
+use PDO;
 
-final class TemaRepositorio
+final class TemaRepositorySQL implements TemaRepository
 {
     private PDO $db;
 
