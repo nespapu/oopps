@@ -70,6 +70,11 @@ final class AppWiring
                 $this->cuantoSabesTemaTituloController()->evaluar();
             },
             
+            RutasCuantoSabesTema::PASO_INDICE => function (): void {
+                if (!Router::esGet()) { http_response_code(405); return; }
+                echo "Paso índice. Próximamente...";
+            },
+            
             // DEV
             RutasDevSesionEjercicio::BASE => function (): void {
                 if (!Router::esGet()) { http_response_code(405); return; }
