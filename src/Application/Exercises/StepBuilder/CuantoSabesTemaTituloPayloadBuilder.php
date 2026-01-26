@@ -25,15 +25,9 @@ final class CuantoSabesTemaTituloPayloadBuilder {
         $dificultadEnum = Dificultad::from($sesion->config()->dificultad());
         $modoPista = ModoPista::PALABRAS;
 
-        if ($titulo === null) {
-            $pista = '(sin pista generada)';
-        } else {
-            $pista = $this->pistaServicio->getPista(
-                $titulo,
-                $dificultadEnum,
-                $modoPista
-            );
-        }
+        $pista = $titulo === null
+            ? '(sin pista generada)'
+            : $this->pistaServicio->getPista($titulo, $dificultadEnum, $modoPista);
 
         return [
             ClavesPasoPayload::PASO => PasoEjercicio::TITULO,
