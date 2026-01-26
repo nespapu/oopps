@@ -42,65 +42,12 @@ if (str_starts_with($ruta, 'dev/') && $entorno !== 'dev') {
 $rutas = (new AppWiring())->rutas();
 
 $manejador = $rutas[$rutaCanonica] ?? null;
-if($manejador) {
-    $manejador();
+if($manejador === null) {
+    http_response_code(404);
+    echo "404 - Ruta no encontrada";
     exit;
 }
 
-switch ($rutaCanonica) {
-    case 'login':
-        $controlador = new App\Controllers\LoginController();
-        if (Router::esGet()) {
-            $controlador->mostrar();
-        } elseif (Router::esPost()) {
-            $controlador->comprobar();
-        } else {
-            http_response_code(405);
-        }
-        break;
-    case 'login/salir':
-        (new App\Controllers\LoginController())->salir();
-        break;
-    case 'panel-control-ejercicios':
-        (new App\Controllers\PanelControlEjerciciosController())->mostrar();
-        break;
-    case RutasCuantoSabesTema::CONFIG:
-        if (!Router::esGet()) {
-            http_response_code(405);
-            break;
-        }
-        (new App\Controllers\CuantoSabesTemaConfigController())->mostrar();
-        break;
-    case RutasCuantoSabesTema::INICIO:
-        if (!Router::esPost()) {
-            http_response_code(405);
-            break;
-        }
-        (new App\Controllers\CuantoSabesTemaConfigController())->comprobar();
-        break;
-    case RutasCuantoSabesTema::PASO_TITULO:
-        if (!Router::esGet()) {
-            http_response_code(405);
-            break;
-        }
-        (new App\Controllers\CuantoSabesTemaTituloController())->mostrar();
-        break;
-    case RutasCuantoSabesTema::EVAL_TITULO:
-        if (!Router::esPost()) {
-            http_response_code(405);
-            break;
-        }
-        (new App\Controllers\CuantoSabesTemaTituloController())->evaluar();
-        break;
-    case RutasCuantoSabesTema::PASO_INDICE:
-        if (!Router::esGet()) {
-            http_response_code(405);
-            break;
-        }
-        echo "Paso índice. Próximamente...";
-        break;
-    default:
-        http_response_code(404);
-        echo "404 - Ruta no encontrada";
-}
+$manejador();
+
 ?>
