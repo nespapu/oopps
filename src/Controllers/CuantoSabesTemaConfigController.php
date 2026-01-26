@@ -17,6 +17,12 @@ use App\Infrastructure\Wiring\CuantoSabesTemaConfigFactory;
 
 final class CuantoSabesTemaConfigController
 {
+    public function __construct(
+        private readonly CuantoSabesTemaConfigPayloadBuilder $payloadBuilder,
+        private readonly TemaRepositorySQL $temaRepositorio,
+        private readonly AlmacenSesionEjercicio $almacenSesionEjercicio
+    ) {}
+
     public function mostrar(): void
     {
         Auth::requiereContextoOposicion();
@@ -24,10 +30,7 @@ final class CuantoSabesTemaConfigController
         $error = Flash::get('error');
         $contextoUsuario = Auth::contextoUsuario();
 
-        $factoria = new CuantoSabesTemaConfigFactory();
-        $payloadBuilder = $factoria->createPayloadBuilder();
-
-        $payload = $payloadBuilder->construir($contextoUsuario);
+        $payload = $this->payloadBuilder->construir($contextoUsuario);
         $payload['error'] = $error;
         $payload['titulo'] = "Configuración";
 
@@ -58,10 +61,8 @@ final class CuantoSabesTemaConfigController
             Http::redirigir(RutasCuantoSabesTema::CONFIG);
         }
 
-         $temaRepositorio = new TemaRepositorySQL();
-
         if ($numeracion === 0) {
-            $numeracionAleatoria = $temaRepositorio->buscarOrdenAleatorioPorCodigoOposicion($codigoOposicion);
+            $numeracionAleatoria = $this->temaRepositorio->buscarOrdenAleatorioPorCodigoOposicion($codigoOposicion);
 
             if ($numeracionAleatoria === null) {
                 Flash::set('error', 'No hay temas disponibles para esta oposición.');
@@ -71,7 +72,7 @@ final class CuantoSabesTemaConfigController
             $numeracion = $numeracionAleatoria;
         }
 
-        $tituloTema = $temaRepositorio->buscarTituloPorCodigoOposicionYOrden($codigoOposicion, $numeracion);
+        $tituloTema = $this->temaRepositorio->buscarTituloPorCodigoOposicionYOrden($codigoOposicion, $numeracion);
         if ($tituloTema === null) {
             Flash::set('error', 'El tema seleccionado no existe.');
             Http::redirigir(RutasCuantoSabesTema::CONFIG);
@@ -89,8 +90,7 @@ final class CuantoSabesTemaConfigController
             'oposicionId' => $contextoUsuario->codigoOposicion()
         ];
 
-        $almacenSesionEjercicio = new AlmacenSesionEjercicio();
-        $sesion = $almacenSesionEjercicio->crear(
+        $sesion = $this->almacenSesionEjercicio->crear(
             $tipoEjercicio,
             $contextoUsuarioArray,
             $configEjercicio,

@@ -1,6 +1,7 @@
 <?php
 namespace App\App;
 
+use App\Application\Exercises\CuantoSabesTemaConfigPayloadBuilder;
 use App\Controllers\LoginController;
 use App\Controllers\PanelControlEjerciciosController;
 use App\Controllers\CuantoSabesTemaConfigController;
@@ -9,10 +10,12 @@ use App\Controllers\Dev\DevSesionEjercicioController;
 use App\Core\Routes\RutasCuantoSabesTema;
 use App\Core\Routes\Dev\RutasDevSesionEjercicio;
 use App\Helpers\Router;
+use App\Infrastructure\Persistence\Repositories\TemaRepositorySQL;
 use App\Infrastructure\Session\AlmacenSesionEjercicio;
 
 final class AppWiring
 {
+    private ?TemaRepositorySQL $temaRepositorio = null;
     private ?AlmacenSesionEjercicio $almacenSesionEjercicio = null;
 
     public function rutas(): array
@@ -95,7 +98,11 @@ final class AppWiring
 
     private function cuantoSabesTemaConfigController(): CuantoSabesTemaConfigController
     {
-        return new CuantoSabesTemaConfigController(/* deps */);
+        return new CuantoSabesTemaConfigController(
+            $this->cuantoSabesTemaConfigPayloadBuilder(),
+            $this->temaRepositorio(),
+            $this->almacenSesionEjercicio()
+        );
     }
 
     private function cuantoSabesTemaTituloController(): CuantoSabesTemaTituloController
@@ -109,7 +116,7 @@ final class AppWiring
     }
 
     // -----------------
-    // Shared deps
+    // Dependencias compartidas
     // -----------------
     private function almacenSesionEjercicio(): AlmacenSesionEjercicio
     {
@@ -117,6 +124,21 @@ final class AppWiring
             $this->almacenSesionEjercicio = new AlmacenSesionEjercicio();
         }
         return $this->almacenSesionEjercicio;
+    }
+
+    private function temaRepositorio(): TemaRepositorySQL
+    {
+        if ($this->temaRepositorio === null) {
+            $this->temaRepositorio = new TemaRepositorySQL();
+        }
+        return $this->temaRepositorio;
+    }
+
+    private function cuantoSabesTemaConfigPayloadBuilder(): CuantoSabesTemaConfigPayloadBuilder
+    {
+        return new CuantoSabesTemaConfigPayloadBuilder(
+            $this->temaRepositorio()
+        );
     }
 }
 
