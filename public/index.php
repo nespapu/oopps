@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 
+use App\App\AppWiring;
 use App\Helpers\Router;
 use App\Core\CanonizadorRuta;
 use App\Core\Routes\RutasApp;
@@ -37,6 +38,14 @@ if (str_starts_with($ruta, 'dev/') && $entorno !== 'dev') {
 }
 
 [$rutaCanonica, $params] = CanonizadorRuta::canonizar($ruta, RutasApp::patrones());
+
+$rutas = (new AppWiring())->rutas();
+
+$manejador = $rutas[$rutaCanonica] ?? null;
+if($manejador) {
+    $manejador();
+    exit;
+}
 
 switch ($rutaCanonica) {
     case 'login':
@@ -89,33 +98,6 @@ switch ($rutaCanonica) {
             break;
         }
         echo "Paso índice. Próximamente...";
-        break;
-    // ======================
-    // DEV ROUTES (dev-only)
-    // ======================
-    case RutasDevSesionEjercicio::BASE:
-        if (!Router::esGet()) {
-            http_response_code(405);
-            break;
-        }
-        $almacen = new \App\Infrastructure\Session\AlmacenSesionEjercicio();
-        (new \App\Controllers\Dev\DevSesionEjercicioController($almacen))->mostrar();
-        break;
-    case RutasDevSesionEjercicio::SIGUIENTE:
-        if (!Router::esPost()) {
-            http_response_code(405);
-            break;
-        }
-        $almacen = new \App\Infrastructure\Session\AlmacenSesionEjercicio();
-        (new \App\Controllers\Dev\DevSesionEjercicioController($almacen))->siguiente();
-        break;
-    case RutasDevSesionEjercicio::RESET:
-        if (!Router::esPost()) {
-            http_response_code(405);
-            break;
-        }
-        $almacen = new \App\Infrastructure\Session\AlmacenSesionEjercicio();
-        (new \App\Controllers\Dev\DevSesionEjercicioController($almacen))->reset();
         break;
     default:
         http_response_code(404);
