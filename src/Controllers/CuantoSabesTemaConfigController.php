@@ -5,21 +5,20 @@ use App\Core\View;
 use App\Helpers\Auth;
 use App\Helpers\Flash;
 use App\Helpers\Http;
-use App\Infrastructure\Persistence\Repositories\TemaRepositorySQL;
 use App\Application\Exercises\CuantoSabesTemaConfigPayloadBuilder;
 use App\Core\Routes\RutasCuantoSabesTema;
 use App\Domain\Exercise\ConfigEjercicio;
 use App\Domain\Exercise\Dificultad;
 use App\Domain\Exercise\PasoEjercicio;
 use App\Domain\Exercise\TipoEjercicio;
+use App\Domain\Temas\TemaRepository;
 use App\Infrastructure\Session\AlmacenSesionEjercicio;
-use App\Infrastructure\Wiring\CuantoSabesTemaConfigFactory;
 
 final class CuantoSabesTemaConfigController
 {
     public function __construct(
         private readonly CuantoSabesTemaConfigPayloadBuilder $payloadBuilder,
-        private readonly TemaRepositorySQL $temaRepositorio,
+        private readonly TemaRepository $temaRepositorio,
         private readonly AlmacenSesionEjercicio $almacenSesionEjercicio
     ) {}
 

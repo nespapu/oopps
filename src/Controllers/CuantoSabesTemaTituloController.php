@@ -1,29 +1,32 @@
 <?php
 namespace App\Controllers;
 
+use App\Application\Exercises\StepBuilder\CuantoSabesTemaTituloPayloadBuilder;
 use App\Application\Exercises\Evaluation\CuantoSabesTemaTituloEvaluationService;
 use App\Core\Routes\RutasCuantoSabesTema;
 use App\Core\View;
 use App\Domain\Exercise\PasoEjercicio;
+use App\Domain\Temas\TemaRepository;
 use App\Helpers\Auth;
 use App\Helpers\Http;
-use App\Infrastructure\Persistence\Repositories\TemaRepositorySQL;
 use App\Infrastructure\Session\AlmacenSesionEjercicio;
-use App\Infrastructure\Wiring\CuantoSabesTemaTituloFactory;
 
 final class CuantoSabesTemaTituloController
 {
+    public function __construct(
+        private readonly AlmacenSesionEjercicio $almacenSesionEjercicio,
+        private readonly CuantoSabesTemaTituloPayloadBuilder $payloadBuilder,
+        private readonly TemaRepository $temaRepositorio,
+        private readonly CuantoSabesTemaTituloEvaluationService $evaluacionServicio
+    ) {}
+
     public function mostrar(): void
     {
         Auth::requiereLogin();
 
-        $almacenSesionEjercicio = new AlmacenSesionEjercicio();
-        $sesion = $almacenSesionEjercicio->getSesionActual();
+        $sesion = $this->almacenSesionEjercicio->getSesionActual();
 
-        $factoria = new CuantoSabesTemaTituloFactory();
-        $payloadBuilder = $factoria->createPayloadBuilder();
-
-        $payload = $payloadBuilder->construir($sesion);
+        $payload = $this->payloadBuilder->construir($sesion);
 
         $evaluacion = $sesion->getEvaluacionPaso(PasoEjercicio::TITULO);
 
@@ -38,22 +41,18 @@ final class CuantoSabesTemaTituloController
     {
         Auth::requiereLogin();
 
-        $almacenSesionEjercicio = new AlmacenSesionEjercicio();
-        $sesion = $almacenSesionEjercicio->getSesionActual();
+        $sesion = $this->almacenSesionEjercicio->getSesionActual();
 
         $codigoOposicion = $sesion->contextoUsuario()['oposicionId'];
         $numeracion = $sesion->config()->tema();
-
-        $temaRepositorio = new TemaRepositorySQL();
              
         $respuesta = trim($_POST['titulo'] ?? '');
-        $solucion = $temaRepositorio->buscarTituloPorCodigoOposicionYOrden($codigoOposicion, $numeracion);
+        $solucion = $this->temaRepositorio->buscarTituloPorCodigoOposicionYOrden($codigoOposicion, $numeracion) ?? '';
 
-        $evaluador = new CuantoSabesTemaTituloEvaluationService();
-        $evaluacion = $evaluador->evaluar($respuesta, $solucion);
+        $evaluacion = $this->evaluacionServicio->evaluar($respuesta, $solucion);
 
         $sesion->setEvaluacionPaso(PasoEjercicio::TITULO, $evaluacion);
-        $almacenSesionEjercicio->guardar($sesion);
+        $this->almacenSesionEjercicio->guardar($sesion);
 
         Http::redirigir(RutasCuantoSabesTema::pasoTitulo($sesion->sesionId()));
     }

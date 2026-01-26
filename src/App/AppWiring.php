@@ -2,6 +2,8 @@
 namespace App\App;
 
 use App\Application\Exercises\CuantoSabesTemaConfigPayloadBuilder;
+use App\Application\Exercises\Evaluation\CuantoSabesTemaTituloEvaluationService;
+use App\Application\Exercises\StepBuilder\CuantoSabesTemaTituloPayloadBuilder;
 use App\Controllers\LoginController;
 use App\Controllers\PanelControlEjerciciosController;
 use App\Controllers\CuantoSabesTemaConfigController;
@@ -9,14 +11,17 @@ use App\Controllers\CuantoSabesTemaTituloController;
 use App\Controllers\Dev\DevSesionEjercicioController;
 use App\Core\Routes\RutasCuantoSabesTema;
 use App\Core\Routes\Dev\RutasDevSesionEjercicio;
+use App\Domain\Exercise\PistaService;
+use App\Domain\Temas\TemaRepository;
 use App\Helpers\Router;
 use App\Infrastructure\Persistence\Repositories\TemaRepositorySQL;
 use App\Infrastructure\Session\AlmacenSesionEjercicio;
 
 final class AppWiring
 {
-    private ?TemaRepositorySQL $temaRepositorio = null;
     private ?AlmacenSesionEjercicio $almacenSesionEjercicio = null;
+    private ?PistaService $pistaServicio = null;
+    private ?TemaRepository $temaRepositorio = null;
 
     public function rutas(): array
     {
@@ -107,7 +112,12 @@ final class AppWiring
 
     private function cuantoSabesTemaTituloController(): CuantoSabesTemaTituloController
     {
-        return new CuantoSabesTemaTituloController(/* deps */);
+        return new CuantoSabesTemaTituloController(
+            $this->almacenSesionEjercicio(),
+            $this->cuantoSabesTemaTituloPayloadBuilder(),
+            $this->temaRepositorio(),
+            $this->cuantoSabesTemaTituloEvaluationService()
+        );
     }
 
     private function devSesionEjercicioController(): DevSesionEjercicioController
@@ -126,7 +136,15 @@ final class AppWiring
         return $this->almacenSesionEjercicio;
     }
 
-    private function temaRepositorio(): TemaRepositorySQL
+    private function pistaServicio(): PistaService
+    {
+        if ($this->pistaServicio === null) {
+            $this->pistaServicio = new PistaService();
+        }
+        return $this->pistaServicio;
+    }
+
+    private function temaRepositorio(): TemaRepository
     {
         if ($this->temaRepositorio === null) {
             $this->temaRepositorio = new TemaRepositorySQL();
@@ -139,6 +157,19 @@ final class AppWiring
         return new CuantoSabesTemaConfigPayloadBuilder(
             $this->temaRepositorio()
         );
+    }
+
+    private function cuantoSabesTemaTituloPayloadBuilder(): CuantoSabesTemaTituloPayloadBuilder
+    {
+        return new CuantoSabesTemaTituloPayloadBuilder(
+            $this->temaRepositorio(),
+            $this->pistaServicio()
+        );
+    }
+
+    private function cuantoSabesTemaTituloEvaluationService(): CuantoSabesTemaTituloEvaluationService
+    {
+        return new CuantoSabesTemaTituloEvaluationService();
     }
 }
 
