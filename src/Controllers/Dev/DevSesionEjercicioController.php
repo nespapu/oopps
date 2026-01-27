@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controllers\Dev;
 
+use App\Application\Routing\UrlGenerator;
 use App\Helpers\Http;
-use App\Helpers\Router;
 use App\Domain\Exercise\ConfigEjercicio;
 use App\Domain\Exercise\PasoEjercicio;
 use App\Domain\Exercise\TipoEjercicio;
@@ -15,7 +15,8 @@ use App\Core\Routes\Dev\RutasDevSesionEjercicio;
 final class DevSesionEjercicioController
 {
     public function __construct(
-        private readonly AlmacenSesionEjercicio $almacen
+        private readonly AlmacenSesionEjercicio $almacen,
+        private readonly UrlGenerator $urlGenerator
     ) {
     }
 
@@ -115,8 +116,8 @@ final class DevSesionEjercicioController
         $dificultad = $config->dificultad();
         $banderasJson = htmlspecialchars(json_encode($config->banderas(), JSON_PRETTY_PRINT), ENT_QUOTES, 'UTF-8');
 
-        $siguienteAccion = Router::url(RutasDevSesionEjercicio::SIGUIENTE);
-        $resetAccion = Router::url(RutasDevSesionEjercicio::RESET);
+        $siguienteAccion = $this->urlGenerator->to(RutasDevSesionEjercicio::SIGUIENTE);
+        $resetAccion = $this->urlGenerator->to(RutasDevSesionEjercicio::RESET);
 
         echo <<<HTML
 <!doctype html>

@@ -5,6 +5,8 @@ use App\Application\Exercises\CuantoSabesTemaConfigPayloadBuilder;
 use App\Application\Exercises\Evaluation\CuantoSabesTemaTituloEvaluationService;
 use App\Application\Exercises\StepBuilder\CuantoSabesTemaTituloPayloadBuilder;
 use App\Application\Flash\FlashMessenger;
+use App\Application\Http\RequestContext;
+use App\Application\Routing\UrlGenerator;
 use App\Controllers\LoginController;
 use App\Controllers\PanelControlEjerciciosController;
 use App\Controllers\CuantoSabesTemaConfigController;
@@ -14,10 +16,11 @@ use App\Core\Routes\RutasCuantoSabesTema;
 use App\Core\Routes\Dev\RutasDevSesionEjercicio;
 use App\Domain\Exercise\PistaService;
 use App\Domain\Temas\TemaRepository;
-use App\Helpers\Router;
 use App\Helpers\ValidadorMetodoHttp;
 use App\Infrastructure\Flash\SessionFlashMessenger;
+use App\Infrastructure\Http\ServerRequestContext;
 use App\Infrastructure\Persistence\Repositories\TemaRepositorySQL;
+use App\Infrastructure\Routing\ScriptNameUrlGenerator;
 use App\Infrastructure\Session\AlmacenSesionEjercicio;
 
 final class AppWiring
@@ -25,6 +28,8 @@ final class AppWiring
     private ?AlmacenSesionEjercicio $almacenSesionEjercicio = null;
     private ?FlashMessenger $flash = null;
     private ?PistaService $pistaServicio = null;
+    private ?RequestContext $requestContext = null;
+    private ?ScriptNameUrlGenerator $urlGenerator = null;
     private ?TemaRepository $temaRepositorio = null;
 
     public function rutas(): array
@@ -99,8 +104,8 @@ final class AppWiring
             $this->almacenSesionEjercicio(),
             $this->cuantoSabesTemaConfigPayloadBuilder(),
             $this->flash(),
-            $this->temaRepositorio()
-            
+            $this->temaRepositorio(),
+            $this->urlGenerator()
         );
     }
 
@@ -109,14 +114,18 @@ final class AppWiring
         return new CuantoSabesTemaTituloController(
             $this->almacenSesionEjercicio(),
             $this->cuantoSabesTemaTituloPayloadBuilder(),
+            $this->cuantoSabesTemaTituloEvaluationService(),
             $this->temaRepositorio(),
-            $this->cuantoSabesTemaTituloEvaluationService()
+            $this->urlGenerator()
         );
     }
 
     private function devSesionEjercicioController(): DevSesionEjercicioController
     {
-        return new DevSesionEjercicioController($this->almacenSesionEjercicio());
+        return new DevSesionEjercicioController(
+            $this->almacenSesionEjercicio(),
+            $this->urlGenerator()
+        );
     }
 
     // -----------------
@@ -146,12 +155,28 @@ final class AppWiring
         return $this->pistaServicio;
     }
 
+    private function requestContext(): RequestContext
+    {
+        if ($this->requestContext === null) {
+            $this->requestContext = new ServerRequestContext();
+        }
+        return $this->requestContext;
+    }
+
     private function temaRepositorio(): TemaRepository
     {
         if ($this->temaRepositorio === null) {
             $this->temaRepositorio = new TemaRepositorySQL();
         }
         return $this->temaRepositorio;
+    }
+
+    private function urlGenerator() : UrlGenerator
+    {
+        if ($this->urlGenerator === null) {
+            $this->urlGenerator = new ScriptNameUrlGenerator();
+        }
+        return $this->urlGenerator;
     }
 
     private function cuantoSabesTemaConfigPayloadBuilder(): CuantoSabesTemaConfigPayloadBuilder

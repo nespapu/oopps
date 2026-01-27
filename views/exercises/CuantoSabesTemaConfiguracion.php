@@ -9,7 +9,6 @@
  */
 
 use App\Core\Routes\RutasCuantoSabesTema;
-use App\Helpers\Router;
 
 $temas = $payload['temas'] ?? [];
 $gradosDificultad = $payload['gradosDificultad'] ?? [];
@@ -21,7 +20,7 @@ $temaSeleccionado = (int)($defecto['tema'] ?? 0);
 $gradoDificultadSeleccionado = (int)($defecto['gradoDificultad'] ?? 3);
 
 
-$formularioAccion = Router::url(RutasCuantoSabesTema::INICIO);
+$formularioAccion = $url->to(RutasCuantoSabesTema::INICIO);
 
 $escapar = static fn(string $valor): string =>
     htmlspecialchars($valor, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
@@ -134,7 +133,7 @@ $etiquetaGradoDificultadSeleccionado = $buscarEtiqueta($gradosDificultad, $grado
                                 </button>
 
                                 <a class="btn btn-outline-secondary"
-                                    href="<?= $escapar(Router::url('/panel-control-ejercicios')) ?>">
+                                    href="<?= $escapar($url->to('/panel-control-ejercicios')) ?>">
                                     Volver
                                 </a>
                             </div>

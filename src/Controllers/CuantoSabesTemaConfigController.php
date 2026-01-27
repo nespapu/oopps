@@ -6,6 +6,7 @@ use App\Helpers\Auth;
 use App\Helpers\Http;
 use App\Application\Exercises\CuantoSabesTemaConfigPayloadBuilder;
 use App\Application\Flash\FlashMessenger;
+use App\Application\Routing\UrlGenerator;
 use App\Core\Routes\RutasCuantoSabesTema;
 use App\Domain\Exercise\ConfigEjercicio;
 use App\Domain\Exercise\Dificultad;
@@ -20,7 +21,8 @@ final class CuantoSabesTemaConfigController
         private readonly AlmacenSesionEjercicio $almacenSesionEjercicio,
         private readonly CuantoSabesTemaConfigPayloadBuilder $payloadBuilder,
         private readonly FlashMessenger $flash,
-        private readonly TemaRepository $temaRepositorio
+        private readonly TemaRepository $temaRepositorio,
+        private readonly UrlGenerator $urlGenerator
     ) {}
 
     public function mostrar(): void
@@ -34,7 +36,10 @@ final class CuantoSabesTemaConfigController
         $payload['error'] = $error;
         $payload['titulo'] = "Configuración";
 
-        View::render('exercises/CuantoSabesTemaConfiguracion.php', ['payload' => $payload]);
+        View::render('exercises/CuantoSabesTemaConfiguracion.php', [
+            'payload' => $payload,
+            'url' => $this->urlGenerator
+        ]);
     }
 
     public function comprobar(): void

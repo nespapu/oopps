@@ -3,6 +3,7 @@ namespace App\Controllers;
 
 use App\Application\Exercises\StepBuilder\CuantoSabesTemaTituloPayloadBuilder;
 use App\Application\Exercises\Evaluation\CuantoSabesTemaTituloEvaluationService;
+use App\Application\Routing\UrlGenerator;
 use App\Core\Routes\RutasCuantoSabesTema;
 use App\Core\View;
 use App\Domain\Exercise\PasoEjercicio;
@@ -16,8 +17,9 @@ final class CuantoSabesTemaTituloController
     public function __construct(
         private readonly AlmacenSesionEjercicio $almacenSesionEjercicio,
         private readonly CuantoSabesTemaTituloPayloadBuilder $payloadBuilder,
+        private readonly CuantoSabesTemaTituloEvaluationService $evaluacionServicio,
         private readonly TemaRepository $temaRepositorio,
-        private readonly CuantoSabesTemaTituloEvaluationService $evaluacionServicio
+        private readonly UrlGenerator $urlGenerator
     ) {}
 
     public function mostrar(): void
@@ -33,7 +35,8 @@ final class CuantoSabesTemaTituloController
         View::render('exercises/CuantoSabesTemaTitulo.php', [
             'payload' => $payload,
             'sesionId' => $sesion->sesionId(),
-            'evaluacion' => $evaluacion
+            'evaluacion' => $evaluacion,
+            'url' => $this->urlGenerator
         ]);
     }
 
