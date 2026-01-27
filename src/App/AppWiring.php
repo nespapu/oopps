@@ -4,6 +4,7 @@ namespace App\App;
 use App\Application\Exercises\CuantoSabesTemaConfigPayloadBuilder;
 use App\Application\Exercises\Evaluation\CuantoSabesTemaTituloEvaluationService;
 use App\Application\Exercises\StepBuilder\CuantoSabesTemaTituloPayloadBuilder;
+use App\Application\Flash\FlashMessenger;
 use App\Controllers\LoginController;
 use App\Controllers\PanelControlEjerciciosController;
 use App\Controllers\CuantoSabesTemaConfigController;
@@ -15,12 +16,14 @@ use App\Domain\Exercise\PistaService;
 use App\Domain\Temas\TemaRepository;
 use App\Helpers\Router;
 use App\Helpers\ValidadorMetodoHttp;
+use App\Infrastructure\Flash\SessionFlashMessenger;
 use App\Infrastructure\Persistence\Repositories\TemaRepositorySQL;
 use App\Infrastructure\Session\AlmacenSesionEjercicio;
 
 final class AppWiring
 {
     private ?AlmacenSesionEjercicio $almacenSesionEjercicio = null;
+    private ?FlashMessenger $flash = null;
     private ?PistaService $pistaServicio = null;
     private ?TemaRepository $temaRepositorio = null;
 
@@ -80,7 +83,9 @@ final class AppWiring
     // -----------------
     private function loginController(): LoginController
     {
-        return new LoginController(/* deps cuando toque */);
+        return new LoginController(
+            $this->flash()
+        );
     }
 
     private function panelControlEjerciciosController(): PanelControlEjerciciosController
@@ -91,9 +96,11 @@ final class AppWiring
     private function cuantoSabesTemaConfigController(): CuantoSabesTemaConfigController
     {
         return new CuantoSabesTemaConfigController(
+            $this->almacenSesionEjercicio(),
             $this->cuantoSabesTemaConfigPayloadBuilder(),
-            $this->temaRepositorio(),
-            $this->almacenSesionEjercicio()
+            $this->flash(),
+            $this->temaRepositorio()
+            
         );
     }
 
@@ -121,6 +128,14 @@ final class AppWiring
             $this->almacenSesionEjercicio = new AlmacenSesionEjercicio();
         }
         return $this->almacenSesionEjercicio;
+    }
+
+    private function flash() : FlashMessenger
+    {
+        if ($this->flash === null) {
+            $this->flash = new SessionFlashMessenger();
+        }
+        return $this->flash;
     }
 
     private function pistaServicio(): PistaService

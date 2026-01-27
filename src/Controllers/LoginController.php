@@ -1,15 +1,19 @@
 <?php
 namespace App\Controllers;
 
+use App\Application\Flash\FlashMessenger;
 use App\Core\View;
 use App\Helpers\Auth;
-use App\Models\Usuario;
 use App\Helpers\Http;
-use App\Helpers\Flash;
+use App\Models\Usuario;
 
 final class LoginController {
+    public function __construct (
+        private readonly FlashMessenger $flash
+    ){}
+
     public function mostrar () : void {
-        $error = Flash::get('error');
+        $error = $this->flash->get('error');
     
         View::render('login/index.php', [
             'error' => $error
@@ -23,13 +27,13 @@ final class LoginController {
         $usuario = Usuario::buscarPorNombre($nombre);
 
         if (!$usuario || $usuario['clave'] !== $clave) {
-            Flash::set('error', 'Usuario o contraseña incorrectos');
+            $this->flash->set('error', 'Usuario o contraseña incorrectos');
             Http::redirigir('login');
         }
         
         $codigoOposicion = trim((string)($usuario['codigo_oposicion'] ?? ''));
         if ($codigoOposicion === '') {
-            Flash::set('error', 'No tienes una oposición activa configurada.');
+            $this->flash->set('error', 'No tienes una oposición activa configurada.');
             Http::redirigir('login');
         }
 
