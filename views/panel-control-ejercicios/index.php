@@ -78,12 +78,14 @@ $ejercicios = $ejercicios ?? [];
                 <?php endif; ?>
 
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
-                    <a 
-                        href="login/salir" 
-                        class="btn btn-outline-danger btn-sm"
-                    >
-                        Cerrar sesión
-                    </a>
+                    <form action="login/salir" method="post" style="display:inline;">
+                        <button 
+                            type="submit" 
+                            class="btn btn-outline-danger btn-sm"
+                        >
+                            Cerrar sesión
+                        </button>
+                    </form>
 
                     <small class="text-muted">
                         Consejo: empieza por “Cuánto sabes del tema” si llevas tiempo sin repasar 😉
