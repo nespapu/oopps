@@ -14,6 +14,7 @@ use App\Core\Routes\Dev\RutasDevSesionEjercicio;
 use App\Domain\Exercise\PistaService;
 use App\Domain\Temas\TemaRepository;
 use App\Helpers\Router;
+use App\Helpers\ValidadorMetodoHttp;
 use App\Infrastructure\Persistence\Repositories\TemaRepositorySQL;
 use App\Infrastructure\Session\AlmacenSesionEjercicio;
 
@@ -26,70 +27,51 @@ final class AppWiring
     public function rutas(): array
     {
         return [
-            'login' => function (): void {
-                $c = $this->loginController();
+            'login' => ValidadorMetodoHttp::segunMetodo(
+                fn () => $this->loginController()->mostrar(),
+                fn () => $this->loginController()->comprobar()
+            ),
 
-                if (Router::esGet()) {
-                    $c->mostrar();
-                    return;
-                }
+            'login/salir' => ValidadorMetodoHttp::soloPost(
+                fn () => $this->loginController()->salir()
+            ),
 
-                if (Router::esPost()) {
-                    $c->comprobar();
-                    return;
-                }
+            'panel-control-ejercicios' => ValidadorMetodoHttp::soloGet(
+                fn () => $this->panelControlEjerciciosController()->mostrar()
+            ),
 
-                http_response_code(405);
-            },
+            RutasCuantoSabesTema::CONFIG => ValidadorMetodoHttp::soloGet(
+                fn () => $this->cuantoSabesTemaConfigController()->mostrar()
+            ),
 
-            'login/salir' => function (): void {
-                $this->loginController()->salir();
-            },
+            RutasCuantoSabesTema::INICIO => ValidadorMetodoHttp::soloPost(
+                fn () => $this->cuantoSabesTemaConfigController()->comprobar()
+            ),
 
-            'panel-control-ejercicios' => function (): void {
-                $this->panelControlEjerciciosController()->mostrar();
-            },
+            RutasCuantoSabesTema::PASO_TITULO => ValidadorMetodoHttp::soloGet(
+                fn () => $this->cuantoSabesTemaTituloController()->mostrar()
+            ),
 
-            RutasCuantoSabesTema::CONFIG => function (): void {
-                if (!Router::esGet()) { http_response_code(405); return; }
-                $this->cuantoSabesTemaConfigController()->mostrar();
-            },
-
-            RutasCuantoSabesTema::INICIO => function (): void {
-                if (!Router::esPost()) { http_response_code(405); return; }
-                $this->cuantoSabesTemaConfigController()->comprobar();
-            },
-
-            RutasCuantoSabesTema::PASO_TITULO => function (): void {
-                if (!Router::esGet()) { http_response_code(405); return; }
-                $this->cuantoSabesTemaTituloController()->mostrar();
-            },
-
-            RutasCuantoSabesTema::EVAL_TITULO => function (): void {
-                if (!Router::esPost()) { http_response_code(405); return; }
-                $this->cuantoSabesTemaTituloController()->evaluar();
-            },
+            RutasCuantoSabesTema::EVAL_TITULO => ValidadorMetodoHttp::soloPost(
+                fn () => $this->cuantoSabesTemaTituloController()->evaluar()
+            ),
             
-            RutasCuantoSabesTema::PASO_INDICE => function (): void {
-                if (!Router::esGet()) { http_response_code(405); return; }
-                echo "Paso índice. Próximamente...";
-            },
+            RutasCuantoSabesTema::PASO_INDICE => ValidadorMetodoHttp::soloGet(
+                fn () => print "Paso índice. Próximamente..."
+            ),
             
             // DEV
-            RutasDevSesionEjercicio::BASE => function (): void {
-                if (!Router::esGet()) { http_response_code(405); return; }
-                $this->devSesionEjercicioController()->mostrar();
-            },
+            RutasDevSesionEjercicio::BASE => ValidadorMetodoHttp::soloGet(
+                fn () => $this->devSesionEjercicioController()->mostrar()
+            ),
 
-            RutasDevSesionEjercicio::SIGUIENTE => function (): void {
-                if (!Router::esPost()) { http_response_code(405); return; }
-                $this->devSesionEjercicioController()->siguiente();
-            },
+            RutasDevSesionEjercicio::SIGUIENTE => ValidadorMetodoHttp::soloPost(
+                fn () => $this->devSesionEjercicioController()->siguiente()
+            ),
 
-            RutasDevSesionEjercicio::RESET => function (): void {
-                if (!Router::esPost()) { http_response_code(405); return; }
-                $this->devSesionEjercicioController()->reset();
-            },
+            RutasDevSesionEjercicio::RESET => ValidadorMetodoHttp::soloPost(
+                fn () => $this->devSesionEjercicioController()->reset()
+            ),
         ];
     }
 
