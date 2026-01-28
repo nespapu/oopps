@@ -27,6 +27,8 @@ use App\Infrastructure\Session\AlmacenSesionEjercicio;
 
 final class AppWiring
 {
+    private ?AppKernel $appKernel = null;
+    private ?AppRoutes $appRoutes = null;
     private ?AlmacenSesionEjercicio $almacenSesionEjercicio = null;
     private ?FlashMessenger $flash = null;
     private ?PistaService $pistaServicio = null;
@@ -39,63 +41,69 @@ final class AppWiring
     // -----------------
     public function appKernel(): AppKernel
     {
-        return new AppKernel(
-            $this->appRoutes(),
-            $this->requestContext()
-        );
+        if ($this->appKernel === null) {
+            return new AppKernel(
+                $this->appRoutes(),
+                $this->requestContext()
+            );
+        }
+        return $this->appKernel;
     }
 
     private function appRoutes(): AppRoutes
     {
-        return new AppRoutes(
-            [
-                'login' => ValidadorMetodoHttp::segunMetodo(
-                    fn () => $this->loginController()->mostrar(),
-                    fn () => $this->loginController()->comprobar()
-                ),
+        if ($this->appRoutes === null) {
+            return new AppRoutes(
+                [
+                    'login' => ValidadorMetodoHttp::segunMetodo(
+                        fn () => $this->loginController()->mostrar(),
+                        fn () => $this->loginController()->comprobar()
+                    ),
 
-                'login/salir' => ValidadorMetodoHttp::soloPost(
-                    fn () => $this->loginController()->salir()
-                ),
+                    'login/salir' => ValidadorMetodoHttp::soloPost(
+                        fn () => $this->loginController()->salir()
+                    ),
 
-                'panel-control-ejercicios' => ValidadorMetodoHttp::soloGet(
-                    fn () => $this->panelControlEjerciciosController()->mostrar()
-                ),
+                    'panel-control-ejercicios' => ValidadorMetodoHttp::soloGet(
+                        fn () => $this->panelControlEjerciciosController()->mostrar()
+                    ),
 
-                RutasCuantoSabesTema::CONFIG => ValidadorMetodoHttp::soloGet(
-                    fn () => $this->cuantoSabesTemaConfigController()->mostrar()
-                ),
+                    RutasCuantoSabesTema::CONFIG => ValidadorMetodoHttp::soloGet(
+                        fn () => $this->cuantoSabesTemaConfigController()->mostrar()
+                    ),
 
-                RutasCuantoSabesTema::INICIO => ValidadorMetodoHttp::soloPost(
-                    fn () => $this->cuantoSabesTemaConfigController()->comprobar()
-                ),
+                    RutasCuantoSabesTema::INICIO => ValidadorMetodoHttp::soloPost(
+                        fn () => $this->cuantoSabesTemaConfigController()->comprobar()
+                    ),
 
-                RutasCuantoSabesTema::PASO_TITULO => ValidadorMetodoHttp::soloGet(
-                    fn () => $this->cuantoSabesTemaTituloController()->mostrar()
-                ),
+                    RutasCuantoSabesTema::PASO_TITULO => ValidadorMetodoHttp::soloGet(
+                        fn () => $this->cuantoSabesTemaTituloController()->mostrar()
+                    ),
 
-                RutasCuantoSabesTema::EVAL_TITULO => ValidadorMetodoHttp::soloPost(
-                    fn () => $this->cuantoSabesTemaTituloController()->evaluar()
-                ),
-                
-                RutasCuantoSabesTema::PASO_INDICE => ValidadorMetodoHttp::soloGet(
-                    fn () => print "Paso índice. Próximamente..."
-                ),
-                
-                // DEV
-                RutasDevSesionEjercicio::BASE => ValidadorMetodoHttp::soloGet(
-                    fn () => $this->devSesionEjercicioController()->mostrar()
-                ),
+                    RutasCuantoSabesTema::EVAL_TITULO => ValidadorMetodoHttp::soloPost(
+                        fn () => $this->cuantoSabesTemaTituloController()->evaluar()
+                    ),
+                    
+                    RutasCuantoSabesTema::PASO_INDICE => ValidadorMetodoHttp::soloGet(
+                        fn () => print "Paso índice. Próximamente..."
+                    ),
+                    
+                    // DEV
+                    RutasDevSesionEjercicio::BASE => ValidadorMetodoHttp::soloGet(
+                        fn () => $this->devSesionEjercicioController()->mostrar()
+                    ),
 
-                RutasDevSesionEjercicio::SIGUIENTE => ValidadorMetodoHttp::soloPost(
-                    fn () => $this->devSesionEjercicioController()->siguiente()
-                ),
+                    RutasDevSesionEjercicio::SIGUIENTE => ValidadorMetodoHttp::soloPost(
+                        fn () => $this->devSesionEjercicioController()->siguiente()
+                    ),
 
-                RutasDevSesionEjercicio::RESET => ValidadorMetodoHttp::soloPost(
-                    fn () => $this->devSesionEjercicioController()->reset()
-                ),
-            ]
-        );
+                    RutasDevSesionEjercicio::RESET => ValidadorMetodoHttp::soloPost(
+                        fn () => $this->devSesionEjercicioController()->reset()
+                    ),
+                ]
+            );
+        }
+        return $this->appRoutes;
     }
 
     private function loginController(): LoginController
