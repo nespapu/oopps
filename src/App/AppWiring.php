@@ -7,6 +7,7 @@ use App\Application\Exercises\CuantoSabesTemaConfigPayloadBuilder;
 use App\Application\Exercises\Evaluation\CuantoSabesTemaTituloEvaluationService;
 use App\Application\Exercises\StepBuilder\CuantoSabesTemaTituloPayloadBuilder;
 use App\Application\Flash\FlashMessenger;
+use App\Application\Http\HttpMethodGuard;
 use App\Application\Http\RequestContext;
 use App\Application\Routing\UrlGenerator;
 use App\Controllers\LoginController;
@@ -20,6 +21,7 @@ use App\Domain\Exercise\PistaService;
 use App\Domain\Temas\TemaRepository;
 use App\Helpers\ValidadorMetodoHttp;
 use App\Infrastructure\Flash\SessionFlashMessenger;
+use App\Infrastructure\Http\DefaultHttpMethodGuard;
 use App\Infrastructure\Http\ServerRequestContext;
 use App\Infrastructure\Persistence\Repositories\TemaRepositorySQL;
 use App\Infrastructure\Routing\ScriptNameUrlGenerator;
@@ -31,6 +33,7 @@ final class AppWiring
     private ?AppRoutes $appRoutes = null;
     private ?AlmacenSesionEjercicio $almacenSesionEjercicio = null;
     private ?FlashMessenger $flash = null;
+    private ?HttpMethodGuard $httpMethodGuard = null;
     private ?PistaService $pistaServicio = null;
     private ?RequestContext $requestContext = null;
     private ?ScriptNameUrlGenerator $urlGenerator = null;
@@ -165,6 +168,16 @@ final class AppWiring
             $this->flash = new SessionFlashMessenger();
         }
         return $this->flash;
+    }
+
+    private function httpMethodGuard() : HttpMethodGuard 
+    {
+        if ($this->httpMethodGuard === null) {
+            $this->httpMethodGuard = new DefaultHttpMethodGuard(
+                $this->requestContext()
+            );
+        }
+        return $this->httpMethodGuard;
     }
 
     private function pistaServicio(): PistaService
