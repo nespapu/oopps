@@ -22,7 +22,6 @@ use App\Core\Routes\RutasCuantoSabesTema;
 use App\Core\Routes\Dev\RutasDevSesionEjercicio;
 use App\Domain\Exercise\PistaService;
 use App\Domain\Temas\TemaRepository;
-use App\Helpers\ValidadorMetodoHttp;
 use App\Infrastructure\Auth\DefaultAuthService;
 use App\Infrastructure\Flash\SessionFlashMessenger;
 use App\Infrastructure\Http\DefaultHttpMethodGuard;
@@ -67,49 +66,49 @@ final class AppWiring
         if ($this->appRoutes === null) {
             return new AppRoutes(
                 [
-                    'login' => ValidadorMetodoHttp::segunMetodo(
+                    'login' => $this->httpMethodGuard()->byMethod(
                         fn () => $this->loginController()->mostrar(),
                         fn () => $this->loginController()->comprobar()
                     ),
 
-                    'login/salir' => ValidadorMetodoHttp::soloPost(
+                    'login/salir' => $this->httpMethodGuard()->onlyPost(
                         fn () => $this->loginController()->salir()
                     ),
 
-                    'panel-control-ejercicios' => ValidadorMetodoHttp::soloGet(
+                    'panel-control-ejercicios' => $this->httpMethodGuard()->onlyGet(
                         fn () => $this->panelControlEjerciciosController()->mostrar()
                     ),
 
-                    RutasCuantoSabesTema::CONFIG => ValidadorMetodoHttp::soloGet(
+                    RutasCuantoSabesTema::CONFIG => $this->httpMethodGuard()->onlyGet(
                         fn () => $this->cuantoSabesTemaConfigController()->mostrar()
                     ),
 
-                    RutasCuantoSabesTema::INICIO => ValidadorMetodoHttp::soloPost(
+                    RutasCuantoSabesTema::INICIO => $this->httpMethodGuard()->onlyPost(
                         fn () => $this->cuantoSabesTemaConfigController()->comprobar()
                     ),
 
-                    RutasCuantoSabesTema::PASO_TITULO => ValidadorMetodoHttp::soloGet(
+                    RutasCuantoSabesTema::PASO_TITULO => $this->httpMethodGuard()->onlyGet(
                         fn () => $this->cuantoSabesTemaTituloController()->mostrar()
                     ),
 
-                    RutasCuantoSabesTema::EVAL_TITULO => ValidadorMetodoHttp::soloPost(
+                    RutasCuantoSabesTema::EVAL_TITULO => $this->httpMethodGuard()->onlyPost(
                         fn () => $this->cuantoSabesTemaTituloController()->evaluar()
                     ),
                     
-                    RutasCuantoSabesTema::PASO_INDICE => ValidadorMetodoHttp::soloGet(
+                    RutasCuantoSabesTema::PASO_INDICE => $this->httpMethodGuard()->onlyGet(
                         fn () => print "Paso índice. Próximamente..."
                     ),
                     
                     // DEV
-                    RutasDevSesionEjercicio::BASE => ValidadorMetodoHttp::soloGet(
+                    RutasDevSesionEjercicio::BASE => $this->httpMethodGuard()->onlyGet(
                         fn () => $this->devSesionEjercicioController()->mostrar()
                     ),
 
-                    RutasDevSesionEjercicio::SIGUIENTE => ValidadorMetodoHttp::soloPost(
+                    RutasDevSesionEjercicio::SIGUIENTE => $this->httpMethodGuard()->onlyPost(
                         fn () => $this->devSesionEjercicioController()->siguiente()
                     ),
 
-                    RutasDevSesionEjercicio::RESET => ValidadorMetodoHttp::soloPost(
+                    RutasDevSesionEjercicio::RESET => $this->httpMethodGuard()->onlyPost(
                         fn () => $this->devSesionEjercicioController()->reset()
                     ),
                 ]
