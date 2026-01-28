@@ -5,8 +5,8 @@ namespace App\Application\Http;
 
 interface RequestContext
 {
-    public function path(): string;     // normalized route/path
-    public function method(): string;   // GET, POST, ...
+    public function path(): string;
+    public function method(): string;
     public function isGet(): bool;
     public function isPost(): bool;
 }
