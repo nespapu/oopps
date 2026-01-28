@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controllers\Dev;
 
+use App\Application\Http\Redirector;
 use App\Application\Routing\UrlGenerator;
-use App\Helpers\Http;
 use App\Domain\Exercise\ConfigEjercicio;
 use App\Domain\Exercise\PasoEjercicio;
 use App\Domain\Exercise\TipoEjercicio;
@@ -16,6 +16,7 @@ final class DevSesionEjercicioController
 {
     public function __construct(
         private readonly AlmacenSesionEjercicio $almacen,
+        private readonly Redirector $redirector,
         private readonly UrlGenerator $urlGenerator
     ) {
     }
@@ -74,7 +75,7 @@ final class DevSesionEjercicioController
         $sesion = $this->almacen->getSesionActual();
 
         if ($sesion === null) {
-            Http::redirigir(RutasDevSesionEjercicio::BASE);
+            $this->redirector->redirect(RutasDevSesionEjercicio::BASE);
             return;
         }
 
@@ -84,7 +85,7 @@ final class DevSesionEjercicioController
         $this->almacen->guardar($sesion);
 
         // PRG: evitar el reenvío del formulario
-        Http::redirigir(RutasDevSesionEjercicio::BASE, 303);
+        $this->redirector->redirect(RutasDevSesionEjercicio::BASE, 303);
     }
 
     /**
@@ -99,7 +100,7 @@ final class DevSesionEjercicioController
             $this->almacen->borrar($sesionIdActual);
         }
 
-        Http::redirigir(RutasDevSesionEjercicio::BASE, 303);
+        $this->redirector->redirect(RutasDevSesionEjercicio::BASE, 303);
     }
 
     private function renderHtml($sesion): void

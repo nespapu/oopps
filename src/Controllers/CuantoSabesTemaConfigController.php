@@ -3,9 +3,9 @@ namespace App\Controllers;
 
 use App\Core\View;
 use App\Helpers\Auth;
-use App\Helpers\Http;
 use App\Application\Exercises\CuantoSabesTemaConfigPayloadBuilder;
 use App\Application\Flash\FlashMessenger;
+use App\Application\Http\Redirector;
 use App\Application\Routing\UrlGenerator;
 use App\Core\Routes\RutasCuantoSabesTema;
 use App\Domain\Exercise\ConfigEjercicio;
@@ -21,6 +21,7 @@ final class CuantoSabesTemaConfigController
         private readonly AlmacenSesionEjercicio $almacenSesionEjercicio,
         private readonly CuantoSabesTemaConfigPayloadBuilder $payloadBuilder,
         private readonly FlashMessenger $flash,
+        private readonly Redirector $redirector,
         private readonly TemaRepository $temaRepositorio,
         private readonly UrlGenerator $urlGenerator
     ) {}
@@ -57,13 +58,13 @@ final class CuantoSabesTemaConfigController
 
         if ($numeracion < 0) {
             $this->flash->set('error', 'Tema inválido.');
-            Http::redirigir(RutasCuantoSabesTema::CONFIG);
+            $this->redirector->redirect(RutasCuantoSabesTema::CONFIG);
         }
 
         $dificultadEnum = Dificultad::tryFrom($dificultad);
         if ($dificultadEnum === null) {
             $this->flash->set('error', 'Dificultad inválida.');
-            Http::redirigir(RutasCuantoSabesTema::CONFIG);
+            $this->redirector->redirect(RutasCuantoSabesTema::CONFIG);
         }
 
         if ($numeracion === 0) {
@@ -71,7 +72,7 @@ final class CuantoSabesTemaConfigController
 
             if ($numeracionAleatoria === null) {
                 $this->flash->set('error', 'No hay temas disponibles para esta oposición.');
-                Http::redirigir(RutasCuantoSabesTema::CONFIG);
+                $this->redirector->redirect(RutasCuantoSabesTema::CONFIG);
             }
 
             $numeracion = $numeracionAleatoria;
@@ -80,7 +81,7 @@ final class CuantoSabesTemaConfigController
         $tituloTema = $this->temaRepositorio->buscarTituloPorCodigoOposicionYOrden($codigoOposicion, $numeracion);
         if ($tituloTema === null) {
             $this->flash->set('error', 'El tema seleccionado no existe.');
-            Http::redirigir(RutasCuantoSabesTema::CONFIG);
+            $this->redirector->redirect(RutasCuantoSabesTema::CONFIG);
         }
 
         $configEjercicio = new ConfigEjercicio(
@@ -102,7 +103,7 @@ final class CuantoSabesTemaConfigController
             $primerPasoEjercicio
         );
 
-        Http::redirigir(RutasCuantoSabesTema::pasoTitulo($sesion->sesionId()));
+        $this->redirector->redirect(RutasCuantoSabesTema::pasoTitulo($sesion->sesionId()));
     }
 }
 ?>

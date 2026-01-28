@@ -3,13 +3,13 @@ namespace App\Controllers;
 
 use App\Application\Exercises\StepBuilder\CuantoSabesTemaTituloPayloadBuilder;
 use App\Application\Exercises\Evaluation\CuantoSabesTemaTituloEvaluationService;
+use App\Application\Http\Redirector;
 use App\Application\Routing\UrlGenerator;
 use App\Core\Routes\RutasCuantoSabesTema;
 use App\Core\View;
 use App\Domain\Exercise\PasoEjercicio;
 use App\Domain\Temas\TemaRepository;
 use App\Helpers\Auth;
-use App\Helpers\Http;
 use App\Infrastructure\Session\AlmacenSesionEjercicio;
 
 final class CuantoSabesTemaTituloController
@@ -18,6 +18,7 @@ final class CuantoSabesTemaTituloController
         private readonly AlmacenSesionEjercicio $almacenSesionEjercicio,
         private readonly CuantoSabesTemaTituloPayloadBuilder $payloadBuilder,
         private readonly CuantoSabesTemaTituloEvaluationService $evaluacionServicio,
+        private readonly Redirector $redirector,
         private readonly TemaRepository $temaRepositorio,
         private readonly UrlGenerator $urlGenerator
     ) {}
@@ -57,7 +58,7 @@ final class CuantoSabesTemaTituloController
         $sesion->setEvaluacionPaso(PasoEjercicio::TITULO, $evaluacion);
         $this->almacenSesionEjercicio->guardar($sesion);
 
-        Http::redirigir(RutasCuantoSabesTema::pasoTitulo($sesion->sesionId()));
+        $this->redirector->redirect(RutasCuantoSabesTema::pasoTitulo($sesion->sesionId()));
     }
 
 }

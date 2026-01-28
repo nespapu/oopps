@@ -8,6 +8,7 @@ use App\Application\Exercises\Evaluation\CuantoSabesTemaTituloEvaluationService;
 use App\Application\Exercises\StepBuilder\CuantoSabesTemaTituloPayloadBuilder;
 use App\Application\Flash\FlashMessenger;
 use App\Application\Http\HttpMethodGuard;
+use App\Application\Http\Redirector;
 use App\Application\Http\RequestContext;
 use App\Application\Routing\UrlGenerator;
 use App\Controllers\LoginController;
@@ -22,6 +23,7 @@ use App\Domain\Temas\TemaRepository;
 use App\Helpers\ValidadorMetodoHttp;
 use App\Infrastructure\Flash\SessionFlashMessenger;
 use App\Infrastructure\Http\DefaultHttpMethodGuard;
+use App\Infrastructure\Http\HeaderRedirector;
 use App\Infrastructure\Http\ServerRequestContext;
 use App\Infrastructure\Persistence\Repositories\TemaRepositorySQL;
 use App\Infrastructure\Routing\ScriptNameUrlGenerator;
@@ -35,6 +37,7 @@ final class AppWiring
     private ?FlashMessenger $flash = null;
     private ?HttpMethodGuard $httpMethodGuard = null;
     private ?PistaService $pistaServicio = null;
+    private ?Redirector $redirector = null;
     private ?RequestContext $requestContext = null;
     private ?ScriptNameUrlGenerator $urlGenerator = null;
     private ?TemaRepository $temaRepositorio = null;
@@ -112,7 +115,8 @@ final class AppWiring
     private function loginController(): LoginController
     {
         return new LoginController(
-            $this->flash()
+            $this->flash(),
+            $this->redirector()
         );
     }
 
@@ -127,6 +131,7 @@ final class AppWiring
             $this->almacenSesionEjercicio(),
             $this->cuantoSabesTemaConfigPayloadBuilder(),
             $this->flash(),
+            $this->redirector(),
             $this->temaRepositorio(),
             $this->urlGenerator()
         );
@@ -138,6 +143,7 @@ final class AppWiring
             $this->almacenSesionEjercicio(),
             $this->cuantoSabesTemaTituloPayloadBuilder(),
             $this->cuantoSabesTemaTituloEvaluationService(),
+            $this->redirector(),
             $this->temaRepositorio(),
             $this->urlGenerator()
         );
@@ -147,6 +153,7 @@ final class AppWiring
     {
         return new DevSesionEjercicioController(
             $this->almacenSesionEjercicio(),
+            $this->redirector(),
             $this->urlGenerator()
         );
     }
@@ -186,6 +193,16 @@ final class AppWiring
             $this->pistaServicio = new PistaService();
         }
         return $this->pistaServicio;
+    }
+
+    private function redirector(): Redirector
+    {
+        if ($this->redirector === null) {
+            $this->redirector = new HeaderRedirector(
+                $this->urlGenerator()
+            );
+        }
+        return $this->redirector;
     }
 
     private function requestContext(): RequestContext

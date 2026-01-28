@@ -2,6 +2,7 @@
 namespace App\Controllers;
 
 use App\Application\Flash\FlashMessenger;
+use App\Application\Http\Redirector;
 use App\Core\View;
 use App\Helpers\Auth;
 use App\Helpers\Http;
@@ -9,7 +10,8 @@ use App\Models\Usuario;
 
 final class LoginController {
     public function __construct (
-        private readonly FlashMessenger $flash
+        private readonly FlashMessenger $flash,
+        private readonly Redirector $redirector
     ){}
 
     public function mostrar () : void {
@@ -28,13 +30,13 @@ final class LoginController {
 
         if (!$usuario || $usuario['clave'] !== $clave) {
             $this->flash->set('error', 'Usuario o contraseña incorrectos');
-            Http::redirigir('login');
+            $this->redirector->redirect('login');
         }
         
         $codigoOposicion = trim((string)($usuario['codigo_oposicion'] ?? ''));
         if ($codigoOposicion === '') {
             $this->flash->set('error', 'No tienes una oposición activa configurada.');
-            Http::redirigir('login');
+            $this->redirector->redirect('login');
         }
 
         session_regenerate_id(true);
@@ -43,7 +45,7 @@ final class LoginController {
         
         $redireccion = $_SESSION['siguiente_url'] ?? 'panel-control-ejercicios';
         unset($_SESSION['siguiente_url']);
-        Http::redirigir($redireccion);               
+        $this->redirector->redirect($redireccion);               
     }
 
     public function salir () : void {
