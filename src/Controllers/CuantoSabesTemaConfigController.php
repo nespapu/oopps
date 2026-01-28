@@ -1,8 +1,8 @@
 <?php
 namespace App\Controllers;
 
+use App\Application\Auth\AuthService;
 use App\Core\View;
-use App\Helpers\Auth;
 use App\Application\Exercises\CuantoSabesTemaConfigPayloadBuilder;
 use App\Application\Flash\FlashMessenger;
 use App\Application\Http\Redirector;
@@ -19,6 +19,7 @@ final class CuantoSabesTemaConfigController
 {
     public function __construct(
         private readonly AlmacenSesionEjercicio $almacenSesionEjercicio,
+        private readonly AuthService $authService,
         private readonly CuantoSabesTemaConfigPayloadBuilder $payloadBuilder,
         private readonly FlashMessenger $flash,
         private readonly Redirector $redirector,
@@ -28,10 +29,10 @@ final class CuantoSabesTemaConfigController
 
     public function mostrar(): void
     {
-        Auth::requiereContextoOposicion();
+        $this->authService->requireOppositionContext();
 
         $error = $this->flash->get('error');
-        $contextoUsuario = Auth::contextoUsuario();
+        $contextoUsuario = $this->authService->userContext();
 
         $payload = $this->payloadBuilder->construir($contextoUsuario);
         $payload['error'] = $error;
@@ -45,9 +46,9 @@ final class CuantoSabesTemaConfigController
 
     public function comprobar(): void
     {
-        Auth::requiereContextoOposicion();
+        $this->authService->requireOppositionContext();
 
-        $contextoUsuario = Auth::contextoUsuario();
+        $contextoUsuario = $this->authService->userContext();
         $codigoOposicion = $contextoUsuario->codigoOposicion();
 
         $numeracionTemaBruto = $_POST['numeracionTema'] ?? null;

@@ -1,12 +1,16 @@
 <?php
 namespace App\Controllers;
 
+use App\Application\Auth\AuthService;
 use App\Core\View;
-use App\Helpers\Auth;
 
 final class PanelControlEjerciciosController {
+    public function __construct(
+        private readonly AuthService $authService
+    ){}
+    
     public function mostrar () : void {
-        Auth::requiereLogin();
+        $this->authService->requireLogin();
         
         // Datos vista
         $titulo = "Panel control ejercicios";

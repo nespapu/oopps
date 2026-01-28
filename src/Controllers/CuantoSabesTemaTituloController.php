@@ -1,6 +1,7 @@
 <?php
 namespace App\Controllers;
 
+use App\Application\Auth\AuthService;
 use App\Application\Exercises\StepBuilder\CuantoSabesTemaTituloPayloadBuilder;
 use App\Application\Exercises\Evaluation\CuantoSabesTemaTituloEvaluationService;
 use App\Application\Http\Redirector;
@@ -9,13 +10,13 @@ use App\Core\Routes\RutasCuantoSabesTema;
 use App\Core\View;
 use App\Domain\Exercise\PasoEjercicio;
 use App\Domain\Temas\TemaRepository;
-use App\Helpers\Auth;
 use App\Infrastructure\Session\AlmacenSesionEjercicio;
 
 final class CuantoSabesTemaTituloController
 {
     public function __construct(
         private readonly AlmacenSesionEjercicio $almacenSesionEjercicio,
+        private readonly AuthService $authService,
         private readonly CuantoSabesTemaTituloPayloadBuilder $payloadBuilder,
         private readonly CuantoSabesTemaTituloEvaluationService $evaluacionServicio,
         private readonly Redirector $redirector,
@@ -25,7 +26,7 @@ final class CuantoSabesTemaTituloController
 
     public function mostrar(): void
     {
-        Auth::requiereLogin();
+        $this->authService->requireLogin();
 
         $sesion = $this->almacenSesionEjercicio->getSesionActual();
 
@@ -43,7 +44,7 @@ final class CuantoSabesTemaTituloController
 
     public function evaluar(): void
     {
-        Auth::requiereLogin();
+        $this->authService->requireLogin();
 
         $sesion = $this->almacenSesionEjercicio->getSesionActual();
 

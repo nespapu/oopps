@@ -1,15 +1,15 @@
 <?php
 namespace App\Controllers;
 
+use App\Application\Auth\AuthService;
 use App\Application\Flash\FlashMessenger;
 use App\Application\Http\Redirector;
 use App\Core\View;
-use App\Helpers\Auth;
-use App\Helpers\Http;
 use App\Models\Usuario;
 
 final class LoginController {
     public function __construct (
+        private readonly AuthService $authService,
         private readonly FlashMessenger $flash,
         private readonly Redirector $redirector
     ){}
@@ -49,7 +49,7 @@ final class LoginController {
     }
 
     public function salir () : void {
-        Auth::logout();
+        $this->authService->logout();
     }
 }
 ?>

@@ -3,6 +3,7 @@ namespace App\App;
 
 use App\App\Http\AppKernel;
 use App\App\Http\AppRoutes;
+use App\Application\Auth\AuthService;
 use App\Application\Exercises\CuantoSabesTemaConfigPayloadBuilder;
 use App\Application\Exercises\Evaluation\CuantoSabesTemaTituloEvaluationService;
 use App\Application\Exercises\StepBuilder\CuantoSabesTemaTituloPayloadBuilder;
@@ -11,6 +12,7 @@ use App\Application\Http\HttpMethodGuard;
 use App\Application\Http\Redirector;
 use App\Application\Http\RequestContext;
 use App\Application\Routing\UrlGenerator;
+use App\Application\Session\SessionStore;
 use App\Controllers\LoginController;
 use App\Controllers\PanelControlEjerciciosController;
 use App\Controllers\CuantoSabesTemaConfigController;
@@ -21,6 +23,7 @@ use App\Core\Routes\Dev\RutasDevSesionEjercicio;
 use App\Domain\Exercise\PistaService;
 use App\Domain\Temas\TemaRepository;
 use App\Helpers\ValidadorMetodoHttp;
+use App\Infrastructure\Auth\DefaultAuthService;
 use App\Infrastructure\Flash\SessionFlashMessenger;
 use App\Infrastructure\Http\DefaultHttpMethodGuard;
 use App\Infrastructure\Http\HeaderRedirector;
@@ -28,17 +31,20 @@ use App\Infrastructure\Http\ServerRequestContext;
 use App\Infrastructure\Persistence\Repositories\TemaRepositorySQL;
 use App\Infrastructure\Routing\ScriptNameUrlGenerator;
 use App\Infrastructure\Session\AlmacenSesionEjercicio;
+use App\Infrastructure\Session\PhpSessionStore;
 
 final class AppWiring
 {
     private ?AppKernel $appKernel = null;
     private ?AppRoutes $appRoutes = null;
     private ?AlmacenSesionEjercicio $almacenSesionEjercicio = null;
+    private ?AuthService $authService = null;
     private ?FlashMessenger $flash = null;
     private ?HttpMethodGuard $httpMethodGuard = null;
     private ?PistaService $pistaServicio = null;
     private ?Redirector $redirector = null;
     private ?RequestContext $requestContext = null;
+    private ?SessionStore $sessionStore = null;
     private ?ScriptNameUrlGenerator $urlGenerator = null;
     private ?TemaRepository $temaRepositorio = null;
 
@@ -115,6 +121,7 @@ final class AppWiring
     private function loginController(): LoginController
     {
         return new LoginController(
+            $this->authService(),
             $this->flash(),
             $this->redirector()
         );
@@ -122,13 +129,16 @@ final class AppWiring
 
     private function panelControlEjerciciosController(): PanelControlEjerciciosController
     {
-        return new PanelControlEjerciciosController(/* deps cuando toque */);
+        return new PanelControlEjerciciosController(
+            $this->authService()
+        );
     }
 
     private function cuantoSabesTemaConfigController(): CuantoSabesTemaConfigController
     {
         return new CuantoSabesTemaConfigController(
             $this->almacenSesionEjercicio(),
+            $this->authService(),
             $this->cuantoSabesTemaConfigPayloadBuilder(),
             $this->flash(),
             $this->redirector(),
@@ -141,6 +151,7 @@ final class AppWiring
     {
         return new CuantoSabesTemaTituloController(
             $this->almacenSesionEjercicio(),
+            $this->authService(),
             $this->cuantoSabesTemaTituloPayloadBuilder(),
             $this->cuantoSabesTemaTituloEvaluationService(),
             $this->redirector(),
@@ -167,6 +178,19 @@ final class AppWiring
             $this->almacenSesionEjercicio = new AlmacenSesionEjercicio();
         }
         return $this->almacenSesionEjercicio;
+    }
+
+    private function authService() : AuthService
+    {
+        if($this->authService === null) {
+            $this->authService = new DefaultAuthService(
+                $this->sessionStore(),
+                $this->requestContext(),
+                $this->redirector(),
+                $this->flash()
+            );
+        }
+        return $this->authService;
     }
 
     private function flash() : FlashMessenger
@@ -211,6 +235,14 @@ final class AppWiring
             $this->requestContext = new ServerRequestContext();
         }
         return $this->requestContext;
+    }
+
+    private function sessionStore() : SessionStore
+    {
+        if ($this->sessionStore === null) {
+            $this->sessionStore = new PhpSessionStore();
+        }
+        return $this->sessionStore;
     }
 
     private function temaRepositorio(): TemaRepository
