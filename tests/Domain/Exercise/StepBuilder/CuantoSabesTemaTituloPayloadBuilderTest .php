@@ -7,6 +7,7 @@ namespace Tests\Domain\Exercise\StepBuilder;
 use PHPUnit\Framework\TestCase;
 use App\Application\Exercises\StepBuilder\CuantoSabesTemaTituloPayloadBuilder;
 use App\Application\Exercises\Payload\ClavesPasoPayload;
+use App\Domain\Auth\ContextoUsuario;
 use App\Domain\Exercise\ModoPista;
 use App\Domain\Exercise\PistaService;
 use App\Domain\Exercise\SesionEjercicio;
@@ -24,10 +25,8 @@ final class CuantoSabesTemaTituloPayloadBuilderTest extends TestCase
 
         $session = $this->createMock(SesionEjercicio::class);
 
-        $session->method('contextoUsuario')->willReturn([
-            'usuario' => 'nestor',
-            'oposicionId' => '590107',
-        ]);
+        $session->method('contextoUsuario')
+                ->willReturn($this->contextoUsuarioDummy());
 
         $config = new class {
             public function tema(): int { return 16; }
@@ -61,10 +60,8 @@ final class CuantoSabesTemaTituloPayloadBuilderTest extends TestCase
         $builder = new CuantoSabesTemaTituloPayloadBuilder($repo, $pistaServicio);
 
         $session = $this->createMock(SesionEjercicio::class);
-        $session->method('contextoUsuario')->willReturn([
-            'usuario' => 'nestor',
-            'oposicionId' => '590107',
-        ]);
+        $session->method('contextoUsuario')
+                ->willReturn($this->contextoUsuarioDummy());
 
         $config = new class {
             public function tema(): int { return 16; }
@@ -76,5 +73,13 @@ final class CuantoSabesTemaTituloPayloadBuilderTest extends TestCase
         $payload = $builder->construir($session);
 
         $this->assertSame('(sin pista generada)', $payload[ClavesPasoPayload::ITEMS][0]['pista']);
+    }
+
+    private function contextoUsuarioDummy(): ContextoUsuario
+    {
+        return new ContextoUsuario(
+            'nestor',
+            '590107'
+        );
     }
 }

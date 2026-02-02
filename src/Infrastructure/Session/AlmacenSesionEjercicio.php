@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Session;
 
+use App\Domain\Auth\ContextoUsuario;
 use App\Domain\Exercise\ConfigEjercicio;
 use App\Domain\Exercise\SesionEjercicio;
 use App\Domain\Exercise\PasoEjercicio;
@@ -22,7 +23,7 @@ final class AlmacenSesionEjercicio
 
     public function crear(
         TipoEjercicio $tipoEjercicio,
-        array $contextoUsuario,
+        ContextoUsuario $contextoUsuario,
         ConfigEjercicio $config,
         PasoEjercicio $primerPaso
     ): SesionEjercicio {
@@ -167,8 +168,6 @@ final class AlmacenSesionEjercicio
      */
     private function deshidratar(SesionEjercicio $sesion): array
     {
-        $contextoUsuario = $sesion->contextoUsuario();
-
         return [
             'sesionId' => $sesion->sesionId(),
             'tipoEjercicio' => [
@@ -176,8 +175,8 @@ final class AlmacenSesionEjercicio
                 'nombre' => $sesion->tipoEjercicio()->nombre(),
             ],
             'contextoUsuario' => [
-                'usuario' => $contextoUsuario['usuario'],
-                'oposicionId' => $contextoUsuario['oposicionId'],
+                'usuario' => $sesion->contextoUsuario()->usuario(),
+                'codigoOposicion' => $sesion->contextoUsuario()->codigoOposicion(),
             ],
             'config' => [
                 'tema' => $sesion->config()->tema(),
@@ -201,11 +200,12 @@ final class AlmacenSesionEjercicio
         $tipoSlug = is_array($tipoBruto) ? (string) ($tipoBruto['slug'] ?? '') : '';
         $tipoEjercicio = TipoEjercicio::desdeSlug($tipoSlug);
 
-        $usuarioBruto = $bruto['contextoUsuario'] ?? [];
-        $contextoUsuario = [
-            'usuario' => is_array($usuarioBruto) ? (string) ($usuarioBruto['usuario'] ?? '') : '',
-            'oposicionId' => is_array($usuarioBruto) ? (string) ($usuarioBruto['oposicionId'] ?? '') : '',
+        $contextoUsuarioBruto = $bruto['contextoUsuario'] ?? [];
+        $contextoUsuarioBruto = [
+            'usuario' => is_array($contextoUsuarioBruto) ? (string) ($contextoUsuarioBruto['usuario'] ?? '') : '',
+            'codigoOposicion' => is_array($contextoUsuarioBruto) ? (string) ($contextoUsuarioBruto['codigoOposicion'] ?? '') : '',
         ];
+        $contextoUsuario = new ContextoUsuario($contextoUsuarioBruto['usuario'], $contextoUsuarioBruto['codigoOposicion']);
 
         $configBruto = $bruto['config'] ?? [];
         $tema = is_array($configBruto) ? (int) ($configBruto['tema'] ?? 0) : 0;

@@ -47,9 +47,7 @@ final class CuantoSabesTemaConfigController
     public function comprobar(): void
     {
         $this->authService->requireOppositionContext();
-
         $contextoUsuario = $this->authService->userContext();
-        $codigoOposicion = $contextoUsuario->codigoOposicion();
 
         $numeracionTemaBruto = $_POST['numeracionTema'] ?? null;
         $dificultadBruto = $_POST['dificultad'] ?? null;
@@ -69,7 +67,7 @@ final class CuantoSabesTemaConfigController
         }
 
         if ($numeracion === 0) {
-            $numeracionAleatoria = $this->temaRepositorio->buscarOrdenAleatorioPorCodigoOposicion($codigoOposicion);
+            $numeracionAleatoria = $this->temaRepositorio->buscarOrdenAleatorioPorCodigoOposicion($contextoUsuario->codigoOposicion());
 
             if ($numeracionAleatoria === null) {
                 $this->flash->set('error', 'No hay temas disponibles para esta oposición.');
@@ -79,7 +77,7 @@ final class CuantoSabesTemaConfigController
             $numeracion = $numeracionAleatoria;
         }
 
-        $tituloTema = $this->temaRepositorio->buscarTituloPorCodigoOposicionYOrden($codigoOposicion, $numeracion);
+        $tituloTema = $this->temaRepositorio->buscarTituloPorCodigoOposicionYOrden($contextoUsuario->codigoOposicion(), $numeracion);
         if ($tituloTema === null) {
             $this->flash->set('error', 'El tema seleccionado no existe.');
             $this->redirector->redirect(RutasCuantoSabesTema::CONFIG);
@@ -92,14 +90,10 @@ final class CuantoSabesTemaConfigController
         );
         $tipoEjercicio = TipoEjercicio::cuantoSabesTema();
         $primerPasoEjercicio = PasoEjercicio::primero();
-        $contextoUsuarioArray = [
-            'usuario' => $contextoUsuario->usuario(),
-            'oposicionId' => $contextoUsuario->codigoOposicion()
-        ];
 
         $sesion = $this->almacenSesionEjercicio->crear(
             $tipoEjercicio,
-            $contextoUsuarioArray,
+            $contextoUsuario,
             $configEjercicio,
             $primerPasoEjercicio
         );

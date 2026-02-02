@@ -48,7 +48,7 @@ final class CuantoSabesTemaTituloController
 
         $sesion = $this->almacenSesionEjercicio->getSesionActual();
 
-        $codigoOposicion = $sesion->contextoUsuario()['oposicionId'];
+        $codigoOposicion = $sesion->contextoUsuario()->codigoOposicion();
         $numeracion = $sesion->config()->tema();
              
         $respuesta = trim($_POST['titulo'] ?? '');

@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace App\Domain\Exercise;
 
+use App\Domain\Auth\ContextoUsuario;
+
 final class SesionEjercicio
 {
     private string $sesionId;
     private TipoEjercicio $TipoEjercicio;
 
-    /** @var array{nombre: string, oposicionId: string} */
-    private array $contextoUsuario;
+    private ContextoUsuario $contextoUsuario;
 
     private ConfigEjercicio $config;
     private PasoEjercicio $pasoActual;
@@ -26,8 +27,8 @@ final class SesionEjercicio
 
     public function __construct(
         string $sesionId,
-        TipoEjercicio $TipoEjercicio,
-        array $contextoUsuario,
+        TipoEjercicio $tipoEjercicio,
+        ContextoUsuario $contextoUsuario,
         ConfigEjercicio $config,
         PasoEjercicio $pasoActual,
         \DateTimeImmutable $fechaCreacion,
@@ -40,22 +41,9 @@ final class SesionEjercicio
             throw new \InvalidArgumentException('sesionId no puede estar vacía.');
         }
 
-        $usuario = trim($contextoUsuario['usuario'] ?? '');
-        $oposicionId = trim($contextoUsuario['oposicionId'] ?? '');
-
-        if ($usuario === '') {
-            throw new \InvalidArgumentException('contextoUsuario.usuario no puede ser vacío.');
-        }
-        if ($oposicionId === '') {
-            throw new \InvalidArgumentException('contextoUsuario.oposicionId no puede ser vacío.');
-        }
-
         $this->sesionId = $sesionId;
-        $this->TipoEjercicio = $TipoEjercicio;
-        $this->contextoUsuario = [
-            'usuario' => $usuario,
-            'oposicionId' => $oposicionId,
-        ];
+        $this->TipoEjercicio = $tipoEjercicio;
+        $this->contextoUsuario = $contextoUsuario;
         $this->config = $config;
         $this->pasoActual = $pasoActual;
         $this->fechaCreacion = $fechaCreacion;
@@ -66,7 +54,7 @@ final class SesionEjercicio
 
     public static function iniciar(
         TipoEjercicio $TipoEjercicio,
-        array $contextoUsuario,
+        ContextoUsuario $contextoUsuario,
         ConfigEjercicio $config,
         PasoEjercicio $primerPaso
     ): self {
@@ -93,10 +81,7 @@ final class SesionEjercicio
         return $this->TipoEjercicio;
     }
 
-    /**
-     * @return array{usuario: string, oposicionId: string}
-     */
-    public function contextoUsuario(): array
+    public function contextoUsuario(): ContextoUsuario
     {
         return $this->contextoUsuario;
     }

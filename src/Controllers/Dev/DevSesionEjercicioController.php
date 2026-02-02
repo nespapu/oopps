@@ -11,6 +11,7 @@ use App\Domain\Exercise\PasoEjercicio;
 use App\Domain\Exercise\TipoEjercicio;
 use App\Infrastructure\Session\AlmacenSesionEjercicio;
 use App\Core\Routes\Dev\RutasDevSesionEjercicio;
+use App\Domain\Auth\ContextoUsuario;
 
 final class DevSesionEjercicioController
 {
@@ -34,10 +35,7 @@ final class DevSesionEjercicioController
         if ($sesion === null) {
             $type = TipoEjercicio::cuantoSabesTema();
 
-            $contextoUsuario = [
-                'usuario' => 'dev-user',
-                'oposicionId' => 'dev-opposition',
-            ];
+            $contextoUsuario = new ContextoUsuario('dev-user', 'dev-opposition');
 
             $config = new ConfigEjercicio(
                 tema: 0,
