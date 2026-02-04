@@ -2,18 +2,18 @@
 namespace App\Controllers;
 
 use App\Application\Auth\AuthService;
-use App\Core\View;
+use App\Application\Exercises\AlmacenSesionEjercicio;
 use App\Application\Exercises\CuantoSabesTemaConfigPayloadBuilder;
 use App\Application\Flash\FlashMessenger;
 use App\Application\Http\Redirector;
 use App\Application\Routing\UrlGenerator;
+use App\Core\View;
 use App\Core\Routes\RutasCuantoSabesTema;
 use App\Domain\Exercise\ConfigEjercicio;
 use App\Domain\Exercise\Dificultad;
 use App\Domain\Exercise\PasoEjercicio;
 use App\Domain\Exercise\TipoEjercicio;
 use App\Domain\Temas\TemaRepository;
-use App\Infrastructure\Session\AlmacenSesionEjercicio;
 
 final class CuantoSabesTemaConfigController
 {

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Controllers\Dev;
 
+use App\Application\Exercises\AlmacenSesionEjercicio;
 use App\Application\Http\Redirector;
 use App\Application\Routing\UrlGenerator;
 use App\Domain\Exercise\ConfigEjercicio;
 use App\Domain\Exercise\PasoEjercicio;
 use App\Domain\Exercise\TipoEjercicio;
-use App\Infrastructure\Session\AlmacenSesionEjercicio;
 use App\Core\Routes\Dev\RutasDevSesionEjercicio;
 use App\Domain\Auth\ContextoUsuario;
 

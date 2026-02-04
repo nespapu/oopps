@@ -4,6 +4,7 @@ namespace App\App;
 use App\App\Http\AppKernel;
 use App\App\Http\AppRoutes;
 use App\Application\Auth\AuthService;
+use App\Application\Exercises\AlmacenSesionEjercicio;
 use App\Application\Exercises\CuantoSabesTemaConfigPayloadBuilder;
 use App\Application\Exercises\Evaluation\CuantoSabesTemaTituloEvaluationService;
 use App\Application\Exercises\StepBuilder\CuantoSabesTemaTituloPayloadBuilder;
@@ -29,7 +30,7 @@ use App\Infrastructure\Http\HeaderRedirector;
 use App\Infrastructure\Http\ServerRequestContext;
 use App\Infrastructure\Persistence\Repositories\TemaRepositorySQL;
 use App\Infrastructure\Routing\ScriptNameUrlGenerator;
-use App\Infrastructure\Session\AlmacenSesionEjercicio;
+use App\Infrastructure\Session\PhpAlmacenSesionEjercicio;
 use App\Infrastructure\Session\PhpSessionStore;
 
 final class AppWiring
@@ -174,7 +175,9 @@ final class AppWiring
     private function almacenSesionEjercicio(): AlmacenSesionEjercicio
     {
         if ($this->almacenSesionEjercicio === null) {
-            $this->almacenSesionEjercicio = new AlmacenSesionEjercicio();
+            $this->almacenSesionEjercicio = new PhpAlmacenSesionEjercicio(
+                $this->sessionStore()
+            );
         }
         return $this->almacenSesionEjercicio;
     }

@@ -4,22 +4,21 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Session;
 
+use App\Application\Exercises\AlmacenSesionEjercicio;
+use App\Application\Session\SessionStore;
 use App\Domain\Auth\ContextoUsuario;
 use App\Domain\Exercise\ConfigEjercicio;
 use App\Domain\Exercise\SesionEjercicio;
 use App\Domain\Exercise\PasoEjercicio;
 use App\Domain\Exercise\TipoEjercicio;
 
-final class AlmacenSesionEjercicio
+final class PhpAlmacenSesionEjercicio implements AlmacenSesionEjercicio
 {
-    private const CLAVE_MAESTRA = 'ejercicio';
-    private const CLAVE_SESIONES = 'sesiones';
-    private const CLAVE_ID_ACTUAL = 'claveIdActual';
+    private const CLAVE_ALMACEN = 'almacen_ejercicio_v1';
 
-    public function __construct()
-    {
-        $this->instanciarAlmacenSesion();
-    }
+    public function __construct(
+        private SessionStore $sessionStore
+    ) {}
 
     public function crear(
         TipoEjercicio $tipoEjercicio,
@@ -42,7 +41,9 @@ final class AlmacenSesionEjercicio
             return null;
         }
 
-        $bruto = $_SESSION[self::CLAVE_MAESTRA][self::CLAVE_SESIONES][$sesionId] ?? null;
+        $data = $this->leerAlmacen();
+        $bruto = $data['sesiones'][$sesionId] ?? null;
+
         if (!is_array($bruto)) {
             return null;
         }
@@ -66,7 +67,10 @@ final class AlmacenSesionEjercicio
 
     public function guardar(SesionEjercicio $sesion): void
     {
-        $_SESSION[self::CLAVE_MAESTRA][self::CLAVE_SESIONES][$sesion->sesionId()] = $this->deshidratar($sesion);
+        $data = $this->leerAlmacen();
+        $data['sesiones'][$sesion->sesionId()] = $this->deshidratar($sesion);
+
+        $this->escribirAlmacen($data);
     }
 
     public function borrar(string $sesionId): void
@@ -76,26 +80,34 @@ final class AlmacenSesionEjercicio
             return;
         }
 
-        unset($_SESSION[self::CLAVE_MAESTRA][self::CLAVE_SESIONES][$sesionId]);
+        $data = $this->leerAlmacen();
+        unset($data['sesiones'][$sesionId]);
 
-        if ($this->getSesionIdActual() === $sesionId) {
-            $this->limpiarSesionIdActual();
+        if (($data['sesionIdActual'] ?? null) === $sesionId) {
+            $data['sesionIdActual'] = null;
         }
+
+        $this->escribirAlmacen($data);
     }
 
     public function setSesionIdActual(string $sesionId): void
     {
         $sesionId = trim($sesionId);
         if ($sesionId === '') {
-            throw new \InvalidArgumentException('claveIdActual no puede estar vacía.');
+            throw new \InvalidArgumentException('sesionId no puede estar vacía.');
         }
 
-        $_SESSION[self::CLAVE_MAESTRA][self::CLAVE_ID_ACTUAL] = $sesionId;
+        $data = $this->leerAlmacen();
+        $data['sesionIdActual'] = $sesionId;
+
+        $this->escribirAlmacen($data);
     }
 
     public function getSesionIdActual(): ?string
     {
-        $value = $_SESSION[self::CLAVE_MAESTRA][self::CLAVE_ID_ACTUAL] ?? null;
+        $data = $this->leerAlmacen();
+        $value = $data['sesionIdActual'] ?? null;
+
         if (!is_string($value) || trim($value) === '') {
             return null;
         }
@@ -105,7 +117,10 @@ final class AlmacenSesionEjercicio
 
     public function limpiarSesionIdActual(): void
     {
-        unset($_SESSION[self::CLAVE_MAESTRA][self::CLAVE_ID_ACTUAL]);
+        $data = $this->leerAlmacen();
+        $data['sesionIdActual'] = null;
+
+        $this->escribirAlmacen($data);
     }
 
     public function purgarExpiradas(int $ttlSegundos): int
@@ -114,13 +129,14 @@ final class AlmacenSesionEjercicio
             return 0;
         }
 
-        $ahora = new \DateTimeImmutable('now');
-        $purgadas = 0;
-
-        $sesiones = $_SESSION[self::CLAVE_MAESTRA][self::CLAVE_SESIONES] ?? [];
+        $data = $this->leerAlmacen();
+        $sesiones = $data['sesiones'] ?? [];
         if (!is_array($sesiones)) {
             return 0;
         }
+
+        $ahora = new \DateTimeImmutable('now');
+        $purgadas = 0;
 
         foreach ($sesiones as $sesionId => $bruto) {
             if (!is_array($bruto)) {
@@ -138,29 +154,61 @@ final class AlmacenSesionEjercicio
                 continue;
             }
 
-            $tiempoTranscurridoSegundos = $ahora->getTimestamp() - $fechaActualizacion->getTimestamp();
-            if ($tiempoTranscurridoSegundos > $ttlSegundos) {
-                unset($_SESSION[self::CLAVE_MAESTRA][self::CLAVE_SESIONES][$sesionId]);
+            $elapsed = $ahora->getTimestamp() - $fechaActualizacion->getTimestamp();
+            if ($elapsed > $ttlSegundos) {
+                unset($sesiones[$sesionId]);
                 $purgadas++;
             }
         }
 
-        $sesionIdActual = $this->getSesionIdActual();
-        if ($sesionIdActual !== null && !isset($_SESSION[self::CLAVE_MAESTRA][self::CLAVE_SESIONES][$sesionIdActual])) {
-            $this->limpiarSesionIdActual();
+        $data['sesiones'] = $sesiones;
+
+        $sesionIdActual = $data['sesionIdActual'] ?? null;
+        if (is_string($sesionIdActual) && $sesionIdActual !== '' && !isset($sesiones[$sesionIdActual])) {
+            $data['sesionIdActual'] = null;
         }
+
+        $this->escribirAlmacen($data);
 
         return $purgadas;
     }
 
-    private function instanciarAlmacenSesion(): void
+    /**
+     * @return array{sesiones: array<string, array<string, mixed>>, sesionIdActual: string|null}
+     */
+    private function leerAlmacen(): array
     {
-        if (!isset($_SESSION[self::CLAVE_MAESTRA]) || !is_array($_SESSION[self::CLAVE_MAESTRA])) {
-            $_SESSION[self::CLAVE_MAESTRA] = [];
+        $raw = $this->sessionStore->getString(self::CLAVE_ALMACEN);
+        if ($raw === null || trim($raw) === '') {
+            return ['sesiones' => [], 'sesionIdActual' => null];
         }
-        if (!isset($_SESSION[self::CLAVE_MAESTRA][self::CLAVE_SESIONES]) || !is_array($_SESSION[self::CLAVE_MAESTRA][self::CLAVE_SESIONES])) {
-            $_SESSION[self::CLAVE_MAESTRA][self::CLAVE_SESIONES] = [];
+
+        try {
+            $decoded = json_decode($raw, true, 512, JSON_THROW_ON_ERROR);
+        } catch (\Throwable) {
+            return ['sesiones' => [], 'sesionIdActual' => null];
         }
+
+        if (!is_array($decoded)) {
+            return ['sesiones' => [], 'sesionIdActual' => null];
+        }
+
+        $sesiones = $decoded['sesiones'] ?? [];
+        $sesionIdActual = $decoded['sesionIdActual'] ?? null;
+
+        return [
+            'sesiones' => is_array($sesiones) ? $sesiones : [],
+            'sesionIdActual' => is_string($sesionIdActual) && trim($sesionIdActual) !== '' ? $sesionIdActual : null,
+        ];
+    }
+
+    /**
+     * @param array{sesiones: array<string, array<string, mixed>>, sesionIdActual: string|null} $data
+     */
+    private function escribirAlmacen(array $data): void
+    {
+        $payload = json_encode($data, JSON_THROW_ON_ERROR);
+        $this->sessionStore->setString(self::CLAVE_ALMACEN, $payload);
     }
 
     /**

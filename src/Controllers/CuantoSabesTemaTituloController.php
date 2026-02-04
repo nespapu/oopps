@@ -2,6 +2,7 @@
 namespace App\Controllers;
 
 use App\Application\Auth\AuthService;
+use App\Application\Exercises\AlmacenSesionEjercicio;
 use App\Application\Exercises\StepBuilder\CuantoSabesTemaTituloPayloadBuilder;
 use App\Application\Exercises\Evaluation\CuantoSabesTemaTituloEvaluationService;
 use App\Application\Http\Redirector;
@@ -10,7 +11,6 @@ use App\Core\Routes\RutasCuantoSabesTema;
 use App\Core\View;
 use App\Domain\Exercise\PasoEjercicio;
 use App\Domain\Temas\TemaRepository;
-use App\Infrastructure\Session\AlmacenSesionEjercicio;
 
 final class CuantoSabesTemaTituloController
 {
