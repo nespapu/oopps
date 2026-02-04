@@ -4,14 +4,15 @@ namespace App\Controllers;
 use App\Application\Auth\AuthService;
 use App\Application\Flash\FlashMessenger;
 use App\Application\Http\Redirector;
+use App\Domain\Auth\UsuarioRepository;
 use App\Core\View;
-use App\Models\Usuario;
 
 final class LoginController {
     public function __construct (
         private readonly AuthService $authService,
         private readonly FlashMessenger $flash,
-        private readonly Redirector $redirector
+        private readonly Redirector $redirector,
+        private readonly UsuarioRepository $usuarioRepositorio
     ){}
 
     public function mostrar () : void {
@@ -26,21 +27,21 @@ final class LoginController {
         $nombre = $_POST['nombre'] ?? '';
         $clave  = $_POST['clave'] ?? '';
 
-        $usuario = Usuario::buscarPorNombre($nombre);
+        $usuario = $this->usuarioRepositorio->buscarPorNombre($nombre);
 
-        if (!$usuario || $usuario['clave'] !== $clave) {
+        if (!$usuario || $usuario->clave() !== $clave) {
             $this->flash->set('error', 'Usuario o contraseña incorrectos');
             $this->redirector->redirect('login');
         }
         
-        $codigoOposicion = trim((string)($usuario['codigo_oposicion'] ?? ''));
+        $codigoOposicion = trim($usuario->codigoOposicion() ?? '');
         if ($codigoOposicion === '') {
             $this->flash->set('error', 'No tienes una oposición activa configurada.');
             $this->redirector->redirect('login');
         }
 
         session_regenerate_id(true);
-        $_SESSION['usuario'] = $usuario['nombre'];
+        $_SESSION['usuario'] = $usuario->nombre();
         $_SESSION['codigoOposicion'] = $codigoOposicion;
         
         $redireccion = $_SESSION['siguiente_url'] ?? 'panel-control-ejercicios';

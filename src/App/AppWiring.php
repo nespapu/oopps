@@ -21,6 +21,7 @@ use App\Controllers\CuantoSabesTemaTituloController;
 use App\Controllers\Dev\DevSesionEjercicioController;
 use App\Core\Routes\RutasCuantoSabesTema;
 use App\Core\Routes\Dev\RutasDevSesionEjercicio;
+use App\Domain\Auth\UsuarioRepository;
 use App\Domain\Exercise\PistaService;
 use App\Domain\Temas\TemaRepository;
 use App\Infrastructure\Auth\DefaultAuthService;
@@ -29,6 +30,7 @@ use App\Infrastructure\Http\DefaultHttpMethodGuard;
 use App\Infrastructure\Http\HeaderRedirector;
 use App\Infrastructure\Http\ServerRequestContext;
 use App\Infrastructure\Persistence\Repositories\TemaRepositorySQL;
+use App\Infrastructure\Persistence\Repositories\UsuarioRepositorySQL;
 use App\Infrastructure\Routing\ScriptNameUrlGenerator;
 use App\Infrastructure\Session\PhpAlmacenSesionEjercicio;
 use App\Infrastructure\Session\PhpSessionStore;
@@ -47,6 +49,7 @@ final class AppWiring
     private ?SessionStore $sessionStore = null;
     private ?ScriptNameUrlGenerator $urlGenerator = null;
     private ?TemaRepository $temaRepositorio = null;
+    private ?UsuarioRepository $usuarioRepositorio = null;
 
     // -----------------
     // Controllers
@@ -123,7 +126,8 @@ final class AppWiring
         return new LoginController(
             $this->authService(),
             $this->flash(),
-            $this->redirector()
+            $this->redirector(),
+            $this->usuarioRepositorio()
         );
     }
 
@@ -261,6 +265,14 @@ final class AppWiring
             $this->urlGenerator = new ScriptNameUrlGenerator();
         }
         return $this->urlGenerator;
+    }
+
+    private function usuarioRepositorio(): UsuarioRepository 
+    {
+        if ($this->usuarioRepositorio === null) {
+            $this->usuarioRepositorio = new UsuarioRepositorySQL();
+        }
+        return $this->usuarioRepositorio;
     }
 
     private function cuantoSabesTemaConfigPayloadBuilder(): CuantoSabesTemaConfigPayloadBuilder
