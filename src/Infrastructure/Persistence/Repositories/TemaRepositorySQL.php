@@ -3,17 +3,13 @@
 namespace App\Infrastructure\Persistence\Repositories;
 
 use App\Domain\Temas\TemaRepository;
-use App\Infrastructure\Persistence\ConexionBD;
 use PDO;
 
 final class TemaRepositorySQL implements TemaRepository
 {
-    private PDO $db;
-
-    public function __construct(?PDO $db = null)
-    {
-        $this->db = $db ?? ConexionBD::obtener();
-    }
+    public function __construct(
+        private readonly PDO $db
+    ){}
 
     public function buscarPorCodigoOposicion(string $codigoOposicion): array
     {

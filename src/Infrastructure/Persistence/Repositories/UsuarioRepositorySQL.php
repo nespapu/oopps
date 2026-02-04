@@ -6,17 +6,13 @@ namespace App\Infrastructure\Persistence\Repositories;
 
 use App\Domain\Auth\Usuario;
 use App\Domain\Auth\UsuarioRepository;
-use App\Infrastructure\Persistence\ConexionBD;
 use PDO;
 
 final class UsuarioRepositorySQL implements UsuarioRepository 
 {
-    private PDO $db;
-
-    public function __construct(?PDO $db = null)
-    {
-        $this->db = $db ?? ConexionBD::obtener();
-    }
+    public function __construct(
+        private readonly PDO $db
+    ){}
 
     public function buscarPorNombre(string $nombre): ?Usuario
     {

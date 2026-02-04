@@ -29,11 +29,13 @@ use App\Infrastructure\Flash\SessionFlashMessenger;
 use App\Infrastructure\Http\DefaultHttpMethodGuard;
 use App\Infrastructure\Http\HeaderRedirector;
 use App\Infrastructure\Http\ServerRequestContext;
+use App\Infrastructure\Persistence\ConexionBD;
 use App\Infrastructure\Persistence\Repositories\TemaRepositorySQL;
 use App\Infrastructure\Persistence\Repositories\UsuarioRepositorySQL;
 use App\Infrastructure\Routing\ScriptNameUrlGenerator;
 use App\Infrastructure\Session\PhpAlmacenSesionEjercicio;
 use App\Infrastructure\Session\PhpSessionStore;
+use PDO;
 
 final class AppWiring
 {
@@ -43,6 +45,7 @@ final class AppWiring
     private ?AuthService $authService = null;
     private ?FlashMessenger $flash = null;
     private ?HttpMethodGuard $httpMethodGuard = null;
+    private ?PDO $pdo = null;
     private ?PistaService $pistaServicio = null;
     private ?Redirector $redirector = null;
     private ?RequestContext $requestContext = null;
@@ -217,6 +220,14 @@ final class AppWiring
         return $this->httpMethodGuard;
     }
 
+    private function pdo() : PDO
+    {
+        if ($this->pdo === null) {
+            $this->pdo = ConexionBD::obtener();
+        }
+        return $this->pdo;
+    }
+
     private function pistaServicio(): PistaService
     {
         if ($this->pistaServicio === null) {
@@ -254,7 +265,9 @@ final class AppWiring
     private function temaRepositorio(): TemaRepository
     {
         if ($this->temaRepositorio === null) {
-            $this->temaRepositorio = new TemaRepositorySQL();
+            $this->temaRepositorio = new TemaRepositorySQL(
+                $this->pdo()
+            );
         }
         return $this->temaRepositorio;
     }
@@ -270,7 +283,9 @@ final class AppWiring
     private function usuarioRepositorio(): UsuarioRepository 
     {
         if ($this->usuarioRepositorio === null) {
-            $this->usuarioRepositorio = new UsuarioRepositorySQL();
+            $this->usuarioRepositorio = new UsuarioRepositorySQL(
+                $this->pdo()
+            );
         }
         return $this->usuarioRepositorio;
     }
