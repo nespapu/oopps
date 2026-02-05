@@ -3,6 +3,10 @@ namespace App\App;
 
 use App\App\Http\AppKernel;
 use App\App\Http\AppRoutes;
+use App\App\Routing\AuthRoutes;
+use App\App\Routing\CuantoSabesTemaRoutes;
+use App\App\Routing\DevRoutes;
+use App\App\Routing\PanelControlEjerciciosRoutes;
 use App\Application\Auth\AuthService;
 use App\Application\Exercises\AlmacenSesionEjercicio;
 use App\Application\Exercises\CuantoSabesTemaConfigPayloadBuilder;
@@ -19,8 +23,6 @@ use App\Controllers\PanelControlEjerciciosController;
 use App\Controllers\CuantoSabesTemaConfigController;
 use App\Controllers\CuantoSabesTemaTituloController;
 use App\Controllers\Dev\DevSesionEjercicioController;
-use App\Core\Routes\RutasCuantoSabesTema;
-use App\Core\Routes\Dev\RutasDevSesionEjercicio;
 use App\Domain\Auth\UsuarioRepository;
 use App\Domain\Exercise\PistaService;
 use App\Domain\Temas\TemaRepository;
@@ -32,6 +34,8 @@ use App\Infrastructure\Http\ServerRequestContext;
 use App\Infrastructure\Persistence\ConexionBD;
 use App\Infrastructure\Persistence\Repositories\TemaRepositorySQL;
 use App\Infrastructure\Persistence\Repositories\UsuarioRepositorySQL;
+use App\Infrastructure\Routing\RouteAssembler;
+use App\Infrastructure\Routing\RouteCollection;
 use App\Infrastructure\Routing\ScriptNameUrlGenerator;
 use App\Infrastructure\Session\PhpAlmacenSesionEjercicio;
 use App\Infrastructure\Session\PhpSessionStore;
@@ -49,6 +53,7 @@ final class AppWiring
     private ?PistaService $pistaServicio = null;
     private ?Redirector $redirector = null;
     private ?RequestContext $requestContext = null;
+    private ?RouteAssembler $routeAssembler = null;
     private ?SessionStore $sessionStore = null;
     private ?ScriptNameUrlGenerator $urlGenerator = null;
     private ?TemaRepository $temaRepositorio = null;
@@ -71,56 +76,16 @@ final class AppWiring
     private function appRoutes(): AppRoutes
     {
         if ($this->appRoutes === null) {
-            return new AppRoutes(
-                [
-                    'login' => $this->httpMethodGuard()->byMethod(
-                        fn () => $this->loginController()->mostrar(),
-                        fn () => $this->loginController()->comprobar()
-                    ),
+            $all = new RouteCollection();
 
-                    'login/salir' => $this->httpMethodGuard()->onlyPost(
-                        fn () => $this->loginController()->salir()
-                    ),
+            $all->merge($this->authRoutes()->routes());
+            $all->merge($this->panelControlEjerciciosRoutes()->routes());
+            $all->merge($this->cuantoSabesTemaRoutes()->routes());
+            $all->merge($this->devRoutes()->routes());
 
-                    'panel-control-ejercicios' => $this->httpMethodGuard()->onlyGet(
-                        fn () => $this->panelControlEjerciciosController()->mostrar()
-                    ),
-
-                    RutasCuantoSabesTema::CONFIG => $this->httpMethodGuard()->onlyGet(
-                        fn () => $this->cuantoSabesTemaConfigController()->mostrar()
-                    ),
-
-                    RutasCuantoSabesTema::INICIO => $this->httpMethodGuard()->onlyPost(
-                        fn () => $this->cuantoSabesTemaConfigController()->comprobar()
-                    ),
-
-                    RutasCuantoSabesTema::PASO_TITULO => $this->httpMethodGuard()->onlyGet(
-                        fn () => $this->cuantoSabesTemaTituloController()->mostrar()
-                    ),
-
-                    RutasCuantoSabesTema::EVAL_TITULO => $this->httpMethodGuard()->onlyPost(
-                        fn () => $this->cuantoSabesTemaTituloController()->evaluar()
-                    ),
-                    
-                    RutasCuantoSabesTema::PASO_INDICE => $this->httpMethodGuard()->onlyGet(
-                        fn () => print "Paso índice. Próximamente..."
-                    ),
-                    
-                    // DEV
-                    RutasDevSesionEjercicio::BASE => $this->httpMethodGuard()->onlyGet(
-                        fn () => $this->devSesionEjercicioController()->mostrar()
-                    ),
-
-                    RutasDevSesionEjercicio::SIGUIENTE => $this->httpMethodGuard()->onlyPost(
-                        fn () => $this->devSesionEjercicioController()->siguiente()
-                    ),
-
-                    RutasDevSesionEjercicio::RESET => $this->httpMethodGuard()->onlyPost(
-                        fn () => $this->devSesionEjercicioController()->reset()
-                    ),
-                ]
-            );
+            $this->appRoutes = new AppRoutes($this->routeAssembler()->assemble($all));
         }
+        
         return $this->appRoutes;
     }
 
@@ -254,6 +219,16 @@ final class AppWiring
         return $this->requestContext;
     }
 
+    private function routeAssembler(): RouteAssembler
+    {
+        if ($this->routeAssembler === null) {
+            $this->routeAssembler = new RouteAssembler(
+                $this->httpMethodGuard()
+            );
+        }
+        return $this->routeAssembler;
+    }
+
     private function sessionStore() : SessionStore
     {
         if ($this->sessionStore === null) {
@@ -308,6 +283,47 @@ final class AppWiring
     private function cuantoSabesTemaTituloEvaluationService(): CuantoSabesTemaTituloEvaluationService
     {
         return new CuantoSabesTemaTituloEvaluationService();
+    }
+
+    private function authRoutes(): AuthRoutes {
+        $controller = $this->loginController();
+        
+        return new AuthRoutes(
+            \Closure::fromCallable([$controller, 'mostrar']),
+            \Closure::fromCallable([$controller, 'comprobar']),
+            \Closure::fromCallable([$controller, 'salir'])
+        );
+    }
+
+    private function panelControlEjerciciosRoutes(): PanelControlEjerciciosRoutes {
+        $controller = $this->panelControlEjerciciosController();
+        
+        return new PanelControlEjerciciosRoutes(
+            \Closure::fromCallable([$controller, 'mostrar'])
+        );
+    }
+
+    private function cuantoSabesTemaRoutes(): CuantoSabesTemaRoutes {
+        $configController = $this->cuantoSabesTemaConfigController();
+        $titleController = $this->cuantoSabesTemaTituloController();
+
+        return new CuantoSabesTemaRoutes(
+            \Closure::fromCallable([$configController, 'mostrar']),
+            \Closure::fromCallable([$configController, 'comprobar']),
+            \Closure::fromCallable([$titleController, 'mostrar']),
+            \Closure::fromCallable([$titleController, 'evaluar']),
+            fn() => print 'Proximamente...'
+        );
+    }
+
+    private function devRoutes(): DevRoutes {
+        $controller = $this->devSesionEjercicioController();
+
+        return new DevRoutes(
+            \Closure::fromCallable([$controller, 'mostrar']),
+            \Closure::fromCallable([$controller, 'siguiente']),
+            \Closure::fromCallable([$controller, 'reset'])
+        );
     }
 }
 
