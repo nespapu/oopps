@@ -43,36 +43,75 @@ use PDO;
 
 final class AppWiring
 {
+    // =========================================================================
+    // Runtime / Kernel
+    // =========================================================================
     private ?AppKernel $appKernel = null;
     private ?AppRoutes $appRoutes = null;
-    private ?AlmacenSesionEjercicio $almacenSesionEjercicio = null;
-    private ?AuthService $authService = null;
-    private ?FlashMessenger $flash = null;
-    private ?HttpMethodGuard $httpMethodGuard = null;
-    private ?PDO $pdo = null;
-    private ?PistaService $pistaServicio = null;
-    private ?Redirector $redirector = null;
     private ?RequestContext $requestContext = null;
+
+    // =========================================================================
+    // Routing infrastructure
+    // =========================================================================
+    private ?HttpMethodGuard $httpMethodGuard = null;
     private ?RouteAssembler $routeAssembler = null;
+
+    // =========================================================================
+    // Controllers (memoized per request for consistency)
+    // =========================================================================
+    private ?LoginController $loginController = null;
+    private ?PanelControlEjerciciosController $panelControlEjerciciosController = null;
+    private ?CuantoSabesTemaConfigController $cuantoSabesTemaConfigController = null;
+    private ?CuantoSabesTemaTituloController $cuantoSabesTemaTituloController = null;
+    private ?DevSesionEjercicioController $devSesionEjercicioController = null;
+
+    // =========================================================================
+    // Application services
+    // =========================================================================
+    private ?AuthService $authService = null;
+    private ?Redirector $redirector = null;
+    private ?FlashMessenger $flash = null;
+    private ?AlmacenSesionEjercicio $almacenSesionEjercicio = null;
+
+    // =========================================================================
+    // Builders / Evaluators
+    // =========================================================================
+    private ?CuantoSabesTemaConfigPayloadBuilder $cuantoSabesTemaConfigPayloadBuilder = null;
+    private ?CuantoSabesTemaTituloPayloadBuilder $cuantoSabesTemaTituloPayloadBuilder = null;
+    private ?CuantoSabesTemaTituloEvaluationService $cuantoSabesTemaTituloEvaluationService = null;
+
+    // =========================================================================
+    // Domain services
+    // =========================================================================
+    private ?PistaService $pistaServicio = null;
+
+    // =========================================================================
+    // Infrastructure (IO)
+    // =========================================================================
+    private ?PDO $pdo = null;
     private ?SessionStore $sessionStore = null;
-    private ?ScriptNameUrlGenerator $urlGenerator = null;
+    private ?UrlGenerator $urlGenerator = null;
     private ?TemaRepository $temaRepositorio = null;
     private ?UsuarioRepository $usuarioRepositorio = null;
 
-    // -----------------
-    // Controllers
-    // -----------------
+    // =========================================================================
+    // Public API
+    // =========================================================================
     public function appKernel(): AppKernel
     {
         if ($this->appKernel === null) {
-            return new AppKernel(
+            $this->appKernel = new AppKernel(
                 $this->appRoutes(),
                 $this->requestContext()
             );
         }
+
         return $this->appKernel;
     }
 
+    // =========================================================================
+    // Routing (root + modules)
+    // =========================================================================
     private function appRoutes(): AppRoutes
     {
         if ($this->appRoutes === null) {
@@ -85,209 +124,14 @@ final class AppWiring
 
             $this->appRoutes = new AppRoutes($this->routeAssembler()->assemble($all));
         }
-        
+
         return $this->appRoutes;
     }
 
-    private function loginController(): LoginController
+    private function authRoutes(): AuthRoutes
     {
-        return new LoginController(
-            $this->authService(),
-            $this->flash(),
-            $this->redirector(),
-            $this->usuarioRepositorio()
-        );
-    }
-
-    private function panelControlEjerciciosController(): PanelControlEjerciciosController
-    {
-        return new PanelControlEjerciciosController(
-            $this->authService()
-        );
-    }
-
-    private function cuantoSabesTemaConfigController(): CuantoSabesTemaConfigController
-    {
-        return new CuantoSabesTemaConfigController(
-            $this->almacenSesionEjercicio(),
-            $this->authService(),
-            $this->cuantoSabesTemaConfigPayloadBuilder(),
-            $this->flash(),
-            $this->redirector(),
-            $this->temaRepositorio(),
-            $this->urlGenerator()
-        );
-    }
-
-    private function cuantoSabesTemaTituloController(): CuantoSabesTemaTituloController
-    {
-        return new CuantoSabesTemaTituloController(
-            $this->almacenSesionEjercicio(),
-            $this->authService(),
-            $this->cuantoSabesTemaTituloPayloadBuilder(),
-            $this->cuantoSabesTemaTituloEvaluationService(),
-            $this->redirector(),
-            $this->temaRepositorio(),
-            $this->urlGenerator()
-        );
-    }
-
-    private function devSesionEjercicioController(): DevSesionEjercicioController
-    {
-        return new DevSesionEjercicioController(
-            $this->almacenSesionEjercicio(),
-            $this->redirector(),
-            $this->urlGenerator()
-        );
-    }
-
-    // -----------------
-    // Dependencias compartidas
-    // -----------------
-    private function almacenSesionEjercicio(): AlmacenSesionEjercicio
-    {
-        if ($this->almacenSesionEjercicio === null) {
-            $this->almacenSesionEjercicio = new PhpAlmacenSesionEjercicio(
-                $this->sessionStore()
-            );
-        }
-        return $this->almacenSesionEjercicio;
-    }
-
-    private function authService() : AuthService
-    {
-        if($this->authService === null) {
-            $this->authService = new DefaultAuthService(
-                $this->sessionStore(),
-                $this->requestContext(),
-                $this->redirector(),
-                $this->flash()
-            );
-        }
-        return $this->authService;
-    }
-
-    private function flash() : FlashMessenger
-    {
-        if ($this->flash === null) {
-            $this->flash = new SessionFlashMessenger();
-        }
-        return $this->flash;
-    }
-
-    private function httpMethodGuard() : HttpMethodGuard 
-    {
-        if ($this->httpMethodGuard === null) {
-            $this->httpMethodGuard = new DefaultHttpMethodGuard(
-                $this->requestContext()
-            );
-        }
-        return $this->httpMethodGuard;
-    }
-
-    private function pdo() : PDO
-    {
-        if ($this->pdo === null) {
-            $this->pdo = ConexionBD::obtener();
-        }
-        return $this->pdo;
-    }
-
-    private function pistaServicio(): PistaService
-    {
-        if ($this->pistaServicio === null) {
-            $this->pistaServicio = new PistaService();
-        }
-        return $this->pistaServicio;
-    }
-
-    private function redirector(): Redirector
-    {
-        if ($this->redirector === null) {
-            $this->redirector = new HeaderRedirector(
-                $this->urlGenerator()
-            );
-        }
-        return $this->redirector;
-    }
-
-    private function requestContext(): RequestContext
-    {
-        if ($this->requestContext === null) {
-            $this->requestContext = new ServerRequestContext();
-        }
-        return $this->requestContext;
-    }
-
-    private function routeAssembler(): RouteAssembler
-    {
-        if ($this->routeAssembler === null) {
-            $this->routeAssembler = new RouteAssembler(
-                $this->httpMethodGuard()
-            );
-        }
-        return $this->routeAssembler;
-    }
-
-    private function sessionStore() : SessionStore
-    {
-        if ($this->sessionStore === null) {
-            $this->sessionStore = new PhpSessionStore();
-        }
-        return $this->sessionStore;
-    }
-
-    private function temaRepositorio(): TemaRepository
-    {
-        if ($this->temaRepositorio === null) {
-            $this->temaRepositorio = new TemaRepositorySQL(
-                $this->pdo()
-            );
-        }
-        return $this->temaRepositorio;
-    }
-
-    private function urlGenerator() : UrlGenerator
-    {
-        if ($this->urlGenerator === null) {
-            $this->urlGenerator = new ScriptNameUrlGenerator();
-        }
-        return $this->urlGenerator;
-    }
-
-    private function usuarioRepositorio(): UsuarioRepository 
-    {
-        if ($this->usuarioRepositorio === null) {
-            $this->usuarioRepositorio = new UsuarioRepositorySQL(
-                $this->pdo()
-            );
-        }
-        return $this->usuarioRepositorio;
-    }
-
-    private function cuantoSabesTemaConfigPayloadBuilder(): CuantoSabesTemaConfigPayloadBuilder
-    {
-        return new CuantoSabesTemaConfigPayloadBuilder(
-            $this->temaRepositorio()
-        );
-    }
-
-    private function cuantoSabesTemaTituloPayloadBuilder(): CuantoSabesTemaTituloPayloadBuilder
-    {
-        return new CuantoSabesTemaTituloPayloadBuilder(
-            $this->temaRepositorio(),
-            $this->pistaServicio()
-        );
-    }
-
-    private function cuantoSabesTemaTituloEvaluationService(): CuantoSabesTemaTituloEvaluationService
-    {
-        return new CuantoSabesTemaTituloEvaluationService();
-    }
-
-    private function authRoutes(): AuthRoutes {
         $controller = $this->loginController();
-        
+
         return new AuthRoutes(
             \Closure::fromCallable([$controller, 'mostrar']),
             \Closure::fromCallable([$controller, 'comprobar']),
@@ -295,15 +139,17 @@ final class AppWiring
         );
     }
 
-    private function panelControlEjerciciosRoutes(): PanelControlEjerciciosRoutes {
+    private function panelControlEjerciciosRoutes(): PanelControlEjerciciosRoutes
+    {
         $controller = $this->panelControlEjerciciosController();
-        
+
         return new PanelControlEjerciciosRoutes(
             \Closure::fromCallable([$controller, 'mostrar'])
         );
     }
 
-    private function cuantoSabesTemaRoutes(): CuantoSabesTemaRoutes {
+    private function cuantoSabesTemaRoutes(): CuantoSabesTemaRoutes
+    {
         $configController = $this->cuantoSabesTemaConfigController();
         $titleController = $this->cuantoSabesTemaTituloController();
 
@@ -316,7 +162,8 @@ final class AppWiring
         );
     }
 
-    private function devRoutes(): DevRoutes {
+    private function devRoutes(): DevRoutes
+    {
         $controller = $this->devSesionEjercicioController();
 
         return new DevRoutes(
@@ -325,6 +172,260 @@ final class AppWiring
             \Closure::fromCallable([$controller, 'reset'])
         );
     }
-}
 
-?>
+    // =========================================================================
+    // Controllers
+    // =========================================================================
+    private function loginController(): LoginController
+    {
+        if ($this->loginController === null) {
+            $this->loginController = new LoginController(
+                $this->authService(),
+                $this->flash(),
+                $this->redirector(),
+                $this->usuarioRepositorio()
+            );
+        }
+
+        return $this->loginController;
+    }
+
+    private function panelControlEjerciciosController(): PanelControlEjerciciosController
+    {
+        if ($this->panelControlEjerciciosController === null) {
+            $this->panelControlEjerciciosController = new PanelControlEjerciciosController(
+                $this->authService()
+            );
+        }
+
+        return $this->panelControlEjerciciosController;
+    }
+
+    private function cuantoSabesTemaConfigController(): CuantoSabesTemaConfigController
+    {
+        if ($this->cuantoSabesTemaConfigController === null) {
+            $this->cuantoSabesTemaConfigController = new CuantoSabesTemaConfigController(
+                $this->almacenSesionEjercicio(),
+                $this->authService(),
+                $this->cuantoSabesTemaConfigPayloadBuilder(),
+                $this->flash(),
+                $this->redirector(),
+                $this->temaRepositorio(),
+                $this->urlGenerator()
+            );
+        }
+
+        return $this->cuantoSabesTemaConfigController;
+    }
+
+    private function cuantoSabesTemaTituloController(): CuantoSabesTemaTituloController
+    {
+        if ($this->cuantoSabesTemaTituloController === null) {
+            $this->cuantoSabesTemaTituloController = new CuantoSabesTemaTituloController(
+                $this->almacenSesionEjercicio(),
+                $this->authService(),
+                $this->cuantoSabesTemaTituloPayloadBuilder(),
+                $this->cuantoSabesTemaTituloEvaluationService(),
+                $this->redirector(),
+                $this->temaRepositorio(),
+                $this->urlGenerator()
+            );
+        }
+
+        return $this->cuantoSabesTemaTituloController;
+    }
+
+    private function devSesionEjercicioController(): DevSesionEjercicioController
+    {
+        if ($this->devSesionEjercicioController === null) {
+            $this->devSesionEjercicioController = new DevSesionEjercicioController(
+                $this->almacenSesionEjercicio(),
+                $this->redirector(),
+                $this->urlGenerator()
+            );
+        }
+
+        return $this->devSesionEjercicioController;
+    }
+
+    // =========================================================================
+    // Application services (shared)
+    // =========================================================================
+    private function almacenSesionEjercicio(): AlmacenSesionEjercicio
+    {
+        if ($this->almacenSesionEjercicio === null) {
+            $this->almacenSesionEjercicio = new PhpAlmacenSesionEjercicio(
+                $this->sessionStore()
+            );
+        }
+
+        return $this->almacenSesionEjercicio;
+    }
+
+    private function authService(): AuthService
+    {
+        if ($this->authService === null) {
+            $this->authService = new DefaultAuthService(
+                $this->sessionStore(),
+                $this->requestContext(),
+                $this->redirector(),
+                $this->flash()
+            );
+        }
+
+        return $this->authService;
+    }
+
+    private function flash(): FlashMessenger
+    {
+        if ($this->flash === null) {
+            $this->flash = new SessionFlashMessenger();
+        }
+
+        return $this->flash;
+    }
+
+    private function redirector(): Redirector
+    {
+        if ($this->redirector === null) {
+            $this->redirector = new HeaderRedirector(
+                $this->urlGenerator()
+            );
+        }
+
+        return $this->redirector;
+    }
+
+    // =========================================================================
+    // Builders / Evaluators
+    // =========================================================================
+    private function cuantoSabesTemaConfigPayloadBuilder(): CuantoSabesTemaConfigPayloadBuilder
+    {
+        if ($this->cuantoSabesTemaConfigPayloadBuilder === null) {
+            $this->cuantoSabesTemaConfigPayloadBuilder = new CuantoSabesTemaConfigPayloadBuilder(
+                $this->temaRepositorio()
+            );
+        }
+
+        return $this->cuantoSabesTemaConfigPayloadBuilder;
+    }
+
+    private function cuantoSabesTemaTituloPayloadBuilder(): CuantoSabesTemaTituloPayloadBuilder
+    {
+        if ($this->cuantoSabesTemaTituloPayloadBuilder === null) {
+            $this->cuantoSabesTemaTituloPayloadBuilder = new CuantoSabesTemaTituloPayloadBuilder(
+                $this->temaRepositorio(),
+                $this->pistaServicio()
+            );
+        }
+
+        return $this->cuantoSabesTemaTituloPayloadBuilder;
+    }
+
+    private function cuantoSabesTemaTituloEvaluationService(): CuantoSabesTemaTituloEvaluationService
+    {
+        if ($this->cuantoSabesTemaTituloEvaluationService === null) {
+            $this->cuantoSabesTemaTituloEvaluationService = new CuantoSabesTemaTituloEvaluationService();
+        }
+
+        return $this->cuantoSabesTemaTituloEvaluationService;
+    }
+
+    // =========================================================================
+    // Domain services
+    // =========================================================================
+    private function pistaServicio(): PistaService
+    {
+        if ($this->pistaServicio === null) {
+            $this->pistaServicio = new PistaService();
+        }
+
+        return $this->pistaServicio;
+    }
+
+    // =========================================================================
+    // HTTP / Request runtime
+    // =========================================================================
+    private function requestContext(): RequestContext
+    {
+        if ($this->requestContext === null) {
+            $this->requestContext = new ServerRequestContext();
+        }
+
+        return $this->requestContext;
+    }
+
+    private function httpMethodGuard(): HttpMethodGuard
+    {
+        if ($this->httpMethodGuard === null) {
+            $this->httpMethodGuard = new DefaultHttpMethodGuard(
+                $this->requestContext()
+            );
+        }
+
+        return $this->httpMethodGuard;
+    }
+
+    private function routeAssembler(): RouteAssembler
+    {
+        if ($this->routeAssembler === null) {
+            $this->routeAssembler = new RouteAssembler(
+                $this->httpMethodGuard()
+            );
+        }
+
+        return $this->routeAssembler;
+    }
+
+    // =========================================================================
+    // Infrastructure (IO)
+    // =========================================================================
+    private function pdo(): PDO
+    {
+        if ($this->pdo === null) {
+            $this->pdo = ConexionBD::obtener();
+        }
+
+        return $this->pdo;
+    }
+
+    private function sessionStore(): SessionStore
+    {
+        if ($this->sessionStore === null) {
+            $this->sessionStore = new PhpSessionStore();
+        }
+
+        return $this->sessionStore;
+    }
+
+    private function urlGenerator(): UrlGenerator
+    {
+        if ($this->urlGenerator === null) {
+            $this->urlGenerator = new ScriptNameUrlGenerator();
+        }
+
+        return $this->urlGenerator;
+    }
+
+    private function temaRepositorio(): TemaRepository
+    {
+        if ($this->temaRepositorio === null) {
+            $this->temaRepositorio = new TemaRepositorySQL(
+                $this->pdo()
+            );
+        }
+
+        return $this->temaRepositorio;
+    }
+
+    private function usuarioRepositorio(): UsuarioRepository
+    {
+        if ($this->usuarioRepositorio === null) {
+            $this->usuarioRepositorio = new UsuarioRepositorySQL(
+                $this->pdo()
+            );
+        }
+
+        return $this->usuarioRepositorio;
+    }
+}
