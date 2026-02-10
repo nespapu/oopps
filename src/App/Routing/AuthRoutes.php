@@ -10,6 +10,7 @@ use App\Infrastructure\Routing\RouteDefinition;
 final class AuthRoutes
 {
     public function __construct(
+        private readonly AuthPaths $authPaths,
         private readonly \Closure $showLoginHandler,
         private readonly \Closure $checkLoginHandler,
         private readonly \Closure $doLogoutHandler
@@ -20,19 +21,19 @@ final class AuthRoutes
         $routes = new RouteCollection();
 
         $routes->add(new RouteDefinition(
-            path: 'login',
+            path: $this->authPaths->login(),
             method: HttpMethod::GET,
             handler: $this->showLoginHandler
         ));
 
         $routes->add(new RouteDefinition(
-            path: 'login',
+            path: $this->authPaths->login(),
             method: HttpMethod::POST,
             handler: $this->checkLoginHandler
         ));
 
         $routes->add(new RouteDefinition(
-            path: 'login/salir',
+            path: $this->authPaths->logout(),
             method: HttpMethod::POST,
             handler:$this->doLogoutHandler
         ));

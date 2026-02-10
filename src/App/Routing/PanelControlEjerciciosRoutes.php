@@ -10,6 +10,7 @@ use App\Infrastructure\Routing\RouteDefinition;
 final class PanelControlEjerciciosRoutes
 {
     public function __construct(
+        private readonly PanelControlEjerciciosPaths $panelControlEjerciciosPaths,
         private readonly \Closure $showPanelHandler
     ){}
 
@@ -18,7 +19,7 @@ final class PanelControlEjerciciosRoutes
         $routes = new RouteCollection();
 
         $routes->add(new RouteDefinition(
-            path: 'panel-control-ejercicios',
+            path: $this->panelControlEjerciciosPaths->panel(),
             method: HttpMethod::GET,
             handler: $this->showPanelHandler
         ));

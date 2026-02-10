@@ -4,15 +4,15 @@ declare(strict_types=1);
 namespace App\App\Http;
 
 use App\Application\Http\RequestContext;
-use App\Core\CanonizadorRuta;
-use App\Core\Routes\RutasApp;
+use App\Application\Routing\RouteCanonicalizer;
 use Throwable;
 
 final class AppKernel
 {
     public function __construct(
         private readonly AppRoutes $appRoutes,
-        private readonly RequestContext $requestContext
+        private readonly RequestContext $requestContext,
+        private readonly RouteCanonicalizer $routeCanonicalizer
     ) {}
 
     public function handle(): void
@@ -25,7 +25,7 @@ final class AppKernel
             return;
         }
 
-        [$canonicRoute, $_] = CanonizadorRuta::canonizar($route, RutasApp::patrones());
+        [$canonicRoute, $_] = $this->routeCanonicalizer->canonicalize($route, $this->appRoutes);
 
         if (!$this->appRoutes->has($canonicRoute)) {
             http_response_code(404);

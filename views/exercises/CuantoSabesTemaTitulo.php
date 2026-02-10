@@ -3,7 +3,6 @@
 /** @var string $sesionId */
 
 use App\Application\Exercises\Payload\ClavesPasoPayload;
-use App\Core\Routes\RutasCuantoSabesTema;
 
 $items = $payload[ClavesPasoPayload::ITEMS] ?? [];
 $meta  = $payload[ClavesPasoPayload::META] ?? [];
@@ -19,7 +18,7 @@ $fieldName   = $item['nombre'] ?? 'titulo';
 $placeholder = $item['placeholder'] ?? '';
 $pista       = $item['pista'] ?? '';
 
-$action = $url->to(RutasCuantoSabesTema::evaluarTitulo($sesionId));
+$action = $url->to($cuantoSabesTemaPaths->evaluarTitulo($sesionId));
 ?>
 
 <div class="row justify-content-center">
@@ -118,7 +117,7 @@ $action = $url->to(RutasCuantoSabesTema::evaluarTitulo($sesionId));
             <?php if (($evaluacion ?? null) === true): ?>
             <a class="btn btn-success"
               href="<?= htmlspecialchars(
-                  $url->to(RutasCuantoSabesTema::pasoIndice($sesionId)),
+                  $url->to($cuantoSabesTemaPaths->pasoIndice($sesionId)),
                   ENT_QUOTES,
                   'UTF-8'
               ) ?>">

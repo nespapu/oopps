@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace App\App\Http;
 
-final class AppRoutes
+use App\Application\Routing\RoutePatternProvider;
+
+final class AppRoutes implements RoutePatternProvider
 {
     /** @var array<string, callable> */
     private array $routes;
@@ -24,5 +26,10 @@ final class AppRoutes
     public function get(string $route): callable
     {
         return $this->routes[$route];
+    }
+
+    public function patterns(): array
+    {
+        return array_keys($this->routes);
     }
 }

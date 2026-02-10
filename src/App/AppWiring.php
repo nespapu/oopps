@@ -3,9 +3,13 @@ namespace App\App;
 
 use App\App\Http\AppKernel;
 use App\App\Http\AppRoutes;
+use App\App\Routing\AuthPaths;
 use App\App\Routing\AuthRoutes;
 use App\App\Routing\CuantoSabesTemaRoutes;
+use App\App\Routing\CuantoSabesTemaPaths;
+use App\App\Routing\DevPaths;
 use App\App\Routing\DevRoutes;
+use App\App\Routing\PanelControlEjerciciosPaths;
 use App\App\Routing\PanelControlEjerciciosRoutes;
 use App\Application\Auth\AuthService;
 use App\Application\Exercises\AlmacenSesionEjercicio;
@@ -16,6 +20,8 @@ use App\Application\Flash\FlashMessenger;
 use App\Application\Http\HttpMethodGuard;
 use App\Application\Http\Redirector;
 use App\Application\Http\RequestContext;
+use App\Application\Routing\RouteCanonicalizer;
+use App\Application\Routing\RouteUrlGenerator;
 use App\Application\Routing\UrlGenerator;
 use App\Application\Session\SessionStore;
 use App\Controllers\LoginController;
@@ -51,10 +57,20 @@ final class AppWiring
     private ?RequestContext $requestContext = null;
 
     // =========================================================================
+    // Routing / Navigation (App layer)
+    // =========================================================================
+    private ?AuthPaths $authPaths = null;
+    private ?CuantoSabesTemaPaths $cuantoSabesTemaPaths = null;
+    private ?DevPaths $devPaths = null;
+    private ?PanelControlEjerciciosPaths $panelControlEjerciciosPaths = null;
+
+    // =========================================================================
     // Routing infrastructure
     // =========================================================================
     private ?HttpMethodGuard $httpMethodGuard = null;
     private ?RouteAssembler $routeAssembler = null;
+    private ?RouteCanonicalizer $routeCanonicalizer = null;
+    private ?RouteUrlGenerator $routeUrlGenerator = null;
 
     // =========================================================================
     // Controllers (memoized per request for consistency)
@@ -102,7 +118,8 @@ final class AppWiring
         if ($this->appKernel === null) {
             $this->appKernel = new AppKernel(
                 $this->appRoutes(),
-                $this->requestContext()
+                $this->requestContext(),
+                $this->routeCanonicalizer()
             );
         }
 
@@ -133,6 +150,7 @@ final class AppWiring
         $controller = $this->loginController();
 
         return new AuthRoutes(
+            $this->authPaths(),
             \Closure::fromCallable([$controller, 'mostrar']),
             \Closure::fromCallable([$controller, 'comprobar']),
             \Closure::fromCallable([$controller, 'salir'])
@@ -144,6 +162,7 @@ final class AppWiring
         $controller = $this->panelControlEjerciciosController();
 
         return new PanelControlEjerciciosRoutes(
+            $this->panelControlEjerciciosPaths(),
             \Closure::fromCallable([$controller, 'mostrar'])
         );
     }
@@ -154,6 +173,7 @@ final class AppWiring
         $titleController = $this->cuantoSabesTemaTituloController();
 
         return new CuantoSabesTemaRoutes(
+            $this->cuantoSabesTemaPaths(),
             \Closure::fromCallable([$configController, 'mostrar']),
             \Closure::fromCallable([$configController, 'comprobar']),
             \Closure::fromCallable([$titleController, 'mostrar']),
@@ -167,10 +187,48 @@ final class AppWiring
         $controller = $this->devSesionEjercicioController();
 
         return new DevRoutes(
+            $this->devPaths(),
             \Closure::fromCallable([$controller, 'mostrar']),
             \Closure::fromCallable([$controller, 'siguiente']),
             \Closure::fromCallable([$controller, 'reset'])
         );
+    }
+
+    // =========================================================================
+    // Routing / Navigation (App layer)
+    // =========================================================================
+    private function authPaths(): AuthPaths
+    {
+        if ($this->authPaths === null) {
+            $this->authPaths = new AuthPaths();
+        }
+        return $this->authPaths;
+    }
+
+    private function cuantoSabesTemaPaths(): CuantoSabesTemaPaths
+    {
+        if ($this->cuantoSabesTemaPaths === null) {
+            $this->cuantoSabesTemaPaths = new CuantoSabesTemaPaths(
+                $this->routeUrlGenerator()
+            );
+        }
+        return $this->cuantoSabesTemaPaths;
+    }
+
+    private function devPaths(): DevPaths
+    {
+        if ($this->devPaths === null) {
+            $this->devPaths = new DevPaths();
+        }
+        return $this->devPaths;
+    }
+
+    private function panelControlEjerciciosPaths(): PanelControlEjerciciosPaths
+    {
+        if ($this->panelControlEjerciciosPaths === null) {
+            $this->panelControlEjerciciosPaths = new PanelControlEjerciciosPaths();
+        }
+        return $this->panelControlEjerciciosPaths;
     }
 
     // =========================================================================
@@ -208,6 +266,7 @@ final class AppWiring
                 $this->almacenSesionEjercicio(),
                 $this->authService(),
                 $this->cuantoSabesTemaConfigPayloadBuilder(),
+                $this->cuantoSabesTemaPaths(),
                 $this->flash(),
                 $this->redirector(),
                 $this->temaRepositorio(),
@@ -224,6 +283,7 @@ final class AppWiring
             $this->cuantoSabesTemaTituloController = new CuantoSabesTemaTituloController(
                 $this->almacenSesionEjercicio(),
                 $this->authService(),
+                $this->cuantoSabesTemaPaths(),
                 $this->cuantoSabesTemaTituloPayloadBuilder(),
                 $this->cuantoSabesTemaTituloEvaluationService(),
                 $this->redirector(),
@@ -241,6 +301,7 @@ final class AppWiring
             $this->devSesionEjercicioController = new DevSesionEjercicioController(
                 $this->almacenSesionEjercicio(),
                 $this->redirector(),
+                $this->devPaths(),
                 $this->urlGenerator()
             );
         }
@@ -375,6 +436,22 @@ final class AppWiring
         }
 
         return $this->routeAssembler;
+    }
+
+    private function routeCanonicalizer(): RouteCanonicalizer
+    {
+        if ($this->routeCanonicalizer === null) {
+            $this->routeCanonicalizer = new RouteCanonicalizer();
+        }
+        return $this->routeCanonicalizer;
+    }
+
+    private function routeUrlGenerator(): RouteUrlGenerator
+    {
+        if ($this->routeUrlGenerator === null) {
+            $this->routeUrlGenerator = new RouteUrlGenerator();
+        }
+        return $this->routeUrlGenerator;
     }
 
     // =========================================================================

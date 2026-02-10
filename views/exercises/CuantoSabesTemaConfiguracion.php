@@ -8,8 +8,6 @@
  * - $titulo: (opcional) string
  */
 
-use App\Core\Routes\RutasCuantoSabesTema;
-
 $temas = $payload['temas'] ?? [];
 $gradosDificultad = $payload['gradosDificultad'] ?? [];
 $defecto = $payload['defecto'] ?? ['tema' => 0, 'gradoDificultad' => 3];
@@ -20,7 +18,7 @@ $temaSeleccionado = (int)($defecto['tema'] ?? 0);
 $gradoDificultadSeleccionado = (int)($defecto['gradoDificultad'] ?? 3);
 
 
-$formularioAccion = $url->to(RutasCuantoSabesTema::INICIO);
+$formularioAccion = $url->to($cuantoSabesTemaPaths->inicio());
 
 $escapar = static fn(string $valor): string =>
     htmlspecialchars($valor, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');

@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Controllers\Dev;
 
+use App\App\Routing\DevPaths;
 use App\Application\Exercises\AlmacenSesionEjercicio;
 use App\Application\Http\Redirector;
 use App\Application\Routing\UrlGenerator;
 use App\Domain\Exercise\ConfigEjercicio;
 use App\Domain\Exercise\PasoEjercicio;
 use App\Domain\Exercise\TipoEjercicio;
-use App\Core\Routes\Dev\RutasDevSesionEjercicio;
 use App\Domain\Auth\ContextoUsuario;
 
 final class DevSesionEjercicioController
@@ -18,6 +18,7 @@ final class DevSesionEjercicioController
     public function __construct(
         private readonly AlmacenSesionEjercicio $almacen,
         private readonly Redirector $redirector,
+        private readonly DevPaths $devPaths,
         private readonly UrlGenerator $urlGenerator
     ) {
     }
@@ -73,7 +74,7 @@ final class DevSesionEjercicioController
         $sesion = $this->almacen->getSesionActual();
 
         if ($sesion === null) {
-            $this->redirector->redirect(RutasDevSesionEjercicio::BASE);
+            $this->redirector->redirect($this->devPaths->base());
             return;
         }
 
@@ -83,7 +84,7 @@ final class DevSesionEjercicioController
         $this->almacen->guardar($sesion);
 
         // PRG: evitar el reenvío del formulario
-        $this->redirector->redirect(RutasDevSesionEjercicio::BASE, 303);
+        $this->redirector->redirect($this->devPaths->base(), 303);
     }
 
     /**
@@ -98,7 +99,7 @@ final class DevSesionEjercicioController
             $this->almacen->borrar($sesionIdActual);
         }
 
-        $this->redirector->redirect(RutasDevSesionEjercicio::BASE, 303);
+        $this->redirector->redirect($this->devPaths->base(), 303);
     }
 
     private function renderHtml($sesion): void
@@ -115,8 +116,8 @@ final class DevSesionEjercicioController
         $dificultad = $config->dificultad();
         $banderasJson = htmlspecialchars(json_encode($config->banderas(), JSON_PRETTY_PRINT), ENT_QUOTES, 'UTF-8');
 
-        $siguienteAccion = $this->urlGenerator->to(RutasDevSesionEjercicio::SIGUIENTE);
-        $resetAccion = $this->urlGenerator->to(RutasDevSesionEjercicio::RESET);
+        $siguienteAccion = $this->urlGenerator->to($this->devPaths->siguiente());
+        $resetAccion = $this->urlGenerator->to($this->devPaths->reset());
 
         echo <<<HTML
 <!doctype html>

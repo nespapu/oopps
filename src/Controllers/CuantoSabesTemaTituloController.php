@@ -1,13 +1,13 @@
 <?php
 namespace App\Controllers;
 
+use App\App\Routing\CuantoSabesTemaPaths;
 use App\Application\Auth\AuthService;
 use App\Application\Exercises\AlmacenSesionEjercicio;
 use App\Application\Exercises\StepBuilder\CuantoSabesTemaTituloPayloadBuilder;
 use App\Application\Exercises\Evaluation\CuantoSabesTemaTituloEvaluationService;
 use App\Application\Http\Redirector;
 use App\Application\Routing\UrlGenerator;
-use App\Core\Routes\RutasCuantoSabesTema;
 use App\Core\View;
 use App\Domain\Exercise\PasoEjercicio;
 use App\Domain\Temas\TemaRepository;
@@ -17,6 +17,7 @@ final class CuantoSabesTemaTituloController
     public function __construct(
         private readonly AlmacenSesionEjercicio $almacenSesionEjercicio,
         private readonly AuthService $authService,
+        private readonly CuantoSabesTemaPaths $cuantoSabesTemaPaths,
         private readonly CuantoSabesTemaTituloPayloadBuilder $payloadBuilder,
         private readonly CuantoSabesTemaTituloEvaluationService $evaluacionServicio,
         private readonly Redirector $redirector,
@@ -38,7 +39,8 @@ final class CuantoSabesTemaTituloController
             'payload' => $payload,
             'sesionId' => $sesion->sesionId(),
             'evaluacion' => $evaluacion,
-            'url' => $this->urlGenerator
+            'url' => $this->urlGenerator,
+            'cuantoSabesTemaPaths' => $this->cuantoSabesTemaPaths
         ]);
     }
 
@@ -59,7 +61,7 @@ final class CuantoSabesTemaTituloController
         $sesion->setEvaluacionPaso(PasoEjercicio::TITULO, $evaluacion);
         $this->almacenSesionEjercicio->guardar($sesion);
 
-        $this->redirector->redirect(RutasCuantoSabesTema::pasoTitulo($sesion->sesionId()));
+        $this->redirector->redirect($this->cuantoSabesTemaPaths->pasoTitulo($sesion->sesionId()));
     }
 
 }
