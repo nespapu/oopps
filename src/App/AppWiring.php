@@ -15,6 +15,8 @@ use App\Application\Auth\AuthService;
 use App\Application\Exercises\AlmacenSesionEjercicio;
 use App\Application\Exercises\CuantoSabesTemaConfigPayloadBuilder;
 use App\Application\Exercises\Evaluation\CuantoSabesTemaTituloEvaluationService;
+use App\Application\Exercises\Evaluation\EqualityEvaluator;
+use App\Application\Exercises\Evaluation\TextNormalizer;
 use App\Application\Exercises\StepBuilder\CuantoSabesTemaTituloPayloadBuilder;
 use App\Application\Flash\FlashMessenger;
 use App\Application\Http\HttpMethodGuard;
@@ -95,6 +97,8 @@ final class AppWiring
     private ?CuantoSabesTemaConfigPayloadBuilder $cuantoSabesTemaConfigPayloadBuilder = null;
     private ?CuantoSabesTemaTituloPayloadBuilder $cuantoSabesTemaTituloPayloadBuilder = null;
     private ?CuantoSabesTemaTituloEvaluationService $cuantoSabesTemaTituloEvaluationService = null;
+    private ?EqualityEvaluator $equalityEvaluator = null;
+    private ?TextNormalizer $textNormalizer = null;
 
     // =========================================================================
     // Domain services
@@ -287,7 +291,6 @@ final class AppWiring
                 $this->cuantoSabesTemaTituloPayloadBuilder(),
                 $this->cuantoSabesTemaTituloEvaluationService(),
                 $this->redirector(),
-                $this->temaRepositorio(),
                 $this->urlGenerator()
             );
         }
@@ -386,10 +389,30 @@ final class AppWiring
     private function cuantoSabesTemaTituloEvaluationService(): CuantoSabesTemaTituloEvaluationService
     {
         if ($this->cuantoSabesTemaTituloEvaluationService === null) {
-            $this->cuantoSabesTemaTituloEvaluationService = new CuantoSabesTemaTituloEvaluationService();
+            $this->cuantoSabesTemaTituloEvaluationService = new CuantoSabesTemaTituloEvaluationService(
+                $this->equalityEvaluator()
+            );
         }
 
         return $this->cuantoSabesTemaTituloEvaluationService;
+    }
+
+    private function equalityEvaluator(): EqualityEvaluator
+    {
+        if ($this->equalityEvaluator === null) {
+            $this->equalityEvaluator = new EqualityEvaluator(
+                $this->textNormalizer()
+            );
+        }
+        return $this->equalityEvaluator;
+    }
+
+    private function textNormalizer(): TextNormalizer
+    {
+        if ($this->textNormalizer === null) {
+            $this->textNormalizer = new TextNormalizer();
+        }
+        return $this->textNormalizer;
     }
 
     // =========================================================================

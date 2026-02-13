@@ -10,7 +10,6 @@ use App\Application\Http\Redirector;
 use App\Application\Routing\UrlGenerator;
 use App\Core\View;
 use App\Domain\Exercise\PasoEjercicio;
-use App\Domain\Temas\TemaRepository;
 
 final class CuantoSabesTemaTituloController
 {
@@ -21,7 +20,6 @@ final class CuantoSabesTemaTituloController
         private readonly CuantoSabesTemaTituloPayloadBuilder $payloadBuilder,
         private readonly CuantoSabesTemaTituloEvaluationService $evaluacionServicio,
         private readonly Redirector $redirector,
-        private readonly TemaRepository $temaRepositorio,
         private readonly UrlGenerator $urlGenerator
     ) {}
 
@@ -50,19 +48,30 @@ final class CuantoSabesTemaTituloController
 
         $sesion = $this->almacenSesionEjercicio->getSesionActual();
 
-        $codigoOposicion = $sesion->contextoUsuario()->codigoOposicion();
-        $numeracion = $sesion->config()->tema();
+        $payload = $this->payloadBuilder->construir($sesion);
              
-        $respuesta = trim($_POST['titulo'] ?? '');
-        $solucion = $this->temaRepositorio->buscarTituloPorCodigoOposicionYOrden($codigoOposicion, $numeracion) ?? '';
+        $stepAnswer = $this->buildStepAnswerFromPost($payload, PasoEjercicio::TITULO->value);
 
-        $evaluacion = $this->evaluacionServicio->evaluar($respuesta, $solucion);
+        $evaluacion = $this->evaluacionServicio->evaluate($payload, $stepAnswer);
 
         $sesion->setEvaluacionPaso(PasoEjercicio::TITULO, $evaluacion);
         $this->almacenSesionEjercicio->guardar($sesion);
 
         $this->redirector->redirect($this->cuantoSabesTemaPaths->pasoTitulo($sesion->sesionId()));
     }
+
+    private function buildStepAnswerFromPost(array $payload, string $step): array
+    {
+        $values = [];
+
+        foreach ($payload['items'] as $item) {
+            $key = $item['key'];
+            $values[$key] = isset($_POST[$key]) ? trim((string) $_POST[$key]) : '';
+        }
+
+        return ['step' => $step, 'values' => $values];
+    }
+
 
 }
 ?>

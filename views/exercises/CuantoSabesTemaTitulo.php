@@ -18,6 +18,12 @@ $fieldName   = $item['nombre'] ?? 'titulo';
 $placeholder = $item['placeholder'] ?? '';
 $pista       = $item['pista'] ?? '';
 
+$isStepCorrect = null;
+
+if (is_array($evaluacion)) {
+    $isStepCorrect = $evaluacion['result']['isStepCorrect'] ?? null;
+}
+
 $action = $url->to($cuantoSabesTemaPaths->evaluarTitulo($sesionId));
 ?>
 
@@ -45,8 +51,8 @@ $action = $url->to($cuantoSabesTemaPaths->evaluarTitulo($sesionId));
     </div>
 
     <div class="mb-3">
-    <?php if (isset($evaluacion)): ?>
-      <?php if ($evaluacion): ?>
+    <?php if (isset($isStepCorrect)): ?>
+      <?php if ($isStepCorrect): ?>
         <div class="alert alert-success d-flex align-items-center" role="alert">
           <div class="me-2">✅</div>
           <div><strong>¡Correcto!</strong> Puedes continuar al siguiente paso.</div>
@@ -114,7 +120,7 @@ $action = $url->to($cuantoSabesTemaPaths->evaluarTitulo($sesionId));
             <a class="btn btn-outline-secondary" href="javascript:history.back()">
               Volver
             </a>
-            <?php if (($evaluacion ?? null) === true): ?>
+            <?php if (($isStepCorrect ?? null) === true): ?>
             <a class="btn btn-success"
               href="<?= htmlspecialchars(
                   $url->to($cuantoSabesTemaPaths->pasoIndice($sesionId)),

@@ -30,9 +30,10 @@ final class CuantoSabesTemaTituloPayloadBuilder {
             : $this->pistaServicio->getPista($titulo, $dificultadEnum, $modoPista);
 
         return [
-            ClavesPasoPayload::PASO => PasoEjercicio::TITULO,
+            "step" => PasoEjercicio::TITULO->value,
             ClavesPasoPayload::ITEMS => [
                 [
+                    "key" => "titulo",
                     "tipo" => "text",
                     "nombre" => "titulo",
                     "pista" => $pista,
@@ -46,7 +47,9 @@ final class CuantoSabesTemaTituloPayloadBuilder {
                 "banderas" => $sesion->config()->banderas(),
                 "tipoPista" => $modoPista->value
             ],
-            ClavesPasoPayload::ESPERADO => []
+            "expected" => [
+                "titulo" => $titulo
+            ]
         ];
     }
 
