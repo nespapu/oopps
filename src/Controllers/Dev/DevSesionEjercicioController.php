@@ -8,7 +8,7 @@ use App\App\Routing\DevPaths;
 use App\Application\Exercises\AlmacenSesionEjercicio;
 use App\Application\Http\Redirector;
 use App\Application\Routing\UrlGenerator;
-use App\Domain\Exercise\ConfigEjercicio;
+use App\Domain\Exercise\ExerciseConfig;
 use App\Domain\Exercise\ExerciseStep;
 use App\Domain\Exercise\TipoEjercicio;
 use App\Domain\Auth\ContextoUsuario;
@@ -38,10 +38,10 @@ final class DevSesionEjercicioController
 
             $contextoUsuario = new ContextoUsuario('dev-user', 'dev-opposition');
 
-            $config = new ConfigEjercicio(
-                tema: 0,
-                dificultad: 2,
-                banderas: ['barajar_preguntas' => true]
+            $config = new ExerciseConfig(
+                topicId: 0,
+                difficulty: 2,
+                flags: ['barajar_preguntas' => true]
             );
 
             $sesion = $this->almacen->crear(
@@ -112,9 +112,9 @@ final class DevSesionEjercicioController
         $fechaActualizacion = htmlspecialchars($sesion->fechaActualizacion()->format(\DateTimeInterface::ATOM), ENT_QUOTES, 'UTF-8');
 
         $config = $sesion->config();
-        $tema = $config->tema();
-        $dificultad = $config->dificultad();
-        $banderasJson = htmlspecialchars(json_encode($config->banderas(), JSON_PRETTY_PRINT), ENT_QUOTES, 'UTF-8');
+        $tema = $config->topicId();
+        $dificultad = $config->difficulty();
+        $banderasJson = htmlspecialchars(json_encode($config->flags(), JSON_PRETTY_PRINT), ENT_QUOTES, 'UTF-8');
 
         $siguienteAccion = $this->urlGenerator->to($this->devPaths->siguiente());
         $resetAccion = $this->urlGenerator->to($this->devPaths->reset());

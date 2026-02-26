@@ -9,7 +9,7 @@ use App\Application\Flash\FlashMessenger;
 use App\Application\Http\Redirector;
 use App\Application\Routing\UrlGenerator;
 use App\Core\View;
-use App\Domain\Exercise\ConfigEjercicio;
+use App\Domain\Exercise\ExerciseConfig;
 use App\Domain\Exercise\Dificultad;
 use App\Domain\Exercise\ExerciseStep;
 use App\Domain\Exercise\TipoEjercicio;
@@ -85,7 +85,7 @@ final class CuantoSabesTemaConfigController
             $this->redirector->redirect($this->cuantoSabesTemaPaths->config());
         }
 
-        $configEjercicio = new ConfigEjercicio(
+        $exerciseConfig = new ExerciseConfig(
             $numeracion,
             $dificultad,
             []
@@ -96,7 +96,7 @@ final class CuantoSabesTemaConfigController
         $sesion = $this->almacenSesionEjercicio->crear(
             $tipoEjercicio,
             $contextoUsuario,
-            $configEjercicio,
+            $exerciseConfig,
             $firstExerciseStep
         );
 

@@ -7,7 +7,7 @@ namespace App\Infrastructure\Session;
 use App\Application\Exercises\AlmacenSesionEjercicio;
 use App\Application\Session\SessionStore;
 use App\Domain\Auth\ContextoUsuario;
-use App\Domain\Exercise\ConfigEjercicio;
+use App\Domain\Exercise\ExerciseConfig;
 use App\Domain\Exercise\SesionEjercicio;
 use App\Domain\Exercise\ExerciseStep;
 use App\Domain\Exercise\TipoEjercicio;
@@ -23,7 +23,7 @@ final class PhpAlmacenSesionEjercicio implements AlmacenSesionEjercicio
     public function crear(
         TipoEjercicio $tipoEjercicio,
         ContextoUsuario $contextoUsuario,
-        ConfigEjercicio $config,
+        ExerciseConfig $config,
         ExerciseStep $firstStep
     ): SesionEjercicio {
         $sesion = SesionEjercicio::iniciar($tipoEjercicio, $contextoUsuario, $config, $firstStep);
@@ -227,9 +227,9 @@ final class PhpAlmacenSesionEjercicio implements AlmacenSesionEjercicio
                 'codigoOposicion' => $sesion->contextoUsuario()->codigoOposicion(),
             ],
             'config' => [
-                'tema' => $sesion->config()->tema(),
-                'dificultad' => $sesion->config()->dificultad(),
-                'banderas' => $sesion->config()->banderas(),
+                'tema' => $sesion->config()->topicId(),
+                'dificultad' => $sesion->config()->difficulty(),
+                'banderas' => $sesion->config()->flags(),
             ],
             'pasoActual' => $sesion->pasoActual()->value,
             // these are intentionally raw; keep DTO-ish, not domain objects
@@ -263,7 +263,7 @@ final class PhpAlmacenSesionEjercicio implements AlmacenSesionEjercicio
             $banderas = [];
         }
 
-        $config = new ConfigEjercicio($tema, $dificultad, $banderas);
+        $config = new ExerciseConfig($tema, $dificultad, $banderas);
 
         $rawStep = (string) ($bruto['pasoActual'] ?? ExerciseStep::first()->value);
         $currentStep = ExerciseStep::from($rawStep);

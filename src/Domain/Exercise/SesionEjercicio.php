@@ -13,7 +13,7 @@ final class SesionEjercicio
 
     private ContextoUsuario $contextoUsuario;
 
-    private ConfigEjercicio $config;
+    private ExerciseConfig $config;
     private ExerciseStep $currentStep;
 
     /** @var array<string, mixed> */
@@ -29,7 +29,7 @@ final class SesionEjercicio
         string $sesionId,
         TipoEjercicio $tipoEjercicio,
         ContextoUsuario $contextoUsuario,
-        ConfigEjercicio $config,
+        ExerciseConfig $config,
         ExerciseStep $currentStep,
         \DateTimeImmutable $fechaCreacion,
         \DateTimeImmutable $fechaActualizacion,
@@ -55,7 +55,7 @@ final class SesionEjercicio
     public static function iniciar(
         TipoEjercicio $TipoEjercicio,
         ContextoUsuario $contextoUsuario,
-        ConfigEjercicio $config,
+        ExerciseConfig $config,
         ExerciseStep $firstStep
     ): self {
         $now = new \DateTimeImmutable('now');
@@ -86,7 +86,7 @@ final class SesionEjercicio
         return $this->contextoUsuario;
     }
 
-    public function config(): ConfigEjercicio
+    public function config(): ExerciseConfig
     {
         return $this->config;
     }
