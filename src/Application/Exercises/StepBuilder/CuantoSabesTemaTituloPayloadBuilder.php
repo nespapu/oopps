@@ -3,7 +3,7 @@
 namespace App\Application\Exercises\StepBuilder;
 
 use App\Application\Exercises\Payload\ClavesPasoPayload;
-use App\Domain\Exercise\Dificultad;
+use App\Domain\Exercise\Difficulty;
 use App\Domain\Exercise\ModoPista;
 use App\Domain\Exercise\ExerciseStep;
 use App\Domain\Exercise\PistaService;
@@ -20,9 +20,9 @@ final class CuantoSabesTemaTituloPayloadBuilder {
     public function construir(SesionEjercicio $sesion) : array
     {
         $codigoOposicion = $sesion->contextoUsuario()->codigoOposicion();
-        $numeracion = $sesion->config()->tema();
+        $numeracion = $sesion->config()->topicId();
         $titulo = $this->temaRepositorio->buscarTituloPorCodigoOposicionYOrden($codigoOposicion, $numeracion);
-        $dificultadEnum = Dificultad::from($sesion->config()->dificultad());
+        $dificultadEnum = Difficulty::from($sesion->config()->difficulty());
         $modoPista = ModoPista::PALABRAS;
 
         $pista = $titulo === null
@@ -43,8 +43,8 @@ final class CuantoSabesTemaTituloPayloadBuilder {
             ClavesPasoPayload::META => [
                 "numeracionTema" => $numeracion,
                 "tituloTema" => $titulo,
-                "gradoDificultad" => $sesion->config()->dificultad(),
-                "banderas" => $sesion->config()->banderas(),
+                "gradoDificultad" => $sesion->config()->difficulty(),
+                "banderas" => $sesion->config()->flags(),
                 "tipoPista" => $modoPista->value
             ],
             "expected" => [

@@ -10,7 +10,7 @@ use App\Application\Http\Redirector;
 use App\Application\Routing\UrlGenerator;
 use App\Core\View;
 use App\Domain\Exercise\ExerciseConfig;
-use App\Domain\Exercise\Dificultad;
+use App\Domain\Exercise\Difficulty;
 use App\Domain\Exercise\ExerciseStep;
 use App\Domain\Exercise\TipoEjercicio;
 use App\Domain\Temas\TemaRepository;
@@ -62,7 +62,7 @@ final class CuantoSabesTemaConfigController
             $this->redirector->redirect($this->cuantoSabesTemaPaths->config());
         }
 
-        $dificultadEnum = Dificultad::tryFrom($dificultad);
+        $dificultadEnum = Difficulty::tryFrom($dificultad);
         if ($dificultadEnum === null) {
             $this->flash->set('error', 'Dificultad inválida.');
             $this->redirector->redirect($this->cuantoSabesTemaPaths->config());

@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Exercise;
 
+use SebastianBergmann\Diff\Diff;
+
 final class PistaService
 {
     private const CHARSET = 'UTF-8';
@@ -20,7 +22,7 @@ final class PistaService
 
     public function getPista(
         string $valor,
-        Dificultad $dificultad,
+        Difficulty $dificultad,
         ModoPista $modo
     ): string {
         if (trim($valor) === '') {
@@ -51,16 +53,16 @@ final class PistaService
     private function generarPistaPorPalabras(
         array $palabras,
         array $indicesContenido,
-        Dificultad $dificultad,
+        Difficulty $dificultad,
         string $valorOriginal
     ): string {
         $total = count($indicesContenido);
 
         return match ($dificultad) {
-            Dificultad::MUY_FACIL => $this->palabrasMuyFacil($palabras, $indicesContenido, $total, $valorOriginal),
-            Dificultad::FACIL     => $this->palabrasFacil($palabras, $indicesContenido, $total, $valorOriginal),
-            Dificultad::MEDIA     => $this->palabrasMedia($palabras, $indicesContenido, $total, $valorOriginal),
-            Dificultad::DIFICIL   => $this->palabrasDificil($palabras, $indicesContenido, $total, $valorOriginal),
+            Difficulty::VERY_EASY => $this->palabrasMuyFacil($palabras, $indicesContenido, $total, $valorOriginal),
+            Difficulty::EASY     => $this->palabrasFacil($palabras, $indicesContenido, $total, $valorOriginal),
+            Difficulty::MEDIUM     => $this->palabrasMedia($palabras, $indicesContenido, $total, $valorOriginal),
+            Difficulty::HARD   => $this->palabrasDificil($palabras, $indicesContenido, $total, $valorOriginal),
         };
     }
 
@@ -153,13 +155,13 @@ final class PistaService
      * @param string[] $palabras
      * @param int[] $indicesContenido
      */
-    private function generarPistaPorLetras(array $palabras, array $indicesContenido, Dificultad $dificultad): string
+    private function generarPistaPorLetras(array $palabras, array $indicesContenido, Difficulty $dificultad): string
     {
         $enmascarador = match ($dificultad) {
-            Dificultad::MUY_FACIL => fn(string $p): string => $this->enmascararUltimaLetra($p),
-            Dificultad::FACIL     => fn(string $p): string => $this->enmascararLetrasSegundaMitad($p),
-            Dificultad::MEDIA     => fn(string $p): string => $this->enmascararPrimeraUltimaLetra($p),
-            Dificultad::DIFICIL   => fn(string $p): string => $this->enmascararTodasLetrasSalvoPrimera($p),
+            Difficulty::VERY_EASY => fn(string $p): string => $this->enmascararUltimaLetra($p),
+            Difficulty::EASY     => fn(string $p): string => $this->enmascararLetrasSegundaMitad($p),
+            Difficulty::MEDIUM     => fn(string $p): string => $this->enmascararPrimeraUltimaLetra($p),
+            Difficulty::HARD   => fn(string $p): string => $this->enmascararTodasLetrasSalvoPrimera($p),
         };
 
         foreach ($indicesContenido as $indice) {

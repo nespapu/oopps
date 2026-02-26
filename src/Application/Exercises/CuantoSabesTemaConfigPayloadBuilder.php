@@ -3,7 +3,7 @@
 namespace App\Application\Exercises;
 
 use App\Domain\Auth\ContextoUsuario;
-use App\Domain\Exercise\Dificultad;
+use App\Domain\Exercise\Difficulty;
 use App\Domain\Temas\TemaRepository;
 
 final class CuantoSabesTemaConfigPayloadBuilder
@@ -19,7 +19,7 @@ final class CuantoSabesTemaConfigPayloadBuilder
             'gradosDificultad' => $this->construirOpcionesDificultad(),
             'defecto' => [
                 'tema' => 0,
-                'gradoDificultad' => Dificultad::MEDIA->value,
+                'gradoDificultad' => Difficulty::MEDIUM->value,
             ],
         ];
     }
@@ -48,11 +48,11 @@ final class CuantoSabesTemaConfigPayloadBuilder
     private function construirOpcionesDificultad(): array
     {
         return array_map(
-            static fn(Dificultad $d) => [
+            static fn(Difficulty $d) => [
                 'valor' => $d->value,
-                'etiqueta' => $d->etiqueta(),
+                'etiqueta' => $d->label(),
             ],
-            Dificultad::cases()
+            Difficulty::cases()
         );
     }
 }
