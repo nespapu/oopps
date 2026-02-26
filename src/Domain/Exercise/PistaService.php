@@ -1,310 +1,312 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Domain\Exercise;
 
-final class PistaService
+final class HintService
 {
     private const CHARSET = 'UTF-8';
-    private const MASCARA_PALABRA = '____';
-    private const MASCARA_LETRA = '_';
+    private const WORD_MASK = '____';
+    private const LETTER_MASK = '_';
 
     /**
-     * Regla de dominio: Las palabras de enlace (artículos, preposiciones, conjunciones)
-     * nunca son enmascaradas ni se tienen en cuenta como palabras con contenido semántico significativo.
+     * Domain rule: Linking words (articles, prepositions, conjunctions)
+     * are never masked and are not considered semantically meaningful content words.
      */
-    private const PALABRAS_DE_ENLACE = [
+    private const STOP_WORDS = [
         'a', 'al', 'con', 'de', 'del', 'el', 'en',
         'la', 'las', 'los', 'para', 'por', 'sin', 'y',
     ];
 
-    public function getPista(
-        string $valor,
-        Difficulty $dificultad,
-        HintMode $modo
+    public function getHint(
+        string $value,
+        Difficulty $difficulty,
+        HintMode $mode
     ): string {
-        if (trim($valor) === '') {
+        if (trim($value) === '') {
             return '';
         }
 
-        $valor = $this->normalizarEspacios($valor);
+        $value = $this->normalizeSpaces($value);
 
-        $palabras = explode(' ', $valor);
-        $indicesContenido = $this->getIndicesPalabrasContenidoSemantico($palabras);
+        $words = explode(' ', $value);
+        $contentWordIndexes = $this->getSemanticContentWordIndexes($words);
 
-        return match ($modo) {
-            HintMode::WORDS => $this->generarPistaPorPalabras($palabras, $indicesContenido, $dificultad, $valor),
-            HintMode::LETTERS   => $this->generarPistaPorLetras($palabras, $indicesContenido, $dificultad),
+        return match ($mode) {
+            HintMode::WORDS   => $this->generateWordHint($words, $contentWordIndexes, $difficulty, $value),
+            HintMode::LETTERS => $this->generateLetterHint($words, $contentWordIndexes, $difficulty),
         };
     }
 
-    private function normalizarEspacios(string $valor): string
+    private function normalizeSpaces(string $value): string
     {
-        $valor = trim($valor);
-        return preg_replace('/\s+/', ' ', $valor) ?? $valor;
+        $value = trim($value);
+        return preg_replace('/\s+/', ' ', $value) ?? $value;
     }
 
     /**
-     * @param string[] $palabras
-     * @param int[] $indicesContenido
+     * @param string[] $words
+     * @param int[] $contentWordIndexes
      */
-    private function generarPistaPorPalabras(
-        array $palabras,
-        array $indicesContenido,
-        Difficulty $dificultad,
-        string $valorOriginal
+    private function generateWordHint(
+        array $words,
+        array $contentWordIndexes,
+        Difficulty $difficulty,
+        string $originalValue
     ): string {
-        $total = count($indicesContenido);
+        $total = count($contentWordIndexes);
 
-        return match ($dificultad) {
-            Difficulty::VERY_EASY => $this->palabrasMuyFacil($palabras, $indicesContenido, $total, $valorOriginal),
-            Difficulty::EASY     => $this->palabrasFacil($palabras, $indicesContenido, $total, $valorOriginal),
-            Difficulty::MEDIUM     => $this->palabrasMedia($palabras, $indicesContenido, $total, $valorOriginal),
-            Difficulty::HARD   => $this->palabrasDificil($palabras, $indicesContenido, $total, $valorOriginal),
+        return match ($difficulty) {
+            Difficulty::VERY_EASY => $this->veryEasyWords($words, $contentWordIndexes, $total, $originalValue),
+            Difficulty::EASY      => $this->easyWords($words, $contentWordIndexes, $total, $originalValue),
+            Difficulty::MEDIUM    => $this->mediumWords($words, $contentWordIndexes, $total, $originalValue),
+            Difficulty::HARD      => $this->hardWords($words, $contentWordIndexes, $total, $originalValue),
         };
     }
 
     /**
-     * @param string[] $palabras
-     * @param int[] $indicesContenido
+     * @param string[] $words
+     * @param int[] $contentWordIndexes
      */
-    private function palabrasMuyFacil(array $palabras, array $indicesContenido, int $total, string $valorOriginal): string
+    private function veryEasyWords(array $words, array $contentWordIndexes, int $total, string $originalValue): string
     {
         if ($total === 0) {
-            return $valorOriginal;
+            return $originalValue;
         }
 
-        $posicionMedia = intdiv($total, 2);
-        $indice = $indicesContenido[$posicionMedia];
+        $middlePosition = intdiv($total, 2);
+        $index = $contentWordIndexes[$middlePosition];
 
-        $palabras[$indice] = $this->enmascararNucleoParaPalabras($palabras[$indice]);
+        $words[$index] = $this->maskWordCoreForWords($words[$index]);
 
-        return implode(' ', $palabras);
+        return implode(' ', $words);
     }
 
     /**
-     * @param string[] $palabras
-     * @param int[] $indicesContenido
+     * @param string[] $words
+     * @param int[] $contentWordIndexes
      */
-    private function palabrasFacil(array $palabras, array $indicesContenido, int $total, string $valorOriginal): string
+    private function easyWords(array $words, array $contentWordIndexes, int $total, string $originalValue): string
     {
         if ($total < 2) {
-            return $valorOriginal;
+            return $originalValue;
         }
 
-        $posicionIzq = intdiv($total - 1, 2);
-        $posicionDcha = $posicionIzq + 1;
+        $leftPosition = intdiv($total - 1, 2);
+        $rightPosition = $leftPosition + 1;
 
-        $indiceIzq = $indicesContenido[$posicionIzq];
-        $indiceDcha = $indicesContenido[$posicionDcha];
+        $leftIndex = $contentWordIndexes[$leftPosition];
+        $rightIndex = $contentWordIndexes[$rightPosition];
 
-        $palabras[$indiceIzq] = $this->enmascararNucleoParaPalabras($palabras[$indiceIzq]);
-        $palabras[$indiceDcha] = $this->enmascararNucleoParaPalabras($palabras[$indiceDcha]);
+        $words[$leftIndex] = $this->maskWordCoreForWords($words[$leftIndex]);
+        $words[$rightIndex] = $this->maskWordCoreForWords($words[$rightIndex]);
 
-        return implode(' ', $palabras);
+        return implode(' ', $words);
     }
 
     /**
-     * @param string[] $palabras
-     * @param int[] $indicesContenido
+     * @param string[] $words
+     * @param int[] $contentWordIndexes
      */
-    private function palabrasMedia(array $palabras, array $indicesContenido, int $total, string $valorOriginal): string
+    private function mediumWords(array $words, array $contentWordIndexes, int $total, string $originalValue): string
     {
         if ($total <= 2) {
-            return $valorOriginal;
+            return $originalValue;
         }
 
-        $indicePrimera = $indicesContenido[0];
-        $indiceUltima  = $indicesContenido[$total - 1];
+        $firstIndex = $contentWordIndexes[0];
+        $lastIndex  = $contentWordIndexes[$total - 1];
 
-        foreach ($indicesContenido as $indice) {
-            if ($indice === $indicePrimera || $indice === $indiceUltima) {
+        foreach ($contentWordIndexes as $index) {
+            if ($index === $firstIndex || $index === $lastIndex) {
                 continue;
             }
-            $palabras[$indice] = $this->enmascararNucleoParaPalabras($palabras[$indice]);
+            $words[$index] = $this->maskWordCoreForWords($words[$index]);
         }
 
-        return implode(' ', $palabras);
+        return implode(' ', $words);
     }
 
     /**
-     * @param string[] $palabras
-     * @param int[] $indicesContenido
+     * @param string[] $words
+     * @param int[] $contentWordIndexes
      */
-    private function palabrasDificil(array $palabras, array $indicesContenido, int $total, string $valorOriginal): string
+    private function hardWords(array $words, array $contentWordIndexes, int $total, string $originalValue): string
     {
         if ($total <= 1) {
-            return $valorOriginal;
+            return $originalValue;
         }
 
-        $indicePrimera = $indicesContenido[0];
+        $firstIndex = $contentWordIndexes[0];
 
-        foreach ($indicesContenido as $indice) {
-            if ($indice === $indicePrimera) {
+        foreach ($contentWordIndexes as $index) {
+            if ($index === $firstIndex) {
                 continue;
             }
-            $palabras[$indice] = $this->enmascararNucleoParaPalabras($palabras[$indice]);
+            $words[$index] = $this->maskWordCoreForWords($words[$index]);
         }
 
-        return implode(' ', $palabras);
+        return implode(' ', $words);
     }
 
     /**
-     * @param string[] $palabras
-     * @param int[] $indicesContenido
+     * @param string[] $words
+     * @param int[] $contentWordIndexes
      */
-    private function generarPistaPorLetras(array $palabras, array $indicesContenido, Difficulty $dificultad): string
+    private function generateLetterHint(array $words, array $contentWordIndexes, Difficulty $difficulty): string
     {
-        $enmascarador = match ($dificultad) {
-            Difficulty::VERY_EASY => fn(string $p): string => $this->enmascararUltimaLetra($p),
-            Difficulty::EASY     => fn(string $p): string => $this->enmascararLetrasSegundaMitad($p),
-            Difficulty::MEDIUM     => fn(string $p): string => $this->enmascararPrimeraUltimaLetra($p),
-            Difficulty::HARD   => fn(string $p): string => $this->enmascararTodasLetrasSalvoPrimera($p),
+        $masker = match ($difficulty) {
+            Difficulty::VERY_EASY => fn(string $w): string => $this->maskLastLetter($w),
+            Difficulty::EASY      => fn(string $w): string => $this->maskSecondHalfLetters($w),
+            Difficulty::MEDIUM    => fn(string $w): string => $this->maskFirstAndLastLetter($w),
+            Difficulty::HARD      => fn(string $w): string => $this->maskAllLettersExceptFirst($w),
         };
 
-        foreach ($indicesContenido as $indice) {
-            $palabras[$indice] = $this->enmascararNucleoParaLetras($palabras[$indice], $enmascarador);
+        foreach ($contentWordIndexes as $index) {
+            $words[$index] = $this->maskWordCoreForLetters($words[$index], $masker);
         }
 
-        return implode(' ', $palabras);
+        return implode(' ', $words);
     }
 
     /**
-     * Devuelve el índice de las palabras consideradas como semánticamente significativas,
-     * excluyendo las palabras de enlace de ser enmascaradas o contadas.
+     * Returns the indexes of semantically meaningful content words,
+     * excluding linking words from being masked or counted.
      *
-     * @param string[] $palabras
+     * @param string[] $words
      * @return int[]
      */
-    private function getIndicesPalabrasContenidoSemantico(array $palabras): array
+    private function getSemanticContentWordIndexes(array $words): array
     {
-        $indices = [];
+        $indexes = [];
 
-        foreach ($palabras as $i => $palabra) {
-            if ($palabra === '') {
+        foreach ($words as $i => $word) {
+            if ($word === '') {
                 continue;
             }
 
-            if ($this->esPalabraEnlace($palabra)) {
+            if ($this->isStopWord($word)) {
                 continue;
             }
 
-            $indices[] = $i;
+            $indexes[] = $i;
         }
 
-        return $indices;
+        return $indexes;
     }
 
-    private function esPalabraEnlace(string $palabra): bool
+    private function isStopWord(string $word): bool
     {
-        $normalizada = $this->normalizarPalabraParaComparacion($palabra);
+        $normalized = $this->normalizeWordForComparison($word);
 
-        if ($normalizada === '') {
+        if ($normalized === '') {
             return false;
         }
 
-        return in_array($normalizada, self::PALABRAS_DE_ENLACE, true);
+        return in_array($normalized, self::STOP_WORDS, true);
     }
 
     /**
-     * Normaliza una palabra para ser comparada con las palabras de enlace:
-     * - Convierte a minúsculas
-     * - Quita símbolos de puntuación iniciales o finales, mantiene los de en medio
-     * - Conserva los acentos
+     * Normalizes a word for comparison against stop words:
+     * - Lowercases it
+     * - Removes leading/trailing punctuation, keeps inner punctuation
+     * - Preserves accents
      */
-    private function normalizarPalabraParaComparacion(string $palabra): string
+    private function normalizeWordForComparison(string $word): string
     {
-        $palabra = mb_strtolower($palabra, self::CHARSET);
-        $palabra = preg_replace('/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/u', '', $palabra);
+        $word = mb_strtolower($word, self::CHARSET);
+        $word = preg_replace('/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/u', '', $word);
 
-        return $palabra ?? '';
+        return $word ?? '';
     }
 
-    private function enmascararUltimaLetra(string $palabra): string
+    private function maskLastLetter(string $word): string
     {
-        $longitud = mb_strlen($palabra, self::CHARSET);
+        $length = mb_strlen($word, self::CHARSET);
 
-        if ($longitud <= 1) {
-            return $palabra;
+        if ($length <= 1) {
+            return $word;
         }
 
-        return mb_substr($palabra, 0, $longitud - 1, self::CHARSET) . self::MASCARA_LETRA;
+        return mb_substr($word, 0, $length - 1, self::CHARSET) . self::LETTER_MASK;
     }
 
-    private function enmascararLetrasSegundaMitad(string $palabra): string
+    private function maskSecondHalfLetters(string $word): string
     {
-        $longitud = mb_strlen($palabra, self::CHARSET);
+        $length = mb_strlen($word, self::CHARSET);
 
-        if ($longitud <= 1) {
-            return $palabra;
+        if ($length <= 1) {
+            return $word;
         }
 
-        $contadorVisibles = intdiv($longitud + 1, 2);
-        $contadorEnmascaradas = $longitud - $contadorVisibles;
+        $visibleCount = intdiv($length + 1, 2);
+        $maskedCount = $length - $visibleCount;
 
-        return mb_substr($palabra, 0, $contadorVisibles, self::CHARSET)
-            . str_repeat(self::MASCARA_LETRA, $contadorEnmascaradas);
+        return mb_substr($word, 0, $visibleCount, self::CHARSET)
+            . str_repeat(self::LETTER_MASK, $maskedCount);
     }
 
-    private function enmascararPrimeraUltimaLetra(string $palabra): string
+    private function maskFirstAndLastLetter(string $word): string
     {
-        $longitud = mb_strlen($palabra, self::CHARSET);
+        $length = mb_strlen($word, self::CHARSET);
 
-        if ($longitud <= 2) {
-            return $palabra;
+        if ($length <= 2) {
+            return $word;
         }
 
-        $primera = mb_substr($palabra, 0, 1, self::CHARSET);
-        $ultima  = mb_substr($palabra, $longitud - 1, 1, self::CHARSET);
+        $first = mb_substr($word, 0, 1, self::CHARSET);
+        $last  = mb_substr($word, $length - 1, 1, self::CHARSET);
 
-        return $primera . str_repeat(self::MASCARA_LETRA, $longitud - 2) . $ultima;
+        return $first . str_repeat(self::LETTER_MASK, $length - 2) . $last;
     }
 
-    private function enmascararTodasLetrasSalvoPrimera(string $palabra): string
+    private function maskAllLettersExceptFirst(string $word): string
     {
-        $longitud = mb_strlen($palabra, self::CHARSET);
+        $length = mb_strlen($word, self::CHARSET);
 
-        if ($longitud <= 1) {
-            return $palabra;
+        if ($length <= 1) {
+            return $word;
         }
 
-        $primera = mb_substr($palabra, 0, 1, self::CHARSET);
+        $first = mb_substr($word, 0, 1, self::CHARSET);
 
-        return $primera . str_repeat(self::MASCARA_LETRA, $longitud - 1);
+        return $first . str_repeat(self::LETTER_MASK, $length - 1);
     }
 
-    private function enmascararNucleoParaLetras(string $palabra, callable $enmascarador): string
+    private function maskWordCoreForLetters(string $word, callable $masker): string
     {
-        [$prefijo, $nucleo, $sufijo] = $this->dividirPalabra($palabra);
+        [$prefix, $core, $suffix] = $this->splitWord($word);
 
-        $nucleoEnmascarado = $enmascarador($nucleo);
+        $maskedCore = $masker($core);
 
-        return $prefijo . $nucleoEnmascarado . $sufijo;
+        return $prefix . $maskedCore . $suffix;
     }
 
-    private function enmascararNucleoParaPalabras(string $palabra): string
+    private function maskWordCoreForWords(string $word): string
     {
-        [$prefijo, $nucleo, $sufijo] = $this->dividirPalabra($palabra);
+        [$prefix, $core, $suffix] = $this->splitWord($word);
 
-        // Enmascar solo si hay un núcleo significativo
-        if ($nucleo === '' || !preg_match('/[\p{L}\p{N}]/u', $nucleo)) {
-            return $palabra;
+        // Mask only if there is a meaningful core
+        if ($core === '' || !preg_match('/[\p{L}\p{N}]/u', $core)) {
+            return $word;
         }
 
-        return $prefijo . self::MASCARA_PALABRA . $sufijo;
+        return $prefix . self::WORD_MASK . $suffix;
     }
 
-    private function dividirPalabra(string $palabra): array
+    /**
+     * @return array{0:string,1:string,2:string}
+     */
+    private function splitWord(string $word): array
     {
-        // prefijo: caracter no alfanumérico al principio
-        // núcleo:    caracteres alfanuméricos
-        // sufijo: ncaracter no alfanumérico al final
-        if (preg_match('/^([^\p{L}\p{N}]*)([\p{L}\p{N}]+)([^\p{L}\p{N}]*)$/u', $palabra, $m) !== 1) {
-            return ['', $palabra, ''];
+        // prefix: non-alphanumeric characters at the start
+        // core:    alphanumeric characters
+        // suffix: non-alphanumeric characters at the end
+        if (preg_match('/^([^\p{L}\p{N}]*)([\p{L}\p{N}]+)([^\p{L}\p{N}]*)$/u', $word, $m) !== 1) {
+            return ['', $word, ''];
         }
 
         return [$m[1], $m[2], $m[3]];
     }
-
 }
-?>

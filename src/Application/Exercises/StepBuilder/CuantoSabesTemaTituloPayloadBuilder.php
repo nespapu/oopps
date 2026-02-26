@@ -6,7 +6,7 @@ use App\Application\Exercises\Payload\ClavesPasoPayload;
 use App\Domain\Exercise\Difficulty;
 use App\Domain\Exercise\HintMode;
 use App\Domain\Exercise\ExerciseStep;
-use App\Domain\Exercise\PistaService;
+use App\Domain\Exercise\HintService;
 use App\Domain\Exercise\SesionEjercicio;
 use App\Domain\Temas\TemaRepository;
 
@@ -14,7 +14,7 @@ final class CuantoSabesTemaTituloPayloadBuilder {
     
     public function __construct(
         private TemaRepository $temaRepositorio,
-        private PistaService $pistaServicio
+        private HintService $pistaServicio
     ) {}
 
     public function construir(SesionEjercicio $sesion) : array
@@ -27,7 +27,7 @@ final class CuantoSabesTemaTituloPayloadBuilder {
 
         $pista = $titulo === null
             ? '(sin pista generada)'
-            : $this->pistaServicio->getPista($titulo, $dificultadEnum, $modoPista);
+            : $this->pistaServicio->getHint($titulo, $dificultadEnum, $modoPista);
 
         return [
             "step" => ExerciseStep::TITLE->value,

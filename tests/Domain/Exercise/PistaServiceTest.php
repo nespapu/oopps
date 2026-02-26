@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Tests\Domain\Exercise;
 
 use PHPUnit\Framework\TestCase;
-use App\Domain\Exercise\PistaService;
+use App\Domain\Exercise\HintService;
 use App\Domain\Exercise\HintMode;
 use App\Domain\Exercise\Difficulty;
 
@@ -15,9 +15,9 @@ final class PistaServiceTest extends TestCase
      */
     public function testGetPista_modoLetras(string $valor, Difficulty $dificultad, string $esperado): void
     {
-        $servicio = new PistaService();
+        $servicio = new HintService();
 
-        $actual = $servicio->getPista($valor, $dificultad, HintMode::LETTERS);
+        $actual = $servicio->getHint($valor, $dificultad, HintMode::LETTERS);
 
         self::assertSame($esperado, $actual);
     }
@@ -27,9 +27,9 @@ final class PistaServiceTest extends TestCase
      */
     public function testGetPista_wordsMode(string $valor, Difficulty $dificultad, string $esperado): void
     {
-        $servicio = new PistaService();
+        $servicio = new HintService();
 
-        $actual = $servicio->getPista($valor, $dificultad, HintMode::WORDS);
+        $actual = $servicio->getHint($valor, $dificultad, HintMode::WORDS);
 
         self::assertSame($esperado, $actual);
     }

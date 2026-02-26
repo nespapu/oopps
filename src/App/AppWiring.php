@@ -32,7 +32,7 @@ use App\Controllers\CuantoSabesTemaConfigController;
 use App\Controllers\CuantoSabesTemaTituloController;
 use App\Controllers\Dev\DevSesionEjercicioController;
 use App\Domain\Auth\UsuarioRepository;
-use App\Domain\Exercise\PistaService;
+use App\Domain\Exercise\HintService;
 use App\Domain\Temas\TemaRepository;
 use App\Infrastructure\Auth\DefaultAuthService;
 use App\Infrastructure\Flash\SessionFlashMessenger;
@@ -103,7 +103,7 @@ final class AppWiring
     // =========================================================================
     // Domain services
     // =========================================================================
-    private ?PistaService $pistaServicio = null;
+    private ?HintService $pistaServicio = null;
 
     // =========================================================================
     // Infrastructure (IO)
@@ -418,10 +418,10 @@ final class AppWiring
     // =========================================================================
     // Domain services
     // =========================================================================
-    private function pistaServicio(): PistaService
+    private function pistaServicio(): HintService
     {
         if ($this->pistaServicio === null) {
-            $this->pistaServicio = new PistaService();
+            $this->pistaServicio = new HintService();
         }
 
         return $this->pistaServicio;

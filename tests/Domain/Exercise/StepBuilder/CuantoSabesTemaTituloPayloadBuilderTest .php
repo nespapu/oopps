@@ -9,7 +9,7 @@ use App\Application\Exercises\StepBuilder\CuantoSabesTemaTituloPayloadBuilder;
 use App\Application\Exercises\Payload\ClavesPasoPayload;
 use App\Domain\Auth\ContextoUsuario;
 use App\Domain\Exercise\HintMode;
-use App\Domain\Exercise\PistaService;
+use App\Domain\Exercise\HintService;
 use App\Domain\Exercise\SesionEjercicio;
 use App\Domain\Exercise\ExerciseStep;
 use Tests\Domain\Exercise\Doubles\FakeTemaRepository;
@@ -19,7 +19,7 @@ final class CuantoSabesTemaTituloPayloadBuilderTest extends TestCase
     public function testConstruyeElPayloadConPistaYMetadatos(): void
     {
         $repo = new FakeTemaRepository('Sistemas operativos. Gestión de procesos', null);
-        $pistaServicio = new PistaService();
+        $pistaServicio = new HintService();
 
         $builder = new CuantoSabesTemaTituloPayloadBuilder($repo, $pistaServicio);
 
@@ -55,7 +55,7 @@ final class CuantoSabesTemaTituloPayloadBuilderTest extends TestCase
     public function testUsaPistaDeRespaldoSiNoHayTitulo(): void
     {
         $repo = new FakeTemaRepository(null, null);
-        $pistaServicio = new PistaService();
+        $pistaServicio = new HintService();
 
         $builder = new CuantoSabesTemaTituloPayloadBuilder($repo, $pistaServicio);
 
