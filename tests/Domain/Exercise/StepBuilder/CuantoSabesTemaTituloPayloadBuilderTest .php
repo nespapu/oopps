@@ -10,7 +10,7 @@ use App\Application\Exercises\Payload\ClavesPasoPayload;
 use App\Domain\Auth\ContextoUsuario;
 use App\Domain\Exercise\HintMode;
 use App\Domain\Exercise\HintService;
-use App\Domain\Exercise\SesionEjercicio;
+use App\Domain\Exercise\ExerciseSession;
 use App\Domain\Exercise\ExerciseStep;
 use Tests\Domain\Exercise\Doubles\FakeTemaRepository;
 
@@ -23,7 +23,7 @@ final class CuantoSabesTemaTituloPayloadBuilderTest extends TestCase
 
         $builder = new CuantoSabesTemaTituloPayloadBuilder($repo, $pistaServicio);
 
-        $session = $this->createMock(SesionEjercicio::class);
+        $session = $this->createMock(ExerciseSession::class);
 
         $session->method('contextoUsuario')
                 ->willReturn($this->contextoUsuarioDummy());
@@ -59,7 +59,7 @@ final class CuantoSabesTemaTituloPayloadBuilderTest extends TestCase
 
         $builder = new CuantoSabesTemaTituloPayloadBuilder($repo, $pistaServicio);
 
-        $session = $this->createMock(SesionEjercicio::class);
+        $session = $this->createMock(ExerciseSession::class);
         $session->method('contextoUsuario')
                 ->willReturn($this->contextoUsuarioDummy());
 

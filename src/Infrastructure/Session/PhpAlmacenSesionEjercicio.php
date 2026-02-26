@@ -8,7 +8,7 @@ use App\Application\Exercises\AlmacenSesionEjercicio;
 use App\Application\Session\SessionStore;
 use App\Domain\Auth\ContextoUsuario;
 use App\Domain\Exercise\ExerciseConfig;
-use App\Domain\Exercise\SesionEjercicio;
+use App\Domain\Exercise\ExerciseSession;
 use App\Domain\Exercise\ExerciseStep;
 use App\Domain\Exercise\ExerciseType;
 
@@ -25,16 +25,16 @@ final class PhpAlmacenSesionEjercicio implements AlmacenSesionEjercicio
         ContextoUsuario $contextoUsuario,
         ExerciseConfig $config,
         ExerciseStep $firstStep
-    ): SesionEjercicio {
-        $sesion = SesionEjercicio::iniciar($tipoEjercicio, $contextoUsuario, $config, $firstStep);
+    ): ExerciseSession {
+        $sesion = ExerciseSession::start($tipoEjercicio, $contextoUsuario, $config, $firstStep);
 
         $this->guardar($sesion);
-        $this->setSesionIdActual($sesion->sesionId());
+        $this->setSesionIdActual($sesion->sessionId());
 
         return $sesion;
     }
 
-    public function get(string $sesionId): ?SesionEjercicio
+    public function get(string $sesionId): ?ExerciseSession
     {
         $sesionId = trim($sesionId);
         if ($sesionId === '') {
@@ -55,7 +55,7 @@ final class PhpAlmacenSesionEjercicio implements AlmacenSesionEjercicio
         }
     }
 
-    public function getSesionActual(): ?SesionEjercicio
+    public function getSesionActual(): ?ExerciseSession
     {
         $sesionIdActual = $this->getSesionIdActual();
         if ($sesionIdActual === null) {
@@ -65,10 +65,10 @@ final class PhpAlmacenSesionEjercicio implements AlmacenSesionEjercicio
         return $this->get($sesionIdActual);
     }
 
-    public function guardar(SesionEjercicio $sesion): void
+    public function guardar(ExerciseSession $sesion): void
     {
         $data = $this->leerAlmacen();
-        $data['sesiones'][$sesion->sesionId()] = $this->deshidratar($sesion);
+        $data['sesiones'][$sesion->sessionId()] = $this->deshidratar($sesion);
 
         $this->escribirAlmacen($data);
     }
@@ -214,33 +214,33 @@ final class PhpAlmacenSesionEjercicio implements AlmacenSesionEjercicio
     /**
      * @return array<string, mixed>
      */
-    private function deshidratar(SesionEjercicio $sesion): array
+    private function deshidratar(ExerciseSession $sesion): array
     {
         return [
-            'sesionId' => $sesion->sesionId(),
+            'sesionId' => $sesion->sessionId(),
             'tipoEjercicio' => [
-                'slug' => $sesion->tipoEjercicio()->slug(),
-                'nombre' => $sesion->tipoEjercicio()->name(),
+                'slug' => $sesion->exerciseType()->slug(),
+                'nombre' => $sesion->exerciseType()->name(),
             ],
             'contextoUsuario' => [
-                'usuario' => $sesion->contextoUsuario()->usuario(),
-                'codigoOposicion' => $sesion->contextoUsuario()->codigoOposicion(),
+                'usuario' => $sesion->userContext()->usuario(),
+                'codigoOposicion' => $sesion->userContext()->codigoOposicion(),
             ],
             'config' => [
                 'tema' => $sesion->config()->topicId(),
                 'dificultad' => $sesion->config()->difficulty(),
                 'banderas' => $sesion->config()->flags(),
             ],
-            'pasoActual' => $sesion->pasoActual()->value,
+            'pasoActual' => $sesion->currentStep()->value,
             // these are intentionally raw; keep DTO-ish, not domain objects
             'respuestasPorPaso' => $this->safeArray($this->readPrivateProperty($sesion, 'respuestasPorPaso')),
             'evaluacionPorPaso' => $this->safeArray($this->readPrivateProperty($sesion, 'evaluacionPorPaso')),
-            'fechaCreacion' => $sesion->fechaCreacion()->format(\DateTimeInterface::ATOM),
-            'fechaActualizacion' => $sesion->fechaActualizacion()->format(\DateTimeInterface::ATOM),
+            'fechaCreacion' => $sesion->createdAt()->format(\DateTimeInterface::ATOM),
+            'fechaActualizacion' => $sesion->updatedAt()->format(\DateTimeInterface::ATOM),
         ];
     }
 
-    private function hidratar(array $bruto): SesionEjercicio
+    private function hidratar(array $bruto): ExerciseSession
     {
         $sesionId = (string) ($bruto['sesionId'] ?? '');
 
@@ -281,7 +281,7 @@ final class PhpAlmacenSesionEjercicio implements AlmacenSesionEjercicio
             $evaluacionPorPaso = [];
         }
 
-        return new SesionEjercicio(
+        return new ExerciseSession(
             $sesionId,
             $tipoEjercicio,
             $contextoUsuario,

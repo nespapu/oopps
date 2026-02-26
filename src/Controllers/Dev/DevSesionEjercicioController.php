@@ -52,7 +52,7 @@ final class DevSesionEjercicioController
             );
         }
 
-        $recargado = $this->almacen->get($sesion->sesionId());
+        $recargado = $this->almacen->get($sesion->sessionId());
         if ($recargado === null) {
             http_response_code(500);
             echo "ERROR: No se pudo recuperar la sesión desde el almacen.";
@@ -78,8 +78,8 @@ final class DevSesionEjercicioController
             return;
         }
 
-        $siguientePaso = $sesion->pasoActual()->next() ?? $sesion->pasoActual();
-        $sesion->moverAlPaso($siguientePaso);
+        $siguientePaso = $sesion->currentStep()->next() ?? $sesion->currentStep();
+        $sesion->moveToStep($siguientePaso);
 
         $this->almacen->guardar($sesion);
 
@@ -104,12 +104,12 @@ final class DevSesionEjercicioController
 
     private function renderHtml($sesion): void
     {
-        $sesionId = htmlspecialchars($sesion->sesionId(), ENT_QUOTES, 'UTF-8');
-        $tipoSlug = htmlspecialchars($sesion->tipoEjercicio()->slug(), ENT_QUOTES, 'UTF-8');
-        $tipoNombre = htmlspecialchars($sesion->tipoEjercicio()->nombre(), ENT_QUOTES, 'UTF-8');
-        $paso = htmlspecialchars($sesion->pasoActual()->value, ENT_QUOTES, 'UTF-8');
-        $fechaCreacion = htmlspecialchars($sesion->fechaCreacion()->format(\DateTimeInterface::ATOM), ENT_QUOTES, 'UTF-8');
-        $fechaActualizacion = htmlspecialchars($sesion->fechaActualizacion()->format(\DateTimeInterface::ATOM), ENT_QUOTES, 'UTF-8');
+        $sesionId = htmlspecialchars($sesion->sessionId(), ENT_QUOTES, 'UTF-8');
+        $tipoSlug = htmlspecialchars($sesion->exerciseType()->slug(), ENT_QUOTES, 'UTF-8');
+        $tipoNombre = htmlspecialchars($sesion->exerciseType()->name(), ENT_QUOTES, 'UTF-8');
+        $paso = htmlspecialchars($sesion->currentStep()->value, ENT_QUOTES, 'UTF-8');
+        $fechaCreacion = htmlspecialchars($sesion->createdAt()->format(\DateTimeInterface::ATOM), ENT_QUOTES, 'UTF-8');
+        $fechaActualizacion = htmlspecialchars($sesion->updatedAt()->format(\DateTimeInterface::ATOM), ENT_QUOTES, 'UTF-8');
 
         $config = $sesion->config();
         $tema = $config->topicId();

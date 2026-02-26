@@ -31,11 +31,11 @@ final class CuantoSabesTemaTituloController
 
         $payload = $this->payloadBuilder->construir($sesion);
 
-        $evaluacion = $sesion->getEvaluacionPaso(ExerciseStep::TITLE);
+        $evaluacion = $sesion->getStepEvaluation(ExerciseStep::TITLE);
 
         View::render('exercises/CuantoSabesTemaTitulo.php', [
             'payload' => $payload,
-            'sesionId' => $sesion->sesionId(),
+            'sesionId' => $sesion->sessionId(),
             'evaluacion' => $evaluacion,
             'url' => $this->urlGenerator,
             'cuantoSabesTemaPaths' => $this->cuantoSabesTemaPaths
@@ -54,10 +54,10 @@ final class CuantoSabesTemaTituloController
 
         $evaluacion = $this->evaluacionServicio->evaluate($payload, $stepAnswer);
 
-        $sesion->setEvaluacionPaso(ExerciseStep::TITLE, $evaluacion);
+        $sesion->setStepEvaluation(ExerciseStep::TITLE, $evaluacion);
         $this->almacenSesionEjercicio->guardar($sesion);
 
-        $this->redirector->redirect($this->cuantoSabesTemaPaths->pasoTitulo($sesion->sesionId()));
+        $this->redirector->redirect($this->cuantoSabesTemaPaths->pasoTitulo($sesion->sessionId()));
     }
 
     private function buildStepAnswerFromPost(array $payload, string $step): array

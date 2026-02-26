@@ -7,7 +7,7 @@ use App\Domain\Exercise\Difficulty;
 use App\Domain\Exercise\HintMode;
 use App\Domain\Exercise\ExerciseStep;
 use App\Domain\Exercise\HintService;
-use App\Domain\Exercise\SesionEjercicio;
+use App\Domain\Exercise\ExerciseSession;
 use App\Domain\Temas\TemaRepository;
 
 final class CuantoSabesTemaTituloPayloadBuilder {
@@ -17,9 +17,9 @@ final class CuantoSabesTemaTituloPayloadBuilder {
         private HintService $pistaServicio
     ) {}
 
-    public function construir(SesionEjercicio $sesion) : array
+    public function construir(ExerciseSession $sesion) : array
     {
-        $codigoOposicion = $sesion->contextoUsuario()->codigoOposicion();
+        $codigoOposicion = $sesion->userContext()->codigoOposicion();
         $numeracion = $sesion->config()->topicId();
         $titulo = $this->temaRepositorio->buscarTituloPorCodigoOposicionYOrden($codigoOposicion, $numeracion);
         $dificultadEnum = Difficulty::from($sesion->config()->difficulty());
