@@ -4,7 +4,7 @@ namespace App\Application\Exercises\StepBuilder;
 
 use App\Application\Exercises\Payload\ClavesPasoPayload;
 use App\Domain\Exercise\Difficulty;
-use App\Domain\Exercise\ModoPista;
+use App\Domain\Exercise\HintMode;
 use App\Domain\Exercise\ExerciseStep;
 use App\Domain\Exercise\PistaService;
 use App\Domain\Exercise\SesionEjercicio;
@@ -23,7 +23,7 @@ final class CuantoSabesTemaTituloPayloadBuilder {
         $numeracion = $sesion->config()->topicId();
         $titulo = $this->temaRepositorio->buscarTituloPorCodigoOposicionYOrden($codigoOposicion, $numeracion);
         $dificultadEnum = Difficulty::from($sesion->config()->difficulty());
-        $modoPista = ModoPista::PALABRAS;
+        $modoPista = HintMode::WORDS;
 
         $pista = $titulo === null
             ? '(sin pista generada)'

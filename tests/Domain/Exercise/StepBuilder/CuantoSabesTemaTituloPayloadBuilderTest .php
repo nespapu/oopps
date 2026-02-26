@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 use App\Application\Exercises\StepBuilder\CuantoSabesTemaTituloPayloadBuilder;
 use App\Application\Exercises\Payload\ClavesPasoPayload;
 use App\Domain\Auth\ContextoUsuario;
-use App\Domain\Exercise\ModoPista;
+use App\Domain\Exercise\HintMode;
 use App\Domain\Exercise\PistaService;
 use App\Domain\Exercise\SesionEjercicio;
 use App\Domain\Exercise\ExerciseStep;
@@ -49,7 +49,7 @@ final class CuantoSabesTemaTituloPayloadBuilderTest extends TestCase
 
         $this->assertSame(16, $payload[ClavesPasoPayload::META]['numeracionTema']);
         $this->assertSame('Sistemas operativos. Gestión de procesos', $payload[ClavesPasoPayload::META]['tituloTema']);
-        $this->assertSame(ModoPista::PALABRAS->value, $payload[ClavesPasoPayload::META]['tipoPista']);
+        $this->assertSame(HintMode::WORDS->value, $payload[ClavesPasoPayload::META]['tipoPista']);
     }
 
     public function testUsaPistaDeRespaldoSiNoHayTitulo(): void

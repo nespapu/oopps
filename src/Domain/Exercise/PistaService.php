@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace App\Domain\Exercise;
 
-use SebastianBergmann\Diff\Diff;
-
 final class PistaService
 {
     private const CHARSET = 'UTF-8';
@@ -23,7 +21,7 @@ final class PistaService
     public function getPista(
         string $valor,
         Difficulty $dificultad,
-        ModoPista $modo
+        HintMode $modo
     ): string {
         if (trim($valor) === '') {
             return '';
@@ -35,8 +33,8 @@ final class PistaService
         $indicesContenido = $this->getIndicesPalabrasContenidoSemantico($palabras);
 
         return match ($modo) {
-            ModoPista::PALABRAS => $this->generarPistaPorPalabras($palabras, $indicesContenido, $dificultad, $valor),
-            ModoPista::LETRAS   => $this->generarPistaPorLetras($palabras, $indicesContenido, $dificultad),
+            HintMode::WORDS => $this->generarPistaPorPalabras($palabras, $indicesContenido, $dificultad, $valor),
+            HintMode::LETTERS   => $this->generarPistaPorLetras($palabras, $indicesContenido, $dificultad),
         };
     }
 
