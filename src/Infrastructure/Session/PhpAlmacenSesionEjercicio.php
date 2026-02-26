@@ -233,8 +233,8 @@ final class PhpAlmacenSesionEjercicio implements AlmacenSesionEjercicio
             ],
             'pasoActual' => $sesion->currentStep()->value,
             // these are intentionally raw; keep DTO-ish, not domain objects
-            'respuestasPorPaso' => $this->safeArray($this->readPrivateProperty($sesion, 'respuestasPorPaso')),
-            'evaluacionPorPaso' => $this->safeArray($this->readPrivateProperty($sesion, 'evaluacionPorPaso')),
+            'respuestasPorPaso' => $this->safeArray($this->readPrivateProperty($sesion, 'answersByStep')),
+            'evaluacionPorPaso' => $this->safeArray($this->readPrivateProperty($sesion, 'evaluationByStep')),
             'fechaCreacion' => $sesion->createdAt()->format(\DateTimeInterface::ATOM),
             'fechaActualizacion' => $sesion->updatedAt()->format(\DateTimeInterface::ATOM),
         ];

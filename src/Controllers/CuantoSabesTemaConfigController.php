@@ -100,7 +100,7 @@ final class CuantoSabesTemaConfigController
             $firstExerciseStep
         );
 
-        $this->redirector->redirect($this->cuantoSabesTemaPaths->pasoTitulo($sesion->sesionId()));
+        $this->redirector->redirect($this->cuantoSabesTemaPaths->pasoTitulo($sesion->sessionId()));
     }
 }
 ?>
