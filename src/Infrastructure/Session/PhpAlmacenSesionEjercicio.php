@@ -10,7 +10,7 @@ use App\Domain\Auth\ContextoUsuario;
 use App\Domain\Exercise\ExerciseConfig;
 use App\Domain\Exercise\SesionEjercicio;
 use App\Domain\Exercise\ExerciseStep;
-use App\Domain\Exercise\TipoEjercicio;
+use App\Domain\Exercise\ExerciseType;
 
 final class PhpAlmacenSesionEjercicio implements AlmacenSesionEjercicio
 {
@@ -21,7 +21,7 @@ final class PhpAlmacenSesionEjercicio implements AlmacenSesionEjercicio
     ) {}
 
     public function crear(
-        TipoEjercicio $tipoEjercicio,
+        ExerciseType $tipoEjercicio,
         ContextoUsuario $contextoUsuario,
         ExerciseConfig $config,
         ExerciseStep $firstStep
@@ -220,7 +220,7 @@ final class PhpAlmacenSesionEjercicio implements AlmacenSesionEjercicio
             'sesionId' => $sesion->sesionId(),
             'tipoEjercicio' => [
                 'slug' => $sesion->tipoEjercicio()->slug(),
-                'nombre' => $sesion->tipoEjercicio()->nombre(),
+                'nombre' => $sesion->tipoEjercicio()->name(),
             ],
             'contextoUsuario' => [
                 'usuario' => $sesion->contextoUsuario()->usuario(),
@@ -246,7 +246,7 @@ final class PhpAlmacenSesionEjercicio implements AlmacenSesionEjercicio
 
         $tipoBruto = $bruto['tipoEjercicio'] ?? [];
         $tipoSlug = is_array($tipoBruto) ? (string) ($tipoBruto['slug'] ?? '') : '';
-        $tipoEjercicio = TipoEjercicio::desdeSlug($tipoSlug);
+        $tipoEjercicio = ExerciseType::fromSlug($tipoSlug);
 
         $contextoUsuarioBruto = $bruto['contextoUsuario'] ?? [];
         $contextoUsuarioBruto = [

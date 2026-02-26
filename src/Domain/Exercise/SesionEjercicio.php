@@ -9,7 +9,7 @@ use App\Domain\Auth\ContextoUsuario;
 final class SesionEjercicio
 {
     private string $sesionId;
-    private TipoEjercicio $TipoEjercicio;
+    private ExerciseType $TipoEjercicio;
 
     private ContextoUsuario $contextoUsuario;
 
@@ -27,7 +27,7 @@ final class SesionEjercicio
 
     public function __construct(
         string $sesionId,
-        TipoEjercicio $tipoEjercicio,
+        ExerciseType $tipoEjercicio,
         ContextoUsuario $contextoUsuario,
         ExerciseConfig $config,
         ExerciseStep $currentStep,
@@ -53,7 +53,7 @@ final class SesionEjercicio
     }
 
     public static function iniciar(
-        TipoEjercicio $TipoEjercicio,
+        ExerciseType $TipoEjercicio,
         ContextoUsuario $contextoUsuario,
         ExerciseConfig $config,
         ExerciseStep $firstStep
@@ -76,7 +76,7 @@ final class SesionEjercicio
         return $this->sesionId;
     }
 
-    public function TipoEjercicio(): TipoEjercicio
+    public function TipoEjercicio(): ExerciseType
     {
         return $this->TipoEjercicio;
     }

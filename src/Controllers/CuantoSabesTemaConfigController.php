@@ -12,7 +12,7 @@ use App\Core\View;
 use App\Domain\Exercise\ExerciseConfig;
 use App\Domain\Exercise\Difficulty;
 use App\Domain\Exercise\ExerciseStep;
-use App\Domain\Exercise\TipoEjercicio;
+use App\Domain\Exercise\ExerciseType;
 use App\Domain\Temas\TemaRepository;
 
 final class CuantoSabesTemaConfigController
@@ -90,7 +90,7 @@ final class CuantoSabesTemaConfigController
             $dificultad,
             []
         );
-        $tipoEjercicio = TipoEjercicio::cuantoSabesTema();
+        $tipoEjercicio = ExerciseType::howMuchDoYouKnowTopic();
         $firstExerciseStep = ExerciseStep::first();
 
         $sesion = $this->almacenSesionEjercicio->crear(

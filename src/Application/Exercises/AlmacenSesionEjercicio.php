@@ -8,12 +8,12 @@ use App\Domain\Auth\ContextoUsuario;
 use App\Domain\Exercise\ExerciseConfig;
 use App\Domain\Exercise\SesionEjercicio;
 use App\Domain\Exercise\ExerciseStep;
-use App\Domain\Exercise\TipoEjercicio;
+use App\Domain\Exercise\ExerciseType;
 
 interface AlmacenSesionEjercicio
 {
     public function crear(
-        TipoEjercicio $tipoEjercicio,
+        ExerciseType $tipoEjercicio,
         ContextoUsuario $contextoUsuario,
         ExerciseConfig $config,
         ExerciseStep $firstStep

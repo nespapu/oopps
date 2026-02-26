@@ -10,7 +10,7 @@ use App\Application\Http\Redirector;
 use App\Application\Routing\UrlGenerator;
 use App\Domain\Exercise\ExerciseConfig;
 use App\Domain\Exercise\ExerciseStep;
-use App\Domain\Exercise\TipoEjercicio;
+use App\Domain\Exercise\ExerciseType;
 use App\Domain\Auth\ContextoUsuario;
 
 final class DevSesionEjercicioController
@@ -34,7 +34,7 @@ final class DevSesionEjercicioController
         $sesion = $this->almacen->getSesionActual();
 
         if ($sesion === null) {
-            $type = TipoEjercicio::cuantoSabesTema();
+            $type = ExerciseType::howMuchDoYouKnowTopic();
 
             $contextoUsuario = new ContextoUsuario('dev-user', 'dev-opposition');
 
