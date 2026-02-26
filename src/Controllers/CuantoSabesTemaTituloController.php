@@ -9,7 +9,7 @@ use App\Application\Exercises\Evaluation\CuantoSabesTemaTituloEvaluationService;
 use App\Application\Http\Redirector;
 use App\Application\Routing\UrlGenerator;
 use App\Core\View;
-use App\Domain\Exercise\PasoEjercicio;
+use App\Domain\Exercise\ExerciseStep;
 
 final class CuantoSabesTemaTituloController
 {
@@ -31,7 +31,7 @@ final class CuantoSabesTemaTituloController
 
         $payload = $this->payloadBuilder->construir($sesion);
 
-        $evaluacion = $sesion->getEvaluacionPaso(PasoEjercicio::TITULO);
+        $evaluacion = $sesion->getEvaluacionPaso(ExerciseStep::TITLE);
 
         View::render('exercises/CuantoSabesTemaTitulo.php', [
             'payload' => $payload,
@@ -50,11 +50,11 @@ final class CuantoSabesTemaTituloController
 
         $payload = $this->payloadBuilder->construir($sesion);
              
-        $stepAnswer = $this->buildStepAnswerFromPost($payload, PasoEjercicio::TITULO->value);
+        $stepAnswer = $this->buildStepAnswerFromPost($payload, ExerciseStep::TITLE->value);
 
         $evaluacion = $this->evaluacionServicio->evaluate($payload, $stepAnswer);
 
-        $sesion->setEvaluacionPaso(PasoEjercicio::TITULO, $evaluacion);
+        $sesion->setEvaluacionPaso(ExerciseStep::TITLE, $evaluacion);
         $this->almacenSesionEjercicio->guardar($sesion);
 
         $this->redirector->redirect($this->cuantoSabesTemaPaths->pasoTitulo($sesion->sesionId()));

@@ -7,7 +7,7 @@ namespace App\Application\Exercises;
 use App\Domain\Auth\ContextoUsuario;
 use App\Domain\Exercise\ConfigEjercicio;
 use App\Domain\Exercise\SesionEjercicio;
-use App\Domain\Exercise\PasoEjercicio;
+use App\Domain\Exercise\ExerciseStep;
 use App\Domain\Exercise\TipoEjercicio;
 
 interface AlmacenSesionEjercicio
@@ -16,7 +16,7 @@ interface AlmacenSesionEjercicio
         TipoEjercicio $tipoEjercicio,
         ContextoUsuario $contextoUsuario,
         ConfigEjercicio $config,
-        PasoEjercicio $primerPaso
+        ExerciseStep $firstStep
     ): SesionEjercicio;
 
     public function get(string $sesionId): ?SesionEjercicio;

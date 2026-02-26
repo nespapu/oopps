@@ -11,7 +11,7 @@ use App\Application\Routing\UrlGenerator;
 use App\Core\View;
 use App\Domain\Exercise\ConfigEjercicio;
 use App\Domain\Exercise\Dificultad;
-use App\Domain\Exercise\PasoEjercicio;
+use App\Domain\Exercise\ExerciseStep;
 use App\Domain\Exercise\TipoEjercicio;
 use App\Domain\Temas\TemaRepository;
 
@@ -91,13 +91,13 @@ final class CuantoSabesTemaConfigController
             []
         );
         $tipoEjercicio = TipoEjercicio::cuantoSabesTema();
-        $primerPasoEjercicio = PasoEjercicio::primero();
+        $firstExerciseStep = ExerciseStep::first();
 
         $sesion = $this->almacenSesionEjercicio->crear(
             $tipoEjercicio,
             $contextoUsuario,
             $configEjercicio,
-            $primerPasoEjercicio
+            $firstExerciseStep
         );
 
         $this->redirector->redirect($this->cuantoSabesTemaPaths->pasoTitulo($sesion->sesionId()));

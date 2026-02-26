@@ -9,7 +9,7 @@ use App\Application\Session\SessionStore;
 use App\Domain\Auth\ContextoUsuario;
 use App\Domain\Exercise\ConfigEjercicio;
 use App\Domain\Exercise\SesionEjercicio;
-use App\Domain\Exercise\PasoEjercicio;
+use App\Domain\Exercise\ExerciseStep;
 use App\Domain\Exercise\TipoEjercicio;
 
 final class PhpAlmacenSesionEjercicio implements AlmacenSesionEjercicio
@@ -24,9 +24,9 @@ final class PhpAlmacenSesionEjercicio implements AlmacenSesionEjercicio
         TipoEjercicio $tipoEjercicio,
         ContextoUsuario $contextoUsuario,
         ConfigEjercicio $config,
-        PasoEjercicio $primerPaso
+        ExerciseStep $firstStep
     ): SesionEjercicio {
-        $sesion = SesionEjercicio::iniciar($tipoEjercicio, $contextoUsuario, $config, $primerPaso);
+        $sesion = SesionEjercicio::iniciar($tipoEjercicio, $contextoUsuario, $config, $firstStep);
 
         $this->guardar($sesion);
         $this->setSesionIdActual($sesion->sesionId());
@@ -265,8 +265,8 @@ final class PhpAlmacenSesionEjercicio implements AlmacenSesionEjercicio
 
         $config = new ConfigEjercicio($tema, $dificultad, $banderas);
 
-        $pasoBruto = (string) ($bruto['pasoActual'] ?? PasoEjercicio::primero()->value);
-        $pasoActual = PasoEjercicio::from($pasoBruto);
+        $rawStep = (string) ($bruto['pasoActual'] ?? ExerciseStep::first()->value);
+        $currentStep = ExerciseStep::from($rawStep);
 
         $fechaCreacion = new \DateTimeImmutable((string) ($bruto['fechaCreacion'] ?? 'now'));
         $fechaActualizacion = new \DateTimeImmutable((string) ($bruto['fechaActualizacion'] ?? 'now'));
@@ -286,7 +286,7 @@ final class PhpAlmacenSesionEjercicio implements AlmacenSesionEjercicio
             $tipoEjercicio,
             $contextoUsuario,
             $config,
-            $pasoActual,
+            $currentStep,
             $fechaCreacion,
             $fechaActualizacion,
             $respuestasPorPaso,

@@ -14,7 +14,7 @@ final class SesionEjercicio
     private ContextoUsuario $contextoUsuario;
 
     private ConfigEjercicio $config;
-    private PasoEjercicio $pasoActual;
+    private ExerciseStep $currentStep;
 
     /** @var array<string, mixed> */
     private array $respuestasPorPaso;
@@ -30,7 +30,7 @@ final class SesionEjercicio
         TipoEjercicio $tipoEjercicio,
         ContextoUsuario $contextoUsuario,
         ConfigEjercicio $config,
-        PasoEjercicio $pasoActual,
+        ExerciseStep $currentStep,
         \DateTimeImmutable $fechaCreacion,
         \DateTimeImmutable $fechaActualizacion,
         array $respuestasPorPaso = [],
@@ -45,7 +45,7 @@ final class SesionEjercicio
         $this->TipoEjercicio = $tipoEjercicio;
         $this->contextoUsuario = $contextoUsuario;
         $this->config = $config;
-        $this->pasoActual = $pasoActual;
+        $this->currentStep = $currentStep;
         $this->fechaCreacion = $fechaCreacion;
         $this->fechaActualizacion = $fechaActualizacion;
         $this->respuestasPorPaso = $respuestasPorPaso;
@@ -56,7 +56,7 @@ final class SesionEjercicio
         TipoEjercicio $TipoEjercicio,
         ContextoUsuario $contextoUsuario,
         ConfigEjercicio $config,
-        PasoEjercicio $primerPaso
+        ExerciseStep $firstStep
     ): self {
         $now = new \DateTimeImmutable('now');
 
@@ -65,7 +65,7 @@ final class SesionEjercicio
             $TipoEjercicio,
             $contextoUsuario,
             $config,
-            $primerPaso,
+            $firstStep,
             $now,
             $now
         );
@@ -91,9 +91,9 @@ final class SesionEjercicio
         return $this->config;
     }
 
-    public function pasoActual(): PasoEjercicio
+    public function pasoActual(): ExerciseStep
     {
-        return $this->pasoActual;
+        return $this->currentStep;
     }
 
     public function fechaCreacion(): \DateTimeImmutable
@@ -106,36 +106,36 @@ final class SesionEjercicio
         return $this->fechaActualizacion;
     }
 
-    public function moverAlPaso(PasoEjercicio $paso): void
+    public function moverAlPaso(ExerciseStep $step): void
     {
-        $this->pasoActual = $paso;
+        $this->currentStep = $step;
         $this->actualizar();
     }
 
     /**
      * @param mixed $respuestaDto
      */
-    public function setRespuestaPaso(PasoEjercicio $paso, mixed $respuestaDto): void
+    public function setRespuestaPaso(ExerciseStep $step, mixed $respuestaDto): void
     {
-        $this->respuestasPorPaso[$paso->value] = $respuestaDto;
+        $this->respuestasPorPaso[$step->value] = $respuestaDto;
         $this->actualizar();
     }
 
     /**
      * @param mixed $evaluacionDto
      */
-    public function setEvaluacionPaso(PasoEjercicio $paso, mixed $evaluacionDto): void
+    public function setEvaluacionPaso(ExerciseStep $step, mixed $evaluacionDto): void
     {
-        $this->evaluacionPorPaso[$paso->value] = $evaluacionDto;
+        $this->evaluacionPorPaso[$step->value] = $evaluacionDto;
         $this->actualizar();
     }
 
-    public function getRespuestaPaso(PasoEjercicio $paso): mixed
+    public function getRespuestaPaso(ExerciseStep $step): mixed
     {
-        return $this->respuestasPorPaso[$paso->value] ?? null;
+        return $this->respuestasPorPaso[$step->value] ?? null;
     }
 
-    public function getEvaluacionPaso(PasoEjercicio $paso): mixed
+    public function getEvaluacionPaso(ExerciseStep $paso): mixed
     {
         return $this->evaluacionPorPaso[$paso->value] ?? null;
     }

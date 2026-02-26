@@ -11,7 +11,7 @@ use App\Domain\Auth\ContextoUsuario;
 use App\Domain\Exercise\ModoPista;
 use App\Domain\Exercise\PistaService;
 use App\Domain\Exercise\SesionEjercicio;
-use App\Domain\Exercise\PasoEjercicio;
+use App\Domain\Exercise\ExerciseStep;
 use Tests\Domain\Exercise\Doubles\FakeTemaRepository;
 
 final class CuantoSabesTemaTituloPayloadBuilderTest extends TestCase
@@ -38,7 +38,7 @@ final class CuantoSabesTemaTituloPayloadBuilderTest extends TestCase
 
         $payload = $builder->construir($session);
 
-        $this->assertSame(PasoEjercicio::TITULO, $payload[ClavesPasoPayload::PASO]);
+        $this->assertSame(ExerciseStep::TITLE, $payload[ClavesPasoPayload::PASO]);
 
         $this->assertArrayHasKey(ClavesPasoPayload::ITEMS, $payload);
         $this->assertSame('text', $payload[ClavesPasoPayload::ITEMS][0]['tipo']);

@@ -9,7 +9,7 @@ use App\Application\Exercises\AlmacenSesionEjercicio;
 use App\Application\Http\Redirector;
 use App\Application\Routing\UrlGenerator;
 use App\Domain\Exercise\ConfigEjercicio;
-use App\Domain\Exercise\PasoEjercicio;
+use App\Domain\Exercise\ExerciseStep;
 use App\Domain\Exercise\TipoEjercicio;
 use App\Domain\Auth\ContextoUsuario;
 
@@ -48,7 +48,7 @@ final class DevSesionEjercicioController
                 tipoEjercicio: $type,
                 contextoUsuario: $contextoUsuario,
                 config: $config,
-                primerPaso: PasoEjercicio::primero()
+                firstStep: ExerciseStep::first()
             );
         }
 
@@ -78,7 +78,7 @@ final class DevSesionEjercicioController
             return;
         }
 
-        $siguientePaso = $sesion->pasoActual()->siguiente() ?? $sesion->pasoActual();
+        $siguientePaso = $sesion->pasoActual()->next() ?? $sesion->pasoActual();
         $sesion->moverAlPaso($siguientePaso);
 
         $this->almacen->guardar($sesion);

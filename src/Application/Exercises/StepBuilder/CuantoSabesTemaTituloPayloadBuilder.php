@@ -5,7 +5,7 @@ namespace App\Application\Exercises\StepBuilder;
 use App\Application\Exercises\Payload\ClavesPasoPayload;
 use App\Domain\Exercise\Dificultad;
 use App\Domain\Exercise\ModoPista;
-use App\Domain\Exercise\PasoEjercicio;
+use App\Domain\Exercise\ExerciseStep;
 use App\Domain\Exercise\PistaService;
 use App\Domain\Exercise\SesionEjercicio;
 use App\Domain\Temas\TemaRepository;
@@ -30,7 +30,7 @@ final class CuantoSabesTemaTituloPayloadBuilder {
             : $this->pistaServicio->getPista($titulo, $dificultadEnum, $modoPista);
 
         return [
-            "step" => PasoEjercicio::TITULO->value,
+            "step" => ExerciseStep::TITLE->value,
             ClavesPasoPayload::ITEMS => [
                 [
                     "key" => "titulo",
