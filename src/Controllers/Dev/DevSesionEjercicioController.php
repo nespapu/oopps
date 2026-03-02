@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers\Dev;
 
 use App\App\Routing\DevPaths;
-use App\Application\Exercises\AlmacenSesionEjercicio;
+use App\Application\Exercises\ExerciseSessionStore;
 use App\Application\Http\Redirector;
 use App\Application\Routing\UrlGenerator;
 use App\Domain\Exercise\ExerciseConfig;
@@ -16,7 +16,7 @@ use App\Domain\Auth\UserContext;
 final class DevSesionEjercicioController
 {
     public function __construct(
-        private readonly AlmacenSesionEjercicio $almacen,
+        private readonly ExerciseSessionStore $almacen,
         private readonly Redirector $redirector,
         private readonly DevPaths $devPaths,
         private readonly UrlGenerator $urlGenerator
@@ -31,7 +31,7 @@ final class DevSesionEjercicioController
      */
     public function mostrar(): void
     {
-        $sesion = $this->almacen->getSesionActual();
+        $sesion = $this->almacen->getCurrentSession();
 
         if ($sesion === null) {
             $type = ExerciseType::howMuchDoYouKnowTopic();
@@ -44,9 +44,9 @@ final class DevSesionEjercicioController
                 flags: ['barajar_preguntas' => true]
             );
 
-            $sesion = $this->almacen->crear(
-                tipoEjercicio: $type,
-                contextoUsuario: $contextoUsuario,
+            $sesion = $this->almacen->create(
+                exerciseType: $type,
+                userContext: $contextoUsuario,
                 config: $config,
                 firstStep: ExerciseStep::first()
             );
@@ -71,7 +71,7 @@ final class DevSesionEjercicioController
      */
     public function siguiente(): void
     {
-        $sesion = $this->almacen->getSesionActual();
+        $sesion = $this->almacen->getCurrentSession();
 
         if ($sesion === null) {
             $this->redirector->redirect($this->devPaths->base());
@@ -81,7 +81,7 @@ final class DevSesionEjercicioController
         $siguientePaso = $sesion->currentStep()->next() ?? $sesion->currentStep();
         $sesion->moveToStep($siguientePaso);
 
-        $this->almacen->guardar($sesion);
+        $this->almacen->save($sesion);
 
         // PRG: evitar el reenvío del formulario
         $this->redirector->redirect($this->devPaths->base(), 303);
@@ -94,9 +94,9 @@ final class DevSesionEjercicioController
      */
     public function reset(): void
     {
-        $sesionIdActual = $this->almacen->getSesionIdActual();
+        $sesionIdActual = $this->almacen->getCurrentSessionId();
         if ($sesionIdActual !== null) {
-            $this->almacen->borrar($sesionIdActual);
+            $this->almacen->delete($sesionIdActual);
         }
 
         $this->redirector->redirect($this->devPaths->base(), 303);

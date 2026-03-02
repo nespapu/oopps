@@ -3,7 +3,7 @@ namespace App\Controllers;
 
 use App\App\Routing\CuantoSabesTemaPaths;
 use App\Application\Auth\AuthService;
-use App\Application\Exercises\AlmacenSesionEjercicio;
+use App\Application\Exercises\ExerciseSessionStore;
 use App\Application\Exercises\CuantoSabesTemaConfigPayloadBuilder;
 use App\Application\Flash\FlashMessenger;
 use App\Application\Http\Redirector;
@@ -18,7 +18,7 @@ use App\Domain\Temas\TopicRepository;
 final class CuantoSabesTemaConfigController
 {
     public function __construct(
-        private readonly AlmacenSesionEjercicio $almacenSesionEjercicio,
+        private readonly ExerciseSessionStore $almacenSesionEjercicio,
         private readonly AuthService $authService,
         private readonly CuantoSabesTemaConfigPayloadBuilder $payloadBuilder,
         private readonly CuantoSabesTemaPaths $cuantoSabesTemaPaths,
@@ -93,7 +93,7 @@ final class CuantoSabesTemaConfigController
         $tipoEjercicio = ExerciseType::howMuchDoYouKnowTopic();
         $firstExerciseStep = ExerciseStep::first();
 
-        $sesion = $this->almacenSesionEjercicio->crear(
+        $sesion = $this->almacenSesionEjercicio->create(
             $tipoEjercicio,
             $contextoUsuario,
             $exerciseConfig,

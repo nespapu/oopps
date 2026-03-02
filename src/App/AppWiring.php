@@ -12,7 +12,7 @@ use App\App\Routing\DevRoutes;
 use App\App\Routing\PanelControlEjerciciosPaths;
 use App\App\Routing\PanelControlEjerciciosRoutes;
 use App\Application\Auth\AuthService;
-use App\Application\Exercises\AlmacenSesionEjercicio;
+use App\Application\Exercises\ExerciseSessionStore;
 use App\Application\Exercises\CuantoSabesTemaConfigPayloadBuilder;
 use App\Application\Exercises\Evaluation\CuantoSabesTemaTituloEvaluationService;
 use App\Application\Exercises\Evaluation\EqualityEvaluator;
@@ -45,7 +45,7 @@ use App\Infrastructure\Persistence\Repositories\UserRepositorySQL;
 use App\Infrastructure\Routing\RouteAssembler;
 use App\Infrastructure\Routing\RouteCollection;
 use App\Infrastructure\Routing\ScriptNameUrlGenerator;
-use App\Infrastructure\Session\PhpAlmacenSesionEjercicio;
+use App\Infrastructure\Session\PhpExerciseSessionStore;
 use App\Infrastructure\Session\PhpSessionStore;
 use PDO;
 
@@ -89,7 +89,7 @@ final class AppWiring
     private ?AuthService $authService = null;
     private ?Redirector $redirector = null;
     private ?FlashMessenger $flash = null;
-    private ?AlmacenSesionEjercicio $almacenSesionEjercicio = null;
+    private ?ExerciseSessionStore $almacenSesionEjercicio = null;
 
     // =========================================================================
     // Builders / Evaluators
@@ -315,10 +315,10 @@ final class AppWiring
     // =========================================================================
     // Application services (shared)
     // =========================================================================
-    private function almacenSesionEjercicio(): AlmacenSesionEjercicio
+    private function almacenSesionEjercicio(): ExerciseSessionStore
     {
         if ($this->almacenSesionEjercicio === null) {
-            $this->almacenSesionEjercicio = new PhpAlmacenSesionEjercicio(
+            $this->almacenSesionEjercicio = new PhpExerciseSessionStore(
                 $this->sessionStore()
             );
         }

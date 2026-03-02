@@ -26,8 +26,8 @@ final class DefaultAuthService implements AuthService
             return;
         }
 
-        if (!$this->session->has('siguiente_url')) {
-            $this->session->setString('siguiente_url', $this->requestContext->path());
+        if (!$this->session->has('next_url')) {
+            $this->session->setString('next_url', $this->requestContext->path());
         }
 
         $this->redirector->redirect('login');
@@ -51,12 +51,12 @@ final class DefaultAuthService implements AuthService
 
     public function username(): ?string
     {
-        return $this->session->getString('usuario');
+        return $this->session->getString('username');
     }
 
     public function oppositionCode(): ?string
     {
-        return $this->session->getString('codigoOposicion');
+        return $this->session->getString('opposition_code');
     }
 
     public function userContext(): UserContext

@@ -41,11 +41,11 @@ final class LoginController {
         }
 
         session_regenerate_id(true);
-        $_SESSION['usuario'] = $usuario->name();
-        $_SESSION['codigoOposicion'] = $codigoOposicion;
+        $_SESSION['username'] = $usuario->name();
+        $_SESSION['opposition_code'] = $codigoOposicion;
         
-        $redireccion = $_SESSION['siguiente_url'] ?? 'panel-control-ejercicios';
-        unset($_SESSION['siguiente_url']);
+        $redireccion = $_SESSION['next_url'] ?? 'panel-control-ejercicios';
+        unset($_SESSION['next_url']);
         $this->redirector->redirect($redireccion);               
     }
 

@@ -14,7 +14,7 @@ final class PanelControlEjerciciosController {
         
         // Datos vista
         $titulo = "Panel control ejercicios";
-        $usuario = $_SESSION['usuario'];
+        $usuario = $_SESSION['username'];
         $ejercicios = require __DIR__.'/../../config/Ejercicios.php';
 
         View::render('panel-control-ejercicios/index.php', [

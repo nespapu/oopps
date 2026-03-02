@@ -3,7 +3,7 @@ namespace App\Controllers;
 
 use App\App\Routing\CuantoSabesTemaPaths;
 use App\Application\Auth\AuthService;
-use App\Application\Exercises\AlmacenSesionEjercicio;
+use App\Application\Exercises\ExerciseSessionStore;
 use App\Application\Exercises\StepBuilder\CuantoSabesTemaTituloPayloadBuilder;
 use App\Application\Exercises\Evaluation\CuantoSabesTemaTituloEvaluationService;
 use App\Application\Http\Redirector;
@@ -14,7 +14,7 @@ use App\Domain\Exercise\ExerciseStep;
 final class CuantoSabesTemaTituloController
 {
     public function __construct(
-        private readonly AlmacenSesionEjercicio $almacenSesionEjercicio,
+        private readonly ExerciseSessionStore $almacenSesionEjercicio,
         private readonly AuthService $authService,
         private readonly CuantoSabesTemaPaths $cuantoSabesTemaPaths,
         private readonly CuantoSabesTemaTituloPayloadBuilder $payloadBuilder,
@@ -27,7 +27,7 @@ final class CuantoSabesTemaTituloController
     {
         $this->authService->requireLogin();
 
-        $sesion = $this->almacenSesionEjercicio->getSesionActual();
+        $sesion = $this->almacenSesionEjercicio->getCurrentSession();
 
         $payload = $this->payloadBuilder->construir($sesion);
 
@@ -46,7 +46,7 @@ final class CuantoSabesTemaTituloController
     {
         $this->authService->requireLogin();
 
-        $sesion = $this->almacenSesionEjercicio->getSesionActual();
+        $sesion = $this->almacenSesionEjercicio->getCurrentSession();
 
         $payload = $this->payloadBuilder->construir($sesion);
              
@@ -55,7 +55,7 @@ final class CuantoSabesTemaTituloController
         $evaluacion = $this->evaluacionServicio->evaluate($payload, $stepAnswer);
 
         $sesion->setStepEvaluation(ExerciseStep::TITLE, $evaluacion);
-        $this->almacenSesionEjercicio->guardar($sesion);
+        $this->almacenSesionEjercicio->save($sesion);
 
         $this->redirector->redirect($this->cuantoSabesTemaPaths->pasoTitulo($sesion->sessionId()));
     }
