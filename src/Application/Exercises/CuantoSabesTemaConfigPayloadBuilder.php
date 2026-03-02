@@ -4,12 +4,12 @@ namespace App\Application\Exercises;
 
 use App\Domain\Auth\UserContext;
 use App\Domain\Exercise\Difficulty;
-use App\Domain\Temas\TemaRepository;
+use App\Domain\Temas\TopicRepository;
 
 final class CuantoSabesTemaConfigPayloadBuilder
 {
     public function __construct(
-        private TemaRepository $temaRepositorio
+        private TopicRepository $temaRepositorio
     ) {}
 
     public function construir(UserContext $ctx): array
@@ -26,7 +26,7 @@ final class CuantoSabesTemaConfigPayloadBuilder
 
     private function contruirOpcionesTema(UserContext $ctx): array
     {
-        $temas = $this->temaRepositorio->buscarPorCodigoOposicion($ctx->oppositionCode());
+        $temas = $this->temaRepositorio->findByOppositionCode($ctx->oppositionCode());
 
         $opciones = array_map(
             fn(array $fila) => [

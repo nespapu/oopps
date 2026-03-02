@@ -33,14 +33,14 @@ use App\Controllers\CuantoSabesTemaTituloController;
 use App\Controllers\Dev\DevSesionEjercicioController;
 use App\Domain\Auth\UserRepository;
 use App\Domain\Exercise\HintService;
-use App\Domain\Temas\TemaRepository;
+use App\Domain\Temas\TopicRepository;
 use App\Infrastructure\Auth\DefaultAuthService;
 use App\Infrastructure\Flash\SessionFlashMessenger;
 use App\Infrastructure\Http\DefaultHttpMethodGuard;
 use App\Infrastructure\Http\HeaderRedirector;
 use App\Infrastructure\Http\ServerRequestContext;
 use App\Infrastructure\Persistence\ConexionBD;
-use App\Infrastructure\Persistence\Repositories\TemaRepositorySQL;
+use App\Infrastructure\Persistence\Repositories\TopicRepositorySQL;
 use App\Infrastructure\Persistence\Repositories\UserRepositorySQL;
 use App\Infrastructure\Routing\RouteAssembler;
 use App\Infrastructure\Routing\RouteCollection;
@@ -111,7 +111,7 @@ final class AppWiring
     private ?PDO $pdo = null;
     private ?SessionStore $sessionStore = null;
     private ?UrlGenerator $urlGenerator = null;
-    private ?TemaRepository $temaRepositorio = null;
+    private ?TopicRepository $temaRepositorio = null;
     private ?UserRepository $usuarioRepositorio = null;
 
     // =========================================================================
@@ -507,10 +507,10 @@ final class AppWiring
         return $this->urlGenerator;
     }
 
-    private function temaRepositorio(): TemaRepository
+    private function temaRepositorio(): TopicRepository
     {
         if ($this->temaRepositorio === null) {
-            $this->temaRepositorio = new TemaRepositorySQL(
+            $this->temaRepositorio = new TopicRepositorySQL(
                 $this->pdo()
             );
         }

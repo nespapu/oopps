@@ -8,12 +8,12 @@ use App\Domain\Exercise\HintMode;
 use App\Domain\Exercise\ExerciseStep;
 use App\Domain\Exercise\HintService;
 use App\Domain\Exercise\ExerciseSession;
-use App\Domain\Temas\TemaRepository;
+use App\Domain\Temas\TopicRepository;
 
 final class CuantoSabesTemaTituloPayloadBuilder {
     
     public function __construct(
-        private TemaRepository $temaRepositorio,
+        private TopicRepository $temaRepositorio,
         private HintService $pistaServicio
     ) {}
 
@@ -21,7 +21,7 @@ final class CuantoSabesTemaTituloPayloadBuilder {
     {
         $codigoOposicion = $sesion->userContext()->oppositionCode();
         $numeracion = $sesion->config()->topicId();
-        $titulo = $this->temaRepositorio->buscarTituloPorCodigoOposicionYOrden($codigoOposicion, $numeracion);
+        $titulo = $this->temaRepositorio->findTitleByOppositionCodeAndOrder($codigoOposicion, $numeracion);
         $dificultadEnum = Difficulty::from($sesion->config()->difficulty());
         $modoPista = HintMode::WORDS;
 

@@ -13,7 +13,7 @@ use App\Domain\Exercise\ExerciseConfig;
 use App\Domain\Exercise\Difficulty;
 use App\Domain\Exercise\ExerciseStep;
 use App\Domain\Exercise\ExerciseType;
-use App\Domain\Temas\TemaRepository;
+use App\Domain\Temas\TopicRepository;
 
 final class CuantoSabesTemaConfigController
 {
@@ -24,7 +24,7 @@ final class CuantoSabesTemaConfigController
         private readonly CuantoSabesTemaPaths $cuantoSabesTemaPaths,
         private readonly FlashMessenger $flash,
         private readonly Redirector $redirector,
-        private readonly TemaRepository $temaRepositorio,
+        private readonly TopicRepository $temaRepositorio,
         private readonly UrlGenerator $urlGenerator
     ) {}
 
@@ -69,7 +69,7 @@ final class CuantoSabesTemaConfigController
         }
 
         if ($numeracion === 0) {
-            $numeracionAleatoria = $this->temaRepositorio->buscarOrdenAleatorioPorCodigoOposicion($contextoUsuario->oppositionCode());
+            $numeracionAleatoria = $this->temaRepositorio->findRandomOrderByOppositionCode($contextoUsuario->oppositionCode());
 
             if ($numeracionAleatoria === null) {
                 $this->flash->set('error', 'No hay temas disponibles para esta oposición.');
@@ -79,7 +79,7 @@ final class CuantoSabesTemaConfigController
             $numeracion = $numeracionAleatoria;
         }
 
-        $tituloTema = $this->temaRepositorio->buscarTituloPorCodigoOposicionYOrden($contextoUsuario->oppositionCode(), $numeracion);
+        $tituloTema = $this->temaRepositorio->findTitleByOppositionCodeAndOrder($contextoUsuario->oppositionCode(), $numeracion);
         if ($tituloTema === null) {
             $this->flash->set('error', 'El tema seleccionado no existe.');
             $this->redirector->redirect($this->cuantoSabesTemaPaths->config());
