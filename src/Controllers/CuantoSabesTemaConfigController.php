@@ -69,7 +69,7 @@ final class CuantoSabesTemaConfigController
         }
 
         if ($numeracion === 0) {
-            $numeracionAleatoria = $this->temaRepositorio->buscarOrdenAleatorioPorCodigoOposicion($contextoUsuario->codigoOposicion());
+            $numeracionAleatoria = $this->temaRepositorio->buscarOrdenAleatorioPorCodigoOposicion($contextoUsuario->oppositionCode());
 
             if ($numeracionAleatoria === null) {
                 $this->flash->set('error', 'No hay temas disponibles para esta oposición.');
@@ -79,7 +79,7 @@ final class CuantoSabesTemaConfigController
             $numeracion = $numeracionAleatoria;
         }
 
-        $tituloTema = $this->temaRepositorio->buscarTituloPorCodigoOposicionYOrden($contextoUsuario->codigoOposicion(), $numeracion);
+        $tituloTema = $this->temaRepositorio->buscarTituloPorCodigoOposicionYOrden($contextoUsuario->oppositionCode(), $numeracion);
         if ($tituloTema === null) {
             $this->flash->set('error', 'El tema seleccionado no existe.');
             $this->redirector->redirect($this->cuantoSabesTemaPaths->config());

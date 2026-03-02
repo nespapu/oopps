@@ -9,7 +9,7 @@ use App\Application\Flash\FlashMessenger;
 use App\Application\Http\Redirector;
 use App\Application\Http\RequestContext;
 use App\Application\Session\SessionStore;
-use App\Domain\Auth\ContextoUsuario;
+use App\Domain\Auth\UserContext;
 
 final class DefaultAuthService implements AuthService
 {
@@ -59,11 +59,11 @@ final class DefaultAuthService implements AuthService
         return $this->session->getString('codigoOposicion');
     }
 
-    public function userContext(): ContextoUsuario
+    public function userContext(): UserContext
     {
         $this->requireOppositionContext();
 
-        return new ContextoUsuario(
+        return new UserContext(
             (string) $this->username(),
             (string) $this->oppositionCode()
         );

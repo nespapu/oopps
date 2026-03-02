@@ -7,7 +7,7 @@ namespace Tests\Domain\Exercise\StepBuilder;
 use PHPUnit\Framework\TestCase;
 use App\Application\Exercises\StepBuilder\CuantoSabesTemaTituloPayloadBuilder;
 use App\Application\Exercises\Payload\ClavesPasoPayload;
-use App\Domain\Auth\ContextoUsuario;
+use App\Domain\Auth\UserContext;
 use App\Domain\Exercise\HintMode;
 use App\Domain\Exercise\HintService;
 use App\Domain\Exercise\ExerciseSession;
@@ -75,9 +75,9 @@ final class CuantoSabesTemaTituloPayloadBuilderTest extends TestCase
         $this->assertSame('(sin pista generada)', $payload[ClavesPasoPayload::ITEMS][0]['pista']);
     }
 
-    private function contextoUsuarioDummy(): ContextoUsuario
+    private function contextoUsuarioDummy(): UserContext
     {
-        return new ContextoUsuario(
+        return new UserContext(
             'nestor',
             '590107'
         );

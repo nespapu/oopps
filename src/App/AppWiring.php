@@ -31,7 +31,7 @@ use App\Controllers\PanelControlEjerciciosController;
 use App\Controllers\CuantoSabesTemaConfigController;
 use App\Controllers\CuantoSabesTemaTituloController;
 use App\Controllers\Dev\DevSesionEjercicioController;
-use App\Domain\Auth\UsuarioRepository;
+use App\Domain\Auth\UserRepository;
 use App\Domain\Exercise\HintService;
 use App\Domain\Temas\TemaRepository;
 use App\Infrastructure\Auth\DefaultAuthService;
@@ -41,7 +41,7 @@ use App\Infrastructure\Http\HeaderRedirector;
 use App\Infrastructure\Http\ServerRequestContext;
 use App\Infrastructure\Persistence\ConexionBD;
 use App\Infrastructure\Persistence\Repositories\TemaRepositorySQL;
-use App\Infrastructure\Persistence\Repositories\UsuarioRepositorySQL;
+use App\Infrastructure\Persistence\Repositories\UserRepositorySQL;
 use App\Infrastructure\Routing\RouteAssembler;
 use App\Infrastructure\Routing\RouteCollection;
 use App\Infrastructure\Routing\ScriptNameUrlGenerator;
@@ -112,7 +112,7 @@ final class AppWiring
     private ?SessionStore $sessionStore = null;
     private ?UrlGenerator $urlGenerator = null;
     private ?TemaRepository $temaRepositorio = null;
-    private ?UsuarioRepository $usuarioRepositorio = null;
+    private ?UserRepository $usuarioRepositorio = null;
 
     // =========================================================================
     // Public API
@@ -518,10 +518,10 @@ final class AppWiring
         return $this->temaRepositorio;
     }
 
-    private function usuarioRepositorio(): UsuarioRepository
+    private function usuarioRepositorio(): UserRepository
     {
         if ($this->usuarioRepositorio === null) {
-            $this->usuarioRepositorio = new UsuarioRepositorySQL(
+            $this->usuarioRepositorio = new UserRepositorySQL(
                 $this->pdo()
             );
         }

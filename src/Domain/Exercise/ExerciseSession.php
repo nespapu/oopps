@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Domain\Exercise;
 
-use App\Domain\Auth\ContextoUsuario;
+use App\Domain\Auth\UserContext;
 
 final class ExerciseSession
 {
     private string $sessionId;
     private ExerciseType $exerciseType;
-    private ContextoUsuario $userContext;
+    private UserContext $userContext;
 
     private ExerciseConfig $config;
     private ExerciseStep $currentStep;
@@ -27,7 +27,7 @@ final class ExerciseSession
     public function __construct(
         string $sessionId,
         ExerciseType $exerciseType,
-        ContextoUsuario $userContext,
+        UserContext $userContext,
         ExerciseConfig $config,
         ExerciseStep $currentStep,
         \DateTimeImmutable $createdAt,
@@ -53,7 +53,7 @@ final class ExerciseSession
 
     public static function start(
         ExerciseType $exerciseType,
-        ContextoUsuario $userContext,
+        UserContext $userContext,
         ExerciseConfig $config,
         ExerciseStep $firstStep
     ): self {
@@ -80,7 +80,7 @@ final class ExerciseSession
         return $this->exerciseType;
     }
 
-    public function userContext(): ContextoUsuario
+    public function userContext(): UserContext
     {
         return $this->userContext;
     }

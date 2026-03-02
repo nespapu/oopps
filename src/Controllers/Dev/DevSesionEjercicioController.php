@@ -11,7 +11,7 @@ use App\Application\Routing\UrlGenerator;
 use App\Domain\Exercise\ExerciseConfig;
 use App\Domain\Exercise\ExerciseStep;
 use App\Domain\Exercise\ExerciseType;
-use App\Domain\Auth\ContextoUsuario;
+use App\Domain\Auth\UserContext;
 
 final class DevSesionEjercicioController
 {
@@ -36,7 +36,7 @@ final class DevSesionEjercicioController
         if ($sesion === null) {
             $type = ExerciseType::howMuchDoYouKnowTopic();
 
-            $contextoUsuario = new ContextoUsuario('dev-user', 'dev-opposition');
+            $contextoUsuario = new UserContext('dev-user', 'dev-opposition');
 
             $config = new ExerciseConfig(
                 topicId: 0,

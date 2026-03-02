@@ -6,7 +6,7 @@ namespace App\Infrastructure\Session;
 
 use App\Application\Exercises\AlmacenSesionEjercicio;
 use App\Application\Session\SessionStore;
-use App\Domain\Auth\ContextoUsuario;
+use App\Domain\Auth\UserContext;
 use App\Domain\Exercise\ExerciseConfig;
 use App\Domain\Exercise\ExerciseSession;
 use App\Domain\Exercise\ExerciseStep;
@@ -22,7 +22,7 @@ final class PhpAlmacenSesionEjercicio implements AlmacenSesionEjercicio
 
     public function crear(
         ExerciseType $tipoEjercicio,
-        ContextoUsuario $contextoUsuario,
+        UserContext $contextoUsuario,
         ExerciseConfig $config,
         ExerciseStep $firstStep
     ): ExerciseSession {
@@ -223,8 +223,8 @@ final class PhpAlmacenSesionEjercicio implements AlmacenSesionEjercicio
                 'nombre' => $sesion->exerciseType()->name(),
             ],
             'contextoUsuario' => [
-                'usuario' => $sesion->userContext()->usuario(),
-                'codigoOposicion' => $sesion->userContext()->codigoOposicion(),
+                'usuario' => $sesion->userContext()->user(),
+                'codigoOposicion' => $sesion->userContext()->oppositionCode(),
             ],
             'config' => [
                 'tema' => $sesion->config()->topicId(),
@@ -253,7 +253,7 @@ final class PhpAlmacenSesionEjercicio implements AlmacenSesionEjercicio
             'usuario' => is_array($contextoUsuarioBruto) ? (string) ($contextoUsuarioBruto['usuario'] ?? '') : '',
             'codigoOposicion' => is_array($contextoUsuarioBruto) ? (string) ($contextoUsuarioBruto['codigoOposicion'] ?? '') : '',
         ];
-        $contextoUsuario = new ContextoUsuario($contextoUsuarioBruto['usuario'], $contextoUsuarioBruto['codigoOposicion']);
+        $contextoUsuario = new UserContext($contextoUsuarioBruto['usuario'], $contextoUsuarioBruto['codigoOposicion']);
 
         $configBruto = $bruto['config'] ?? [];
         $tema = is_array($configBruto) ? (int) ($configBruto['tema'] ?? 0) : 0;

@@ -19,7 +19,7 @@ final class CuantoSabesTemaTituloPayloadBuilder {
 
     public function construir(ExerciseSession $sesion) : array
     {
-        $codigoOposicion = $sesion->userContext()->codigoOposicion();
+        $codigoOposicion = $sesion->userContext()->oppositionCode();
         $numeracion = $sesion->config()->topicId();
         $titulo = $this->temaRepositorio->buscarTituloPorCodigoOposicionYOrden($codigoOposicion, $numeracion);
         $dificultadEnum = Difficulty::from($sesion->config()->difficulty());

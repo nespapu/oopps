@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Exercises;
 
-use App\Domain\Auth\ContextoUsuario;
+use App\Domain\Auth\UserContext;
 use App\Domain\Exercise\ExerciseConfig;
 use App\Domain\Exercise\ExerciseSession;
 use App\Domain\Exercise\ExerciseStep;
@@ -14,7 +14,7 @@ interface AlmacenSesionEjercicio
 {
     public function crear(
         ExerciseType $tipoEjercicio,
-        ContextoUsuario $contextoUsuario,
+        UserContext $contextoUsuario,
         ExerciseConfig $config,
         ExerciseStep $firstStep
     ): ExerciseSession;

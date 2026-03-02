@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Auth;
 
-use App\Domain\Auth\ContextoUsuario;
+use App\Domain\Auth\UserContext;
 
 interface AuthService
 {
@@ -18,7 +18,7 @@ interface AuthService
 
     public function oppositionCode(): ?string;
 
-    public function userContext(): ContextoUsuario;
+    public function userContext(): UserContext;
 
     public function logout(): void;
 }
