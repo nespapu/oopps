@@ -4,6 +4,7 @@ namespace App\Controllers;
 use App\Application\Auth\AuthService;
 use App\Application\Flash\FlashMessenger;
 use App\Application\Http\Redirector;
+use App\Application\Session\SessionStore;
 use App\Domain\Auth\UserRepository;
 use App\Core\View;
 
@@ -12,6 +13,7 @@ final class LoginController {
         private readonly AuthService $authService,
         private readonly FlashMessenger $flash,
         private readonly Redirector $redirector,
+        private readonly SessionStore $sessionStore,
         private readonly UserRepository $usuarioRepositorio
     ){}
 
@@ -40,13 +42,21 @@ final class LoginController {
             $this->redirector->redirect('login');
         }
 
-        session_regenerate_id(true);
-        $_SESSION['username'] = $usuario->name();
-        $_SESSION['opposition_code'] = $codigoOposicion;
+        $this->sessionStore->startIfNeeded();
+        $this->sessionStore->regenerateId(true);
+
+        $this->sessionStore->setString('username', $usuario->name());
+        $this->sessionStore->setString('opposition_code', $codigoOposicion);
         
-        $redireccion = $_SESSION['next_url'] ?? 'panel-control-ejercicios';
-        unset($_SESSION['next_url']);
-        $this->redirector->redirect($redireccion);               
+        $redirectTo = trim($this->sessionStore->getString('next_url') ?? '');
+        if ($redirectTo === '') {
+            $redirectTo = 'panel-control-ejercicios';
+        }
+
+        // "clear" the one-time redirect
+        $this->sessionStore->setString('next_url', '');
+
+        $this->redirector->redirect($redirectTo);              
     }
 
     public function salir () : void {

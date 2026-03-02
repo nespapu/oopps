@@ -245,6 +245,7 @@ final class AppWiring
                 $this->authService(),
                 $this->flash(),
                 $this->redirector(),
+                $this->sessionStore(),
                 $this->usuarioRepositorio()
             );
         }
