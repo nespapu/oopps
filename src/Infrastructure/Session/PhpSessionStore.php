@@ -35,6 +35,15 @@ final class PhpSessionStore implements SessionStore
         return array_key_exists($key, $_SESSION) && $_SESSION[$key] !== null && $_SESSION[$key] !== '';
     }
 
+    public function remove(string $key): void
+    {
+        $this->startIfNeeded();
+
+        if (isset($_SESSION[$key])) {
+            unset($_SESSION[$key]);
+        }
+    }
+
     public function clear(): void
     {
         $this->startIfNeeded();

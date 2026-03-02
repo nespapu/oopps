@@ -53,8 +53,7 @@ final class LoginController {
             $redirectTo = 'panel-control-ejercicios';
         }
 
-        // "clear" the one-time redirect
-        $this->sessionStore->setString('next_url', '');
+        $this->sessionStore->remove('next_url');
 
         $this->redirector->redirect($redirectTo);              
     }

@@ -12,6 +12,8 @@ interface SessionStore
 
     public function has(string $key): bool;
 
+    public function remove(string $key): void;
+
     public function clear(): void;
 
     public function startIfNeeded(): void;
