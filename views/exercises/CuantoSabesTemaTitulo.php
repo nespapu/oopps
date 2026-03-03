@@ -2,10 +2,10 @@
 /** @var array $payload */
 /** @var string $sesionId */
 
-use App\Application\Exercises\Payload\ClavesPasoPayload;
+use App\Application\Exercises\Payload\StepPayloadKeys;
 
-$items = $payload[ClavesPasoPayload::ITEMS] ?? [];
-$meta  = $payload[ClavesPasoPayload::META] ?? [];
+$items = $payload[StepPayloadKeys::ITEMS] ?? [];
+$meta  = $payload[StepPayloadKeys::META] ?? [];
 
 $numeracionTema   = $meta['numeracionTema'] ?? '';
 $tituloTema       = $meta['tituloTema'] ?? '';

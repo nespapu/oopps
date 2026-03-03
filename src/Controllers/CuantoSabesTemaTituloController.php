@@ -4,8 +4,8 @@ namespace App\Controllers;
 use App\App\Routing\CuantoSabesTemaPaths;
 use App\Application\Auth\AuthService;
 use App\Application\Exercises\ExerciseSessionStore;
-use App\Application\Exercises\StepBuilder\CuantoSabesTemaTituloPayloadBuilder;
-use App\Application\Exercises\Evaluation\CuantoSabesTemaTituloEvaluationService;
+use App\Application\Exercises\StepBuilder\HowMuchDoYouKnowTitlePayloadBuilder;
+use App\Application\Exercises\Evaluation\HowMuchDoYouKnowTitleEvaluationService;
 use App\Application\Http\Redirector;
 use App\Application\Routing\UrlGenerator;
 use App\Core\View;
@@ -17,8 +17,8 @@ final class CuantoSabesTemaTituloController
         private readonly ExerciseSessionStore $almacenSesionEjercicio,
         private readonly AuthService $authService,
         private readonly CuantoSabesTemaPaths $cuantoSabesTemaPaths,
-        private readonly CuantoSabesTemaTituloPayloadBuilder $payloadBuilder,
-        private readonly CuantoSabesTemaTituloEvaluationService $evaluacionServicio,
+        private readonly HowMuchDoYouKnowTitlePayloadBuilder $payloadBuilder,
+        private readonly HowMuchDoYouKnowTitleEvaluationService $evaluacionServicio,
         private readonly Redirector $redirector,
         private readonly UrlGenerator $urlGenerator
     ) {}
@@ -29,7 +29,7 @@ final class CuantoSabesTemaTituloController
 
         $sesion = $this->almacenSesionEjercicio->getCurrentSession();
 
-        $payload = $this->payloadBuilder->construir($sesion);
+        $payload = $this->payloadBuilder->build($sesion);
 
         $evaluacion = $sesion->getStepEvaluation(ExerciseStep::TITLE);
 
@@ -48,7 +48,7 @@ final class CuantoSabesTemaTituloController
 
         $sesion = $this->almacenSesionEjercicio->getCurrentSession();
 
-        $payload = $this->payloadBuilder->construir($sesion);
+        $payload = $this->payloadBuilder->build($sesion);
              
         $stepAnswer = $this->buildStepAnswerFromPost($payload, ExerciseStep::TITLE->value);
 

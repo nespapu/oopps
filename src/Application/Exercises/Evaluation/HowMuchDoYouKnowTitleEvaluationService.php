@@ -2,11 +2,11 @@
 
 namespace App\Application\Exercises\Evaluation;
 
-final class CuantoSabesTemaTituloEvaluationService
+final class HowMuchDoYouKnowTitleEvaluationService
 {
     public function __construct(
         private readonly EqualityEvaluator $equalityEvaluator
-    ){}
+    ) {}
 
     /**
      * @phpstan-type StepPayload array{
@@ -48,7 +48,7 @@ final class CuantoSabesTemaTituloEvaluationService
             }
 
             $expected = $payload['expected'][$fieldKey];
-            $actual   = isset($values[$fieldKey]) ? (string) $values[$fieldKey] : '';
+            $actual = isset($values[$fieldKey]) ? (string) $values[$fieldKey] : '';
 
             $fieldResult = $this->equalityEvaluator->evaluate($fieldKey, $actual, $expected);
 
@@ -65,6 +65,4 @@ final class CuantoSabesTemaTituloEvaluationService
 
         return StepEvaluation::now($stepResult);
     }
-
 }
-?>

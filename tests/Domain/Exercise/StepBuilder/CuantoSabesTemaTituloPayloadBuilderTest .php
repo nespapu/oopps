@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Tests\Domain\Exercise\StepBuilder;
 
 use PHPUnit\Framework\TestCase;
-use App\Application\Exercises\StepBuilder\CuantoSabesTemaTituloPayloadBuilder;
-use App\Application\Exercises\Payload\ClavesPasoPayload;
+use App\Application\Exercises\StepBuilder\HowMuchDoYouKnowTitlePayloadBuilder;
+use App\Application\Exercises\Payload\StepPayloadKeys;
 use App\Domain\Auth\UserContext;
 use App\Domain\Exercise\HintMode;
 use App\Domain\Exercise\HintService;
@@ -21,7 +21,7 @@ final class CuantoSabesTemaTituloPayloadBuilderTest extends TestCase
         $repo = new FakeTopicRepository('Sistemas operativos. Gestión de procesos', null);
         $pistaServicio = new HintService();
 
-        $builder = new CuantoSabesTemaTituloPayloadBuilder($repo, $pistaServicio);
+        $builder = new HowMuchDoYouKnowTitlePayloadBuilder($repo, $pistaServicio);
 
         $session = $this->createMock(ExerciseSession::class);
 
@@ -36,20 +36,20 @@ final class CuantoSabesTemaTituloPayloadBuilderTest extends TestCase
 
         $session->method('config')->willReturn($config);
 
-        $payload = $builder->construir($session);
+        $payload = $builder->build($session);
 
-        $this->assertSame(ExerciseStep::TITLE, $payload[ClavesPasoPayload::PASO]);
+        $this->assertSame(ExerciseStep::TITLE, $payload[StepPayloadKeys::STEP]);
 
-        $this->assertArrayHasKey(ClavesPasoPayload::ITEMS, $payload);
-        $this->assertSame('text', $payload[ClavesPasoPayload::ITEMS][0]['tipo']);
-        $this->assertSame('titulo', $payload[ClavesPasoPayload::ITEMS][0]['nombre']);
+        $this->assertArrayHasKey(StepPayloadKeys::ITEMS, $payload);
+        $this->assertSame('text', $payload[StepPayloadKeys::ITEMS][0]['tipo']);
+        $this->assertSame('titulo', $payload[StepPayloadKeys::ITEMS][0]['nombre']);
 
-        $this->assertArrayHasKey('pista', $payload[ClavesPasoPayload::ITEMS][0]);
-        $this->assertNotSame('', $payload[ClavesPasoPayload::ITEMS][0]['pista']);
+        $this->assertArrayHasKey('pista', $payload[StepPayloadKeys::ITEMS][0]);
+        $this->assertNotSame('', $payload[StepPayloadKeys::ITEMS][0]['pista']);
 
-        $this->assertSame(16, $payload[ClavesPasoPayload::META]['numeracionTema']);
-        $this->assertSame('Sistemas operativos. Gestión de procesos', $payload[ClavesPasoPayload::META]['tituloTema']);
-        $this->assertSame(HintMode::WORDS->value, $payload[ClavesPasoPayload::META]['tipoPista']);
+        $this->assertSame(16, $payload[StepPayloadKeys::META]['numeracionTema']);
+        $this->assertSame('Sistemas operativos. Gestión de procesos', $payload[StepPayloadKeys::META]['tituloTema']);
+        $this->assertSame(HintMode::WORDS->value, $payload[StepPayloadKeys::META]['tipoPista']);
     }
 
     public function testUsaPistaDeRespaldoSiNoHayTitulo(): void
@@ -57,7 +57,7 @@ final class CuantoSabesTemaTituloPayloadBuilderTest extends TestCase
         $repo = new FakeTopicRepository(null, null);
         $pistaServicio = new HintService();
 
-        $builder = new CuantoSabesTemaTituloPayloadBuilder($repo, $pistaServicio);
+        $builder = new HowMuchDoYouKnowTitlePayloadBuilder($repo, $pistaServicio);
 
         $session = $this->createMock(ExerciseSession::class);
         $session->method('contextoUsuario')
@@ -70,9 +70,9 @@ final class CuantoSabesTemaTituloPayloadBuilderTest extends TestCase
         };
         $session->method('config')->willReturn($config);
 
-        $payload = $builder->construir($session);
+        $payload = $builder->build($session);
 
-        $this->assertSame('(sin pista generada)', $payload[ClavesPasoPayload::ITEMS][0]['pista']);
+        $this->assertSame('(sin pista generada)', $payload[StepPayloadKeys::ITEMS][0]['pista']);
     }
 
     private function contextoUsuarioDummy(): UserContext

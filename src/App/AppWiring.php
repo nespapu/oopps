@@ -13,11 +13,11 @@ use App\App\Routing\PanelControlEjerciciosPaths;
 use App\App\Routing\PanelControlEjerciciosRoutes;
 use App\Application\Auth\AuthService;
 use App\Application\Exercises\ExerciseSessionStore;
-use App\Application\Exercises\CuantoSabesTemaConfigPayloadBuilder;
-use App\Application\Exercises\Evaluation\CuantoSabesTemaTituloEvaluationService;
+use App\Application\Exercises\Evaluation\HowMuchDoYouKnowTitleEvaluationService;
 use App\Application\Exercises\Evaluation\EqualityEvaluator;
 use App\Application\Exercises\Evaluation\TextNormalizer;
-use App\Application\Exercises\StepBuilder\CuantoSabesTemaTituloPayloadBuilder;
+use App\Application\Exercises\StepBuilder\HowMuchDoYouKnowConfigPayloadBuilder;
+use App\Application\Exercises\StepBuilder\HowMuchDoYouKnowTitlePayloadBuilder;
 use App\Application\Flash\FlashMessenger;
 use App\Application\Http\HttpMethodGuard;
 use App\Application\Http\Redirector;
@@ -94,9 +94,9 @@ final class AppWiring
     // =========================================================================
     // Builders / Evaluators
     // =========================================================================
-    private ?CuantoSabesTemaConfigPayloadBuilder $cuantoSabesTemaConfigPayloadBuilder = null;
-    private ?CuantoSabesTemaTituloPayloadBuilder $cuantoSabesTemaTituloPayloadBuilder = null;
-    private ?CuantoSabesTemaTituloEvaluationService $cuantoSabesTemaTituloEvaluationService = null;
+    private ?HowMuchDoYouKnowConfigPayloadBuilder $cuantoSabesTemaConfigPayloadBuilder = null;
+    private ?HowMuchDoYouKnowTitlePayloadBuilder $cuantoSabesTemaTituloPayloadBuilder = null;
+    private ?HowMuchDoYouKnowTitleEvaluationService $cuantoSabesTemaTituloEvaluationService = null;
     private ?EqualityEvaluator $equalityEvaluator = null;
     private ?TextNormalizer $textNormalizer = null;
 
@@ -364,10 +364,10 @@ final class AppWiring
     // =========================================================================
     // Builders / Evaluators
     // =========================================================================
-    private function cuantoSabesTemaConfigPayloadBuilder(): CuantoSabesTemaConfigPayloadBuilder
+    private function cuantoSabesTemaConfigPayloadBuilder(): HowMuchDoYouKnowConfigPayloadBuilder
     {
         if ($this->cuantoSabesTemaConfigPayloadBuilder === null) {
-            $this->cuantoSabesTemaConfigPayloadBuilder = new CuantoSabesTemaConfigPayloadBuilder(
+            $this->cuantoSabesTemaConfigPayloadBuilder = new HowMuchDoYouKnowConfigPayloadBuilder(
                 $this->temaRepositorio()
             );
         }
@@ -375,10 +375,10 @@ final class AppWiring
         return $this->cuantoSabesTemaConfigPayloadBuilder;
     }
 
-    private function cuantoSabesTemaTituloPayloadBuilder(): CuantoSabesTemaTituloPayloadBuilder
+    private function cuantoSabesTemaTituloPayloadBuilder(): HowMuchDoYouKnowTitlePayloadBuilder
     {
         if ($this->cuantoSabesTemaTituloPayloadBuilder === null) {
-            $this->cuantoSabesTemaTituloPayloadBuilder = new CuantoSabesTemaTituloPayloadBuilder(
+            $this->cuantoSabesTemaTituloPayloadBuilder = new HowMuchDoYouKnowTitlePayloadBuilder(
                 $this->temaRepositorio(),
                 $this->pistaServicio()
             );
@@ -387,10 +387,10 @@ final class AppWiring
         return $this->cuantoSabesTemaTituloPayloadBuilder;
     }
 
-    private function cuantoSabesTemaTituloEvaluationService(): CuantoSabesTemaTituloEvaluationService
+    private function cuantoSabesTemaTituloEvaluationService(): HowMuchDoYouKnowTitleEvaluationService
     {
         if ($this->cuantoSabesTemaTituloEvaluationService === null) {
-            $this->cuantoSabesTemaTituloEvaluationService = new CuantoSabesTemaTituloEvaluationService(
+            $this->cuantoSabesTemaTituloEvaluationService = new HowMuchDoYouKnowTitleEvaluationService(
                 $this->equalityEvaluator()
             );
         }

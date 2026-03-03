@@ -4,7 +4,7 @@ namespace App\Controllers;
 use App\App\Routing\CuantoSabesTemaPaths;
 use App\Application\Auth\AuthService;
 use App\Application\Exercises\ExerciseSessionStore;
-use App\Application\Exercises\CuantoSabesTemaConfigPayloadBuilder;
+use App\Application\Exercises\StepBuilder\HowMuchDoYouKnowConfigPayloadBuilder;
 use App\Application\Flash\FlashMessenger;
 use App\Application\Http\Redirector;
 use App\Application\Routing\UrlGenerator;
@@ -20,7 +20,7 @@ final class CuantoSabesTemaConfigController
     public function __construct(
         private readonly ExerciseSessionStore $almacenSesionEjercicio,
         private readonly AuthService $authService,
-        private readonly CuantoSabesTemaConfigPayloadBuilder $payloadBuilder,
+        private readonly HowMuchDoYouKnowConfigPayloadBuilder $payloadBuilder,
         private readonly CuantoSabesTemaPaths $cuantoSabesTemaPaths,
         private readonly FlashMessenger $flash,
         private readonly Redirector $redirector,
@@ -35,7 +35,7 @@ final class CuantoSabesTemaConfigController
         $error = $this->flash->get('error');
         $contextoUsuario = $this->authService->userContext();
 
-        $payload = $this->payloadBuilder->construir($contextoUsuario);
+        $payload = $this->payloadBuilder->build($contextoUsuario);
         $payload['error'] = $error;
         $payload['titulo'] = "Configuración";
 
