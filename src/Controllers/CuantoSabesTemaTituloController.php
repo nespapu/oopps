@@ -1,7 +1,7 @@
 <?php
 namespace App\Controllers;
 
-use App\App\Routing\CuantoSabesTemaPaths;
+use App\App\Routing\HowMuchDoYouKnowPaths;
 use App\Application\Auth\AuthService;
 use App\Application\Exercises\ExerciseSessionStore;
 use App\Application\Exercises\StepBuilder\HowMuchDoYouKnowTitlePayloadBuilder;
@@ -16,7 +16,7 @@ final class CuantoSabesTemaTituloController
     public function __construct(
         private readonly ExerciseSessionStore $almacenSesionEjercicio,
         private readonly AuthService $authService,
-        private readonly CuantoSabesTemaPaths $cuantoSabesTemaPaths,
+        private readonly HowMuchDoYouKnowPaths $cuantoSabesTemaPaths,
         private readonly HowMuchDoYouKnowTitlePayloadBuilder $payloadBuilder,
         private readonly HowMuchDoYouKnowTitleEvaluationService $evaluacionServicio,
         private readonly Redirector $redirector,
@@ -57,7 +57,7 @@ final class CuantoSabesTemaTituloController
         $sesion->setStepEvaluation(ExerciseStep::TITLE, $evaluacion);
         $this->almacenSesionEjercicio->save($sesion);
 
-        $this->redirector->redirect($this->cuantoSabesTemaPaths->pasoTitulo($sesion->sessionId()));
+        $this->redirector->redirect($this->cuantoSabesTemaPaths->titleStep($sesion->sessionId()));
     }
 
     private function buildStepAnswerFromPost(array $payload, string $step): array

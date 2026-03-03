@@ -18,7 +18,7 @@ $temaSeleccionado = (int)($defecto['tema'] ?? 0);
 $gradoDificultadSeleccionado = (int)($defecto['gradoDificultad'] ?? 3);
 
 
-$formularioAccion = $url->to($cuantoSabesTemaPaths->inicio());
+$formularioAccion = $url->to($cuantoSabesTemaPaths->start());
 
 $escapar = static fn(string $valor): string =>
     htmlspecialchars($valor, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');

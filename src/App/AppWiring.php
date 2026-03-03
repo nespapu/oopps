@@ -5,12 +5,12 @@ use App\App\Http\AppKernel;
 use App\App\Http\AppRoutes;
 use App\App\Routing\AuthPaths;
 use App\App\Routing\AuthRoutes;
-use App\App\Routing\CuantoSabesTemaRoutes;
-use App\App\Routing\CuantoSabesTemaPaths;
+use App\App\Routing\HowMuchDoYouKnowRoutes;
+use App\App\Routing\HowMuchDoYouKnowPaths;
 use App\App\Routing\DevPaths;
 use App\App\Routing\DevRoutes;
-use App\App\Routing\PanelControlEjerciciosPaths;
-use App\App\Routing\PanelControlEjerciciosRoutes;
+use App\App\Routing\ExercisesDashboardPaths;
+use App\App\Routing\ExercisesDashboardRoutes;
 use App\Application\Auth\AuthService;
 use App\Application\Exercises\ExerciseSessionStore;
 use App\Application\Exercises\Evaluation\HowMuchDoYouKnowTitleEvaluationService;
@@ -62,9 +62,9 @@ final class AppWiring
     // Routing / Navigation (App layer)
     // =========================================================================
     private ?AuthPaths $authPaths = null;
-    private ?CuantoSabesTemaPaths $cuantoSabesTemaPaths = null;
+    private ?HowMuchDoYouKnowPaths $cuantoSabesTemaPaths = null;
     private ?DevPaths $devPaths = null;
-    private ?PanelControlEjerciciosPaths $panelControlEjerciciosPaths = null;
+    private ?ExercisesDashboardPaths $panelControlEjerciciosPaths = null;
 
     // =========================================================================
     // Routing infrastructure
@@ -161,22 +161,22 @@ final class AppWiring
         );
     }
 
-    private function panelControlEjerciciosRoutes(): PanelControlEjerciciosRoutes
+    private function panelControlEjerciciosRoutes(): ExercisesDashboardRoutes
     {
         $controller = $this->panelControlEjerciciosController();
 
-        return new PanelControlEjerciciosRoutes(
+        return new ExercisesDashboardRoutes(
             $this->panelControlEjerciciosPaths(),
             \Closure::fromCallable([$controller, 'mostrar'])
         );
     }
 
-    private function cuantoSabesTemaRoutes(): CuantoSabesTemaRoutes
+    private function cuantoSabesTemaRoutes(): HowMuchDoYouKnowRoutes
     {
         $configController = $this->cuantoSabesTemaConfigController();
         $titleController = $this->cuantoSabesTemaTituloController();
 
-        return new CuantoSabesTemaRoutes(
+        return new HowMuchDoYouKnowRoutes(
             $this->cuantoSabesTemaPaths(),
             \Closure::fromCallable([$configController, 'mostrar']),
             \Closure::fromCallable([$configController, 'comprobar']),
@@ -209,10 +209,10 @@ final class AppWiring
         return $this->authPaths;
     }
 
-    private function cuantoSabesTemaPaths(): CuantoSabesTemaPaths
+    private function cuantoSabesTemaPaths(): HowMuchDoYouKnowPaths
     {
         if ($this->cuantoSabesTemaPaths === null) {
-            $this->cuantoSabesTemaPaths = new CuantoSabesTemaPaths(
+            $this->cuantoSabesTemaPaths = new HowMuchDoYouKnowPaths(
                 $this->routeUrlGenerator()
             );
         }
@@ -227,10 +227,10 @@ final class AppWiring
         return $this->devPaths;
     }
 
-    private function panelControlEjerciciosPaths(): PanelControlEjerciciosPaths
+    private function panelControlEjerciciosPaths(): ExercisesDashboardPaths
     {
         if ($this->panelControlEjerciciosPaths === null) {
-            $this->panelControlEjerciciosPaths = new PanelControlEjerciciosPaths();
+            $this->panelControlEjerciciosPaths = new ExercisesDashboardPaths();
         }
         return $this->panelControlEjerciciosPaths;
     }

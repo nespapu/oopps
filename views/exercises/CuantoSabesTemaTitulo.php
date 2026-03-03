@@ -24,7 +24,7 @@ if (is_array($evaluacion)) {
     $isStepCorrect = $evaluacion['result']['isStepCorrect'] ?? null;
 }
 
-$action = $url->to($cuantoSabesTemaPaths->evaluarTitulo($sesionId));
+$action = $url->to($cuantoSabesTemaPaths->titleEvaluation($sesionId));
 ?>
 
 <div class="row justify-content-center">
@@ -123,7 +123,7 @@ $action = $url->to($cuantoSabesTemaPaths->evaluarTitulo($sesionId));
             <?php if (($isStepCorrect ?? null) === true): ?>
             <a class="btn btn-success"
               href="<?= htmlspecialchars(
-                  $url->to($cuantoSabesTemaPaths->pasoIndice($sesionId)),
+                  $url->to($cuantoSabesTemaPaths->indexStep($sesionId)),
                   ENT_QUOTES,
                   'UTF-8'
               ) ?>">

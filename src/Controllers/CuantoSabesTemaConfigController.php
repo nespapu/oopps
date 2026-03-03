@@ -1,7 +1,7 @@
 <?php
 namespace App\Controllers;
 
-use App\App\Routing\CuantoSabesTemaPaths;
+use App\App\Routing\HowMuchDoYouKnowPaths;
 use App\Application\Auth\AuthService;
 use App\Application\Exercises\ExerciseSessionStore;
 use App\Application\Exercises\StepBuilder\HowMuchDoYouKnowConfigPayloadBuilder;
@@ -21,7 +21,7 @@ final class CuantoSabesTemaConfigController
         private readonly ExerciseSessionStore $almacenSesionEjercicio,
         private readonly AuthService $authService,
         private readonly HowMuchDoYouKnowConfigPayloadBuilder $payloadBuilder,
-        private readonly CuantoSabesTemaPaths $cuantoSabesTemaPaths,
+        private readonly HowMuchDoYouKnowPaths $cuantoSabesTemaPaths,
         private readonly FlashMessenger $flash,
         private readonly Redirector $redirector,
         private readonly TopicRepository $temaRepositorio,
@@ -100,7 +100,7 @@ final class CuantoSabesTemaConfigController
             $firstExerciseStep
         );
 
-        $this->redirector->redirect($this->cuantoSabesTemaPaths->pasoTitulo($sesion->sessionId()));
+        $this->redirector->redirect($this->cuantoSabesTemaPaths->titleStep($sesion->sessionId()));
     }
 }
 ?>
