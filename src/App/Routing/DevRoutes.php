@@ -21,19 +21,19 @@ final class DevRoutes
         $routes = new RouteCollection();
 
         $routes->add(new RouteDefinition(
-            path: $this->devPaths->base(),
+            path: $this->devPaths->exerciseSessionBase(),
             method: HttpMethod::GET,
             handler: $this->showHandler
         ));
 
         $routes->add(new RouteDefinition(
-            path: $this->devPaths->siguiente(),
+            path: $this->devPaths->exerciseSessionNext(),
             method: HttpMethod::POST,
             handler: $this->nextHandler
         ));
 
         $routes->add(new RouteDefinition(
-            path: $this->devPaths->reset(),
+            path: $this->devPaths->exerciseSessionReset(),
             method: HttpMethod::POST,
             handler: $this->resetHandler
         ));

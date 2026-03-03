@@ -1,27 +1,27 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\App\Routing;
 
-
 final class DevPaths
 {
-    private const BASE = 'dev/sesion-ejercicio';
-    private const SIGUIENTE = 'dev/sesion-ejercicio/siguiente';
-    private const RESET = 'dev/sesion-ejercicio/reset';
+    private const EXERCISE_SESSION_BASE = 'dev/sesion-ejercicio';
+    private const EXERCISE_SESSION_NEXT = 'dev/sesion-ejercicio/siguiente';
+    private const EXERCISE_SESSION_RESET = 'dev/sesion-ejercicio/reset';
 
-    public function base(): string
+    public function exerciseSessionBase(): string
     {
-        return self::BASE;
+        return self::EXERCISE_SESSION_BASE;
     }
 
-    public function siguiente(): string
+    public function exerciseSessionNext(): string
     {
-        return self::SIGUIENTE;
+        return self::EXERCISE_SESSION_NEXT;
     }
 
-    public function reset(): string
+    public function exerciseSessionReset(): string
     {
-        return self::RESET;
+        return self::EXERCISE_SESSION_RESET;
     }
 }

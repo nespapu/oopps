@@ -30,7 +30,7 @@ use App\Controllers\LoginController;
 use App\Controllers\ExercisesDashboardController;
 use App\Controllers\HowMuchDoYouKnowConfigController;
 use App\Controllers\HowMuchDoYouKnowTitleController;
-use App\Controllers\Dev\DevSesionEjercicioController;
+use App\Controllers\Dev\DevExerciseSessionController;
 use App\Domain\Auth\UserRepository;
 use App\Domain\Exercise\HintService;
 use App\Domain\Temas\TopicRepository;
@@ -81,7 +81,7 @@ final class AppWiring
     private ?ExercisesDashboardController $panelControlEjerciciosController = null;
     private ?HowMuchDoYouKnowConfigController $cuantoSabesTemaConfigController = null;
     private ?HowMuchDoYouKnowTitleController $cuantoSabesTemaTituloController = null;
-    private ?DevSesionEjercicioController $devSesionEjercicioController = null;
+    private ?DevExerciseSessionController $devSesionEjercicioController = null;
 
     // =========================================================================
     // Application services
@@ -192,8 +192,8 @@ final class AppWiring
 
         return new DevRoutes(
             $this->devPaths(),
-            \Closure::fromCallable([$controller, 'mostrar']),
-            \Closure::fromCallable([$controller, 'siguiente']),
+            \Closure::fromCallable([$controller, 'show']),
+            \Closure::fromCallable([$controller, 'next']),
             \Closure::fromCallable([$controller, 'reset'])
         );
     }
@@ -299,10 +299,10 @@ final class AppWiring
         return $this->cuantoSabesTemaTituloController;
     }
 
-    private function devSesionEjercicioController(): DevSesionEjercicioController
+    private function devSesionEjercicioController(): DevExerciseSessionController
     {
         if ($this->devSesionEjercicioController === null) {
-            $this->devSesionEjercicioController = new DevSesionEjercicioController(
+            $this->devSesionEjercicioController = new DevExerciseSessionController(
                 $this->almacenSesionEjercicio(),
                 $this->redirector(),
                 $this->devPaths(),
