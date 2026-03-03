@@ -27,9 +27,9 @@ use App\Application\Routing\RouteUrlGenerator;
 use App\Application\Routing\UrlGenerator;
 use App\Application\Session\SessionStore;
 use App\Controllers\LoginController;
-use App\Controllers\PanelControlEjerciciosController;
-use App\Controllers\CuantoSabesTemaConfigController;
-use App\Controllers\CuantoSabesTemaTituloController;
+use App\Controllers\ExercisesDashboardController;
+use App\Controllers\HowMuchDoYouKnowConfigController;
+use App\Controllers\HowMuchDoYouKnowTitleController;
 use App\Controllers\Dev\DevSesionEjercicioController;
 use App\Domain\Auth\UserRepository;
 use App\Domain\Exercise\HintService;
@@ -78,9 +78,9 @@ final class AppWiring
     // Controllers (memoized per request for consistency)
     // =========================================================================
     private ?LoginController $loginController = null;
-    private ?PanelControlEjerciciosController $panelControlEjerciciosController = null;
-    private ?CuantoSabesTemaConfigController $cuantoSabesTemaConfigController = null;
-    private ?CuantoSabesTemaTituloController $cuantoSabesTemaTituloController = null;
+    private ?ExercisesDashboardController $panelControlEjerciciosController = null;
+    private ?HowMuchDoYouKnowConfigController $cuantoSabesTemaConfigController = null;
+    private ?HowMuchDoYouKnowTitleController $cuantoSabesTemaTituloController = null;
     private ?DevSesionEjercicioController $devSesionEjercicioController = null;
 
     // =========================================================================
@@ -155,9 +155,9 @@ final class AppWiring
 
         return new AuthRoutes(
             $this->authPaths(),
-            \Closure::fromCallable([$controller, 'mostrar']),
-            \Closure::fromCallable([$controller, 'comprobar']),
-            \Closure::fromCallable([$controller, 'salir'])
+            \Closure::fromCallable([$controller, 'show']),
+            \Closure::fromCallable([$controller, 'authenticate']),
+            \Closure::fromCallable([$controller, 'logout'])
         );
     }
 
@@ -167,7 +167,7 @@ final class AppWiring
 
         return new ExercisesDashboardRoutes(
             $this->panelControlEjerciciosPaths(),
-            \Closure::fromCallable([$controller, 'mostrar'])
+            \Closure::fromCallable([$controller, 'show'])
         );
     }
 
@@ -178,10 +178,10 @@ final class AppWiring
 
         return new HowMuchDoYouKnowRoutes(
             $this->cuantoSabesTemaPaths(),
-            \Closure::fromCallable([$configController, 'mostrar']),
-            \Closure::fromCallable([$configController, 'comprobar']),
-            \Closure::fromCallable([$titleController, 'mostrar']),
-            \Closure::fromCallable([$titleController, 'evaluar']),
+            \Closure::fromCallable([$configController, 'show']),
+            \Closure::fromCallable([$configController, 'submit']),
+            \Closure::fromCallable([$titleController, 'show']),
+            \Closure::fromCallable([$titleController, 'evaluate']),
             fn() => print 'Proximamente...'
         );
     }
@@ -253,10 +253,10 @@ final class AppWiring
         return $this->loginController;
     }
 
-    private function panelControlEjerciciosController(): PanelControlEjerciciosController
+    private function panelControlEjerciciosController(): ExercisesDashboardController
     {
         if ($this->panelControlEjerciciosController === null) {
-            $this->panelControlEjerciciosController = new PanelControlEjerciciosController(
+            $this->panelControlEjerciciosController = new ExercisesDashboardController(
                 $this->authService()
             );
         }
@@ -264,10 +264,10 @@ final class AppWiring
         return $this->panelControlEjerciciosController;
     }
 
-    private function cuantoSabesTemaConfigController(): CuantoSabesTemaConfigController
+    private function cuantoSabesTemaConfigController(): HowMuchDoYouKnowConfigController
     {
         if ($this->cuantoSabesTemaConfigController === null) {
-            $this->cuantoSabesTemaConfigController = new CuantoSabesTemaConfigController(
+            $this->cuantoSabesTemaConfigController = new HowMuchDoYouKnowConfigController(
                 $this->almacenSesionEjercicio(),
                 $this->authService(),
                 $this->cuantoSabesTemaConfigPayloadBuilder(),
@@ -282,10 +282,10 @@ final class AppWiring
         return $this->cuantoSabesTemaConfigController;
     }
 
-    private function cuantoSabesTemaTituloController(): CuantoSabesTemaTituloController
+    private function cuantoSabesTemaTituloController(): HowMuchDoYouKnowTitleController
     {
         if ($this->cuantoSabesTemaTituloController === null) {
-            $this->cuantoSabesTemaTituloController = new CuantoSabesTemaTituloController(
+            $this->cuantoSabesTemaTituloController = new HowMuchDoYouKnowTitleController(
                 $this->almacenSesionEjercicio(),
                 $this->authService(),
                 $this->cuantoSabesTemaPaths(),

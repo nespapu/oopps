@@ -1,63 +1,63 @@
 <?php
+
 namespace App\Controllers;
 
 use App\App\Routing\HowMuchDoYouKnowPaths;
 use App\Application\Auth\AuthService;
+use App\Application\Exercises\Evaluation\HowMuchDoYouKnowTitleEvaluationService;
 use App\Application\Exercises\ExerciseSessionStore;
 use App\Application\Exercises\StepBuilder\HowMuchDoYouKnowTitlePayloadBuilder;
-use App\Application\Exercises\Evaluation\HowMuchDoYouKnowTitleEvaluationService;
 use App\Application\Http\Redirector;
 use App\Application\Routing\UrlGenerator;
 use App\Core\View;
 use App\Domain\Exercise\ExerciseStep;
 
-final class CuantoSabesTemaTituloController
+final class HowMuchDoYouKnowTitleController
 {
     public function __construct(
-        private readonly ExerciseSessionStore $almacenSesionEjercicio,
+        private readonly ExerciseSessionStore $exerciseSessionStore,
         private readonly AuthService $authService,
-        private readonly HowMuchDoYouKnowPaths $cuantoSabesTemaPaths,
+        private readonly HowMuchDoYouKnowPaths $paths,
         private readonly HowMuchDoYouKnowTitlePayloadBuilder $payloadBuilder,
-        private readonly HowMuchDoYouKnowTitleEvaluationService $evaluacionServicio,
+        private readonly HowMuchDoYouKnowTitleEvaluationService $evaluationService,
         private readonly Redirector $redirector,
         private readonly UrlGenerator $urlGenerator
     ) {}
 
-    public function mostrar(): void
+    public function show(): void
     {
         $this->authService->requireLogin();
 
-        $sesion = $this->almacenSesionEjercicio->getCurrentSession();
+        $session = $this->exerciseSessionStore->getCurrentSession();
 
-        $payload = $this->payloadBuilder->build($sesion);
-
-        $evaluacion = $sesion->getStepEvaluation(ExerciseStep::TITLE);
+        $payload = $this->payloadBuilder->build($session);
+        $evaluation = $session->getStepEvaluation(ExerciseStep::TITLE);
 
         View::render('exercises/CuantoSabesTemaTitulo.php', [
             'payload' => $payload,
-            'sesionId' => $sesion->sessionId(),
-            'evaluacion' => $evaluacion,
+            'sesionId' => $session->sessionId(),
+            'evaluacion' => $evaluation,
             'url' => $this->urlGenerator,
-            'cuantoSabesTemaPaths' => $this->cuantoSabesTemaPaths
+            'cuantoSabesTemaPaths' => $this->paths,
         ]);
     }
 
-    public function evaluar(): void
+    public function evaluate(): void
     {
         $this->authService->requireLogin();
 
-        $sesion = $this->almacenSesionEjercicio->getCurrentSession();
+        $session = $this->exerciseSessionStore->getCurrentSession();
 
-        $payload = $this->payloadBuilder->build($sesion);
-             
+        $payload = $this->payloadBuilder->build($session);
+
         $stepAnswer = $this->buildStepAnswerFromPost($payload, ExerciseStep::TITLE->value);
 
-        $evaluacion = $this->evaluacionServicio->evaluate($payload, $stepAnswer);
+        $evaluation = $this->evaluationService->evaluate($payload, $stepAnswer);
 
-        $sesion->setStepEvaluation(ExerciseStep::TITLE, $evaluacion);
-        $this->almacenSesionEjercicio->save($sesion);
+        $session->setStepEvaluation(ExerciseStep::TITLE, $evaluation);
+        $this->exerciseSessionStore->save($session);
 
-        $this->redirector->redirect($this->cuantoSabesTemaPaths->titleStep($sesion->sessionId()));
+        $this->redirector->redirect($this->paths->titleStep($session->sessionId()));
     }
 
     private function buildStepAnswerFromPost(array $payload, string $step): array
@@ -71,7 +71,4 @@ final class CuantoSabesTemaTituloController
 
         return ['step' => $step, 'values' => $values];
     }
-
-
 }
-?>
