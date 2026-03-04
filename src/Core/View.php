@@ -25,7 +25,7 @@ final class View
         $content = ob_get_clean();
 
         // Load main layout
-        $layoutFile = "{$viewsBasePath}/layouts/plantilla.php";
+        $layoutFile = "{$viewsBasePath}/layouts/layout.php";
 
         if (!is_file($layoutFile)) {
             throw new \RuntimeException("Layout not found: {$layoutFile}");
