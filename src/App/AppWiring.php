@@ -39,7 +39,9 @@ use App\Infrastructure\Flash\SessionFlashMessenger;
 use App\Infrastructure\Http\DefaultHttpMethodGuard;
 use App\Infrastructure\Http\HeaderRedirector;
 use App\Infrastructure\Http\ServerRequestContext;
-use App\Infrastructure\Persistence\ConexionBD;
+use App\Infrastructure\Config\DatabaseConfigProvider;
+use App\Infrastructure\Config\EnvDatabaseConfigProvider;
+use App\Infrastructure\Persistence\PdoFactory;
 use App\Infrastructure\Persistence\Repositories\TopicRepositorySQL;
 use App\Infrastructure\Persistence\Repositories\UserRepositorySQL;
 use App\Infrastructure\Routing\RouteAssembler;
@@ -109,6 +111,8 @@ final class AppWiring
     // Infrastructure (IO)
     // =========================================================================
     private ?PDO $pdo = null;
+    private ?DatabaseConfigProvider $databaseConfigProvider = null;
+    private ?PdoFactory $pdoFactory = null;
     private ?SessionStore $sessionStore = null;
     private ?UrlGenerator $urlGenerator = null;
     private ?TopicRepository $temaRepositorio = null;
@@ -484,10 +488,26 @@ final class AppWiring
     private function pdo(): PDO
     {
         if ($this->pdo === null) {
-            $this->pdo = ConexionBD::obtener();
+            $config = $this->databaseConfigProvider()->get();
+            $this->pdo = $this->pdoFactory()->create($config);
         }
-
         return $this->pdo;
+    }
+
+    private function databaseConfigProvider(): DatabaseConfigProvider
+    {
+        if ($this->databaseConfigProvider == null) {
+            $this->databaseConfigProvider = new EnvDatabaseConfigProvider();
+        }
+        return $this->databaseConfigProvider;
+    }
+
+    private function pdoFactory(): PdoFactory
+    {
+        if($this->pdoFactory == null) {
+            $this->pdoFactory = new PdoFactory();
+        }
+        return $this->pdoFactory;
     }
 
     private function sessionStore(): SessionStore
