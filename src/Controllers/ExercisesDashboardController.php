@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Application\Auth\AuthService;
+use App\Application\Exercises\ExerciseCatalog;
 use App\Core\View;
 
 final class ExercisesDashboardController
@@ -18,7 +19,7 @@ final class ExercisesDashboardController
         $this->authService->requireLogin();
 
         $username = $this->authService->username() ?? '';
-        $exercises = require __DIR__ . '/../../config/Exercises.php';
+        $exercises = ExerciseCatalog::all();
 
         View::render('exercises-dashboard/dashboard', [
             'username' => $username,
