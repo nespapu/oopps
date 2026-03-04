@@ -7,7 +7,7 @@ return [
     ],
     [
         'nombre' => 'Cuánto sabes del tema',
-        'ruta' => 'ejercicio/cuanto-sabes-tema',
+        'ruta' => 'ejercicios/cuanto-sabes-tema/config',
         'activo' => true
     ]
 ];

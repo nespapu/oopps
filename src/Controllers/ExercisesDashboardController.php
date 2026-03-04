@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controllers;
 
 use App\Application\Auth\AuthService;
@@ -15,16 +17,12 @@ final class ExercisesDashboardController
     {
         $this->authService->requireLogin();
 
-        // View data
-        $title = 'Exercises dashboard';
         $username = $this->authService->username() ?? '';
+        $exercises = require __DIR__ . '/../../config/Exercises.php';
 
-        $exercises = require __DIR__ . '/../../config/Ejercicios.php';
-
-        View::render('panel-control-ejercicios/index', [
-            'title' => $title,
-            'usuario' => $username,
-            'ejercicios' => $exercises,
+        View::render('exercises-dashboard/dashboard', [
+            'username' => $username,
+            'exercises' => $exercises,
         ]);
     }
 }

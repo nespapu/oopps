@@ -1,12 +1,8 @@
 <?php
-// Título de la pestaña del navegador
-$titulo = 'Panel control ejercicios';
+$title = 'Panel de ejercicios';
 
-// Intentamos obtener el nombre del usuario
-$nombreUsuario = $usuario ?? 'usuario';
-
-// Aseguramos que $ejercicios sea un array para evitar avisos
-$ejercicios = $ejercicios ?? [];
+$username = $username ?? 'usuario';
+$exercises = $exercises ?? [];
 ?>
 
 <div class="row justify-content-center">
@@ -16,14 +12,14 @@ $ejercicios = $ejercicios ?? [];
             <div class="card-body p-4 p-md-5">
 
                 <h1 class="h3 mb-3">
-                    OOPPS – Bienvenido, <?= htmlspecialchars($nombreUsuario, ENT_QUOTES, 'UTF-8') ?>
+                    OOPPS – Bienvenido, <?= htmlspecialchars((string) $username, ENT_QUOTES, 'UTF-8') ?>
                 </h1>
 
                 <p class="text-muted mb-4">
                     ¿Qué ejercicio quieres practicar hoy?
                 </p>
 
-                <?php if (empty($ejercicios)): ?>
+                <?php if (empty($exercises)): ?>
                     <div class="alert alert-info">
                         De momento no hay ejercicios configurados en el panel de control.
                     </div>
@@ -31,24 +27,23 @@ $ejercicios = $ejercicios ?? [];
 
                     <div class="row g-3 mb-4">
 
-                        <?php foreach ($ejercicios as $ejercicio): ?>
+                        <?php foreach ($exercises as $exercise): ?>
                             <?php
-                                $nombre = $ejercicio['nombre'] ?? 'Ejercicio sin nombre';
-                                $ruta   = $ejercicio['ruta']   ?? '#';
-                                $activo = $ejercicio['activo'] ?? false;
+                                $name = $exercise['nombre'] ?? 'Ejercicio sin nombre';
+                                $path = $exercise['ruta'] ?? '#';
+                                $isActive = (bool) ($exercise['activo'] ?? false);
                             ?>
 
                             <div class="col-md-6 col-lg-4">
-                                <?php if ($activo): ?>
-                                    <!-- Tarjeta de ejercicio ACTIVO (clicable) -->
-                                    <a 
-                                        href="/oopps/menu.php?nombre=nestor&oposicion=590107" 
+                                <?php if ($isActive): ?>
+                                    <a
+                                        href="<?= htmlspecialchars((string) $path, ENT_QUOTES, 'UTF-8') ?>"
                                         class="text-decoration-none"
                                     >
                                         <div class="card h-100 border-0 shadow-sm">
                                             <div class="card-body">
                                                 <h2 class="h5 mb-2">
-                                                    <?= htmlspecialchars($nombre, ENT_QUOTES, 'UTF-8') ?>
+                                                    <?= htmlspecialchars((string) $name, ENT_QUOTES, 'UTF-8') ?>
                                                 </h2>
                                                 <p class="small text-muted mb-0">
                                                     Haz clic para practicar este ejercicio.
@@ -57,11 +52,10 @@ $ejercicios = $ejercicios ?? [];
                                         </div>
                                     </a>
                                 <?php else: ?>
-                                    <!-- Tarjeta de ejercicio INACTIVO (no clicable) -->
                                     <div class="card h-100 border-0 shadow-sm bg-light-subtle">
                                         <div class="card-body">
                                             <h2 class="h5 mb-2 text-muted">
-                                                <?= htmlspecialchars($nombre, ENT_QUOTES, 'UTF-8') ?>
+                                                <?= htmlspecialchars((string) $name, ENT_QUOTES, 'UTF-8') ?>
                                             </h2>
                                             <p class="small text-muted mb-1">
                                                 Este ejercicio todavía no está disponible.
@@ -79,10 +73,7 @@ $ejercicios = $ejercicios ?? [];
 
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
                     <form action="login/salir" method="post" style="display:inline;">
-                        <button 
-                            type="submit" 
-                            class="btn btn-outline-danger btn-sm"
-                        >
+                        <button type="submit" class="btn btn-outline-danger btn-sm">
                             Cerrar sesión
                         </button>
                     </form>
