@@ -33,7 +33,7 @@ final class HowMuchDoYouKnowTitleController
         $payload = $this->payloadBuilder->build($session);
         $evaluation = $session->getStepEvaluation(ExerciseStep::TITLE);
 
-        View::render('exercises/CuantoSabesTemaTitulo.php', [
+        View::render('exercises/CuantoSabesTemaTitulo', [
             'payload' => $payload,
             'sesionId' => $session->sessionId(),
             'evaluacion' => $evaluation,

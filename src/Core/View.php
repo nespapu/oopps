@@ -1,21 +1,36 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core;
 
-class View
+final class View
 {
-    public static function render(string $vista, array $datos = []): void
+    public static function render(string $view, array $data = []): void
     {
-        // Convierte cada clave del array en una variable
-        extract($datos);
+        // Make data available as variables inside the view
+        extract($data, EXTR_SKIP);
 
-        // Capturamos el contenido de la vista
+        $viewsBasePath = __DIR__ . '/../../views';
+
+        $viewFile = "{$viewsBasePath}/{$view}.php";
+
+        if (!is_file($viewFile)) {
+            throw new \RuntimeException("View not found: {$viewFile}");
+        }
+
+        // Capture view output
         ob_start();
-        require __DIR__ . "/../../views/{$vista}";
-        $contenido = ob_get_clean();
+        require $viewFile;
+        $content = ob_get_clean();
 
-        // Cargamos el layout principal
-        require __DIR__ . "/../../views/layouts/plantilla.php";
+        // Load main layout
+        $layoutFile = "{$viewsBasePath}/layouts/plantilla.php";
+
+        if (!is_file($layoutFile)) {
+            throw new \RuntimeException("Layout not found: {$layoutFile}");
+        }
+
+        require $layoutFile;
     }
 }
-?>

@@ -18,7 +18,7 @@
     <?php require __DIR__ . '/../partials/cabecera.php'; ?>
 
     <main class="container mt-4">
-        <?= $contenido ?>
+        <?= $content ?>
     </main>
 
     <!-- FOOTER -->

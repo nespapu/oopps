@@ -21,7 +21,7 @@ final class ExercisesDashboardController
 
         $exercises = require __DIR__ . '/../../config/Ejercicios.php';
 
-        View::render('panel-control-ejercicios/index.php', [
+        View::render('panel-control-ejercicios/index', [
             'title' => $title,
             'usuario' => $username,
             'ejercicios' => $exercises,

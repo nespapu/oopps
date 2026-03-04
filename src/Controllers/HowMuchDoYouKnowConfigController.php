@@ -40,7 +40,7 @@ final class HowMuchDoYouKnowConfigController
         $payload['error'] = $error;
         $payload['titulo'] = 'Configuración';
 
-        View::render('exercises/CuantoSabesTemaConfiguracion.php', [
+        View::render('exercises/CuantoSabesTemaConfiguracion', [
             'payload' => $payload,
             'url' => $this->urlGenerator,
             'cuantoSabesTemaPaths' => $this->paths,

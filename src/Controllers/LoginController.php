@@ -23,7 +23,7 @@ final class LoginController
     {
         $error = $this->flash->get('error');
 
-        View::render('login/index.php', [
+        View::render('login/index', [
             'error' => $error,
         ]);
     }
