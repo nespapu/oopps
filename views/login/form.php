@@ -1,7 +1,8 @@
 <?php
-// Título de la pestaña del navegador
-$titulo = 'Login';
+// Browser tab title
+$title = 'Login';
 ?>
+
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-6 col-lg-4">
@@ -15,17 +16,17 @@ $titulo = 'Login';
 
                     <?php if (!empty($error)): ?>
                         <div class="alert alert-danger">
-                            <?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?>
+                            <?= htmlspecialchars((string) $error, ENT_QUOTES, 'UTF-8') ?>
                         </div>
                     <?php endif; ?>
 
                     <form method="post" action="login">
                         <div class="mb-3">
-                            <label for="nombre" class="form-label">Nombre de usuario</label>
+                            <label for="username" class="form-label">Nombre de usuario</label>
                             <input
                                 type="text"
-                                name="nombre"
-                                id="nombre"
+                                name="username"
+                                id="username"
                                 class="form-control"
                                 placeholder="Introduce tu usuario"
                                 required
@@ -35,20 +36,17 @@ $titulo = 'Login';
                         </div>
 
                         <div class="mb-3">
-                            <label for="clave" class="form-label">Contraseña</label>
+                            <label for="password" class="form-label">Contraseña</label>
                             <input
                                 type="password"
-                                name="clave"
-                                id="clave"
+                                name="password"
+                                id="password"
                                 class="form-control"
                                 placeholder="Introduce tu contraseña"
                                 required
                                 autocomplete="current-password"
                             >
                         </div>
-
-                        <!-- Si tienes token CSRF, iría aquí -->
-                        <!-- <input type="hidden" name="csrf_token" value="<?= $csrfToken ?? '' ?>"> -->
 
                         <button type="submit" class="btn btn-primary w-100">
                             Entrar

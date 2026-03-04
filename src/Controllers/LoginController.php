@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controllers;
 
 use App\Application\Auth\AuthService;
@@ -23,24 +25,24 @@ final class LoginController
     {
         $error = $this->flash->get('error');
 
-        View::render('login/index', [
+        View::render('login/form', [
             'error' => $error,
         ]);
     }
 
     public function authenticate(): void
     {
-        $username = $_POST['nombre'] ?? '';
-        $password = $_POST['clave'] ?? '';
+        $username = (string) ($_POST['username'] ?? '');
+        $password = (string) ($_POST['password'] ?? '');
 
         $user = $this->userRepository->findByName($username);
 
-        if (!$user || $user->password() !== $password) {
+        if ($user === null || $user->password() !== $password) {
             $this->flash->set('error', 'Usuario o contraseña incorrectos');
             $this->redirector->redirect('login');
         }
 
-        $oppositionCode = trim($user->oppositionCode() ?? '');
+        $oppositionCode = trim((string) ($user->oppositionCode() ?? ''));
         if ($oppositionCode === '') {
             $this->flash->set('error', 'No tienes una oposición activa configurada.');
             $this->redirector->redirect('login');
@@ -52,7 +54,7 @@ final class LoginController
         $this->sessionStore->setString('username', $user->name());
         $this->sessionStore->setString('opposition_code', $oppositionCode);
 
-        $redirectTo = trim($this->sessionStore->getString('next_url') ?? '');
+        $redirectTo = trim((string) ($this->sessionStore->getString('next_url') ?? ''));
         if ($redirectTo === '') {
             $redirectTo = 'panel-control-ejercicios';
         }
