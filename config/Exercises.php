@@ -1,14 +1,14 @@
 <?php
+
 return [
     [
-        'nombre' => 'Simulacro examen teórico',
-        'ruta' => 'ejercicio/simulacro-examen-teorico',
-        'activo' => true
+        'name' => 'Simulacro examen teórico',
+        'path' => 'ejercicio/simulacro-examen-teorico',
+        'is_active' => true,
     ],
     [
-        'nombre' => 'Cuánto sabes del tema',
-        'ruta' => 'ejercicios/cuanto-sabes-tema/config',
-        'activo' => true
-    ]
+        'name' => 'Cuánto sabes del tema',
+        'path' => 'ejercicios/cuanto-sabes-tema/config',
+        'is_active' => true,
+    ],
 ];
-?>

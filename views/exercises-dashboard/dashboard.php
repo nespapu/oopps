@@ -29,9 +29,9 @@ $exercises = $exercises ?? [];
 
                         <?php foreach ($exercises as $exercise): ?>
                             <?php
-                                $name = $exercise['nombre'] ?? 'Ejercicio sin nombre';
-                                $path = $exercise['ruta'] ?? '#';
-                                $isActive = (bool) ($exercise['activo'] ?? false);
+                               $name = $exercise['name'] ?? 'Ejercicio sin nombre';
+                                $path = $exercise['path'] ?? '#';
+                                $isActive = (bool) ($exercise['is_active'] ?? false);
                             ?>
 
                             <div class="col-md-6 col-lg-4">
