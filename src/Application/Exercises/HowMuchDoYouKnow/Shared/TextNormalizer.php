@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Exercises\Evaluation;
+namespace App\Application\Exercises\HowMuchDoYouKnow\Shared;
 
 final class TextNormalizer
 {

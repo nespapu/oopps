@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Domain\Exercise\StepBuilder;
 
-use App\Application\Exercises\Payload\StepPayloadKeys;
-use App\Application\Exercises\StepBuilder\HowMuchDoYouKnowTitlePayloadBuilder;
+use App\Application\Exercises\HowMuchDoYouKnow\Shared\StepPayloadKeys;
+use App\Application\Exercises\HowMuchDoYouKnow\Title\TitlePayloadBuilder;
 use App\Domain\Auth\UserContext;
 use App\Domain\Exercise\ExerciseConfig;
 use App\Domain\Exercise\ExerciseSession;
@@ -23,7 +23,7 @@ final class HowMuchDoYouKnowTitlePayloadBuilderTest extends TestCase
         $repo = new FakeTopicRepository('Sistemas operativos. Gestión de procesos', null);
         $hintService = new HintService();
 
-        $builder = new HowMuchDoYouKnowTitlePayloadBuilder($repo, $hintService);
+        $builder = new TitlePayloadBuilder($repo, $hintService);
 
         $session = ExerciseSession::start(
             exerciseType: ExerciseType::howMuchDoYouKnowTopic(),
@@ -53,7 +53,7 @@ final class HowMuchDoYouKnowTitlePayloadBuilderTest extends TestCase
         $repo = new FakeTopicRepository(null, null);
         $hintService = new HintService();
 
-        $builder = new HowMuchDoYouKnowTitlePayloadBuilder($repo, $hintService);
+        $builder = new TitlePayloadBuilder($repo, $hintService);
 
         $session = ExerciseSession::start(
             exerciseType: ExerciseType::howMuchDoYouKnowTopic(),

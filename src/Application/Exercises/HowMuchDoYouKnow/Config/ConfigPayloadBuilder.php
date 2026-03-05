@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Application\Exercises\StepBuilder;
+namespace App\Application\Exercises\HowMuchDoYouKnow\Config;
 
 use App\Domain\Auth\UserContext;
 use App\Domain\Exercise\Difficulty;
 use App\Domain\Temas\TopicRepository;
 
-final class HowMuchDoYouKnowConfigPayloadBuilder
+final class ConfigPayloadBuilder
 {
     public function __construct(
         private TopicRepository $topicRepository

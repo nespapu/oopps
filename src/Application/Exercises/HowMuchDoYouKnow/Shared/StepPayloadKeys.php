@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Application\Exercises\Payload;
+namespace App\Application\Exercises\HowMuchDoYouKnow\Shared;
 
 final class StepPayloadKeys
 {

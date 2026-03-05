@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Controllers;
+namespace App\Controllers\HowMuchDoYouKnow;
 
-use App\App\Routing\HowMuchDoYouKnowPaths;
+use App\App\Routing\HowMuchDoYouKnow\Paths;
 use App\Application\Auth\AuthService;
 use App\Application\Exercises\ExerciseSessionStore;
-use App\Application\Exercises\StepBuilder\HowMuchDoYouKnowConfigPayloadBuilder;
+use App\Application\Exercises\HowMuchDoYouKnow\Config\ConfigPayloadBuilder;
 use App\Application\Flash\FlashMessenger;
 use App\Application\Http\Redirector;
 use App\Application\Routing\UrlGenerator;
@@ -16,13 +16,13 @@ use App\Domain\Exercise\ExerciseStep;
 use App\Domain\Exercise\ExerciseType;
 use App\Domain\Temas\TopicRepository;
 
-final class HowMuchDoYouKnowConfigController
+final class ConfigController
 {
     public function __construct(
         private readonly ExerciseSessionStore $exerciseSessionStore,
         private readonly AuthService $authService,
-        private readonly HowMuchDoYouKnowConfigPayloadBuilder $payloadBuilder,
-        private readonly HowMuchDoYouKnowPaths $paths,
+        private readonly ConfigPayloadBuilder $payloadBuilder,
+        private readonly Paths $paths,
         private readonly FlashMessenger $flash,
         private readonly Redirector $redirector,
         private readonly TopicRepository $topicRepository,
@@ -39,7 +39,7 @@ final class HowMuchDoYouKnowConfigController
         $payload = $this->payloadBuilder->build($userContext);
         $payload['error'] = $error;
 
-        View::render('exercises/HowMuchDoYouKnowConfig', [
+        View::render('exercises/how-much-do-you-know/config', [
             'payload' => $payload,
             'url' => $this->urlGenerator,
             'howMuchDoYouKnowPaths' => $this->paths,

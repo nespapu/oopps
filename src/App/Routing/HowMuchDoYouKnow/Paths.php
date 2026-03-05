@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\App\Routing;
+namespace App\App\Routing\HowMuchDoYouKnow;
 
 use App\Application\Routing\RouteUrlGenerator;
 
-final class HowMuchDoYouKnowPaths
+final class Paths
 {
     private const CONFIG = 'ejercicios/cuanto-sabes-tema/config';
     private const START  = 'ejercicios/cuanto-sabes-tema/inicio';

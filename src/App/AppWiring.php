@@ -5,19 +5,19 @@ use App\App\Http\AppKernel;
 use App\App\Http\AppRoutes;
 use App\App\Routing\AuthPaths;
 use App\App\Routing\AuthRoutes;
-use App\App\Routing\HowMuchDoYouKnowRoutes;
-use App\App\Routing\HowMuchDoYouKnowPaths;
+use App\App\Routing\HowMuchDoYouKnow\Paths;
+use App\App\Routing\HowMuchDoYouKnow\Routes;
 use App\App\Routing\DevPaths;
 use App\App\Routing\DevRoutes;
 use App\App\Routing\ExercisesDashboardPaths;
 use App\App\Routing\ExercisesDashboardRoutes;
 use App\Application\Auth\AuthService;
 use App\Application\Exercises\ExerciseSessionStore;
-use App\Application\Exercises\Evaluation\HowMuchDoYouKnowTitleEvaluationService;
-use App\Application\Exercises\Evaluation\EqualityEvaluator;
-use App\Application\Exercises\Evaluation\TextNormalizer;
-use App\Application\Exercises\StepBuilder\HowMuchDoYouKnowConfigPayloadBuilder;
-use App\Application\Exercises\StepBuilder\HowMuchDoYouKnowTitlePayloadBuilder;
+use App\Application\Exercises\HowMuchDoYouKnow\Shared\EqualityEvaluator;
+use App\Application\Exercises\HowMuchDoYouKnow\Shared\TextNormalizer;
+use App\Application\Exercises\HowMuchDoYouKnow\Config\ConfigPayloadBuilder;
+use App\Application\Exercises\HowMuchDoYouKnow\Title\TitleEvaluationService;
+use App\Application\Exercises\HowMuchDoYouKnow\Title\TitlePayloadBuilder;
 use App\Application\Flash\FlashMessenger;
 use App\Application\Http\HttpMethodGuard;
 use App\Application\Http\Redirector;
@@ -28,8 +28,8 @@ use App\Application\Routing\UrlGenerator;
 use App\Application\Session\SessionStore;
 use App\Controllers\LoginController;
 use App\Controllers\ExercisesDashboardController;
-use App\Controllers\HowMuchDoYouKnowConfigController;
-use App\Controllers\HowMuchDoYouKnowTitleController;
+use App\Controllers\HowMuchDoYouKnow\ConfigController;
+use App\Controllers\HowMuchDoYouKnow\TitleController;
 use App\Controllers\Dev\DevExerciseSessionController;
 use App\Domain\Auth\UserRepository;
 use App\Domain\Exercise\HintService;
@@ -59,7 +59,7 @@ final class AppWiring
     private ?RequestContext $requestContext = null;
 
     private ?AuthPaths $authPaths = null;
-    private ?HowMuchDoYouKnowPaths $howMuchDoYouKnowPaths = null;
+    private ?Paths $howMuchDoYouKnowPaths = null;
     private ?DevPaths $devPaths = null;
     private ?ExercisesDashboardPaths $exercisesDashboardPaths = null;
 
@@ -70,8 +70,8 @@ final class AppWiring
 
     private ?LoginController $loginController = null;
     private ?ExercisesDashboardController $exercisesDashboardController = null;
-    private ?HowMuchDoYouKnowConfigController $howMuchDoYouKnowConfigController = null;
-    private ?HowMuchDoYouKnowTitleController $howMuchDoYouKnowTitleController = null;
+    private ?ConfigController $howMuchDoYouKnowConfigController = null;
+    private ?TitleController $howMuchDoYouKnowTitleController = null;
     private ?DevExerciseSessionController $devExerciseSessionController = null;
 
     private ?AuthService $authService = null;
@@ -79,9 +79,9 @@ final class AppWiring
     private ?FlashMessenger $flash = null;
     private ?ExerciseSessionStore $exerciseSessionStore = null;
 
-    private ?HowMuchDoYouKnowConfigPayloadBuilder $howMuchDoYouKnowConfigPayloadBuilder = null;
-    private ?HowMuchDoYouKnowTitlePayloadBuilder $howMuchDoYouKnowTitlePayloadBuilder = null;
-    private ?HowMuchDoYouKnowTitleEvaluationService $howMuchDoYouKnowTitleEvaluationService = null;
+    private ?ConfigPayloadBuilder $howMuchDoYouKnowConfigPayloadBuilder = null;
+    private ?TitlePayloadBuilder $howMuchDoYouKnowTitlePayloadBuilder = null;
+    private ?TitleEvaluationService $howMuchDoYouKnowTitleEvaluationService = null;
     private ?EqualityEvaluator $equalityEvaluator = null;
     private ?TextNormalizer $textNormalizer = null;
 
@@ -146,12 +146,12 @@ final class AppWiring
         );
     }
 
-    private function howMuchDoYouKnowRoutes(): HowMuchDoYouKnowRoutes
+    private function howMuchDoYouKnowRoutes(): Routes
     {
         $configController = $this->howMuchDoYouKnowConfigController();
         $titleController = $this->howMuchDoYouKnowTitleController();
 
-        return new HowMuchDoYouKnowRoutes(
+        return new Routes(
             $this->howMuchDoYouKnowPaths(),
             \Closure::fromCallable([$configController, 'show']),
             \Closure::fromCallable([$configController, 'submit']),
@@ -181,10 +181,10 @@ final class AppWiring
         return $this->authPaths;
     }
 
-    private function howMuchDoYouKnowPaths(): HowMuchDoYouKnowPaths
+    private function howMuchDoYouKnowPaths(): Paths
     {
         if ($this->howMuchDoYouKnowPaths === null) {
-            $this->howMuchDoYouKnowPaths = new HowMuchDoYouKnowPaths(
+            $this->howMuchDoYouKnowPaths = new Paths(
                 $this->routeUrlGenerator()
             );
         }
@@ -233,10 +233,10 @@ final class AppWiring
         return $this->exercisesDashboardController;
     }
 
-    private function howMuchDoYouKnowConfigController(): HowMuchDoYouKnowConfigController
+    private function howMuchDoYouKnowConfigController(): ConfigController
     {
         if ($this->howMuchDoYouKnowConfigController === null) {
-            $this->howMuchDoYouKnowConfigController = new HowMuchDoYouKnowConfigController(
+            $this->howMuchDoYouKnowConfigController = new ConfigController(
                 $this->exerciseSessionStore(),
                 $this->authService(),
                 $this->howMuchDoYouKnowConfigPayloadBuilder(),
@@ -251,10 +251,10 @@ final class AppWiring
         return $this->howMuchDoYouKnowConfigController;
     }
 
-    private function howMuchDoYouKnowTitleController(): HowMuchDoYouKnowTitleController
+    private function howMuchDoYouKnowTitleController(): TitleController
     {
         if ($this->howMuchDoYouKnowTitleController === null) {
-            $this->howMuchDoYouKnowTitleController = new HowMuchDoYouKnowTitleController(
+            $this->howMuchDoYouKnowTitleController = new TitleController(
                 $this->exerciseSessionStore(),
                 $this->authService(),
                 $this->howMuchDoYouKnowPaths(),
@@ -327,10 +327,10 @@ final class AppWiring
         return $this->redirector;
     }
 
-    private function howMuchDoYouKnowConfigPayloadBuilder(): HowMuchDoYouKnowConfigPayloadBuilder
+    private function howMuchDoYouKnowConfigPayloadBuilder(): ConfigPayloadBuilder
     {
         if ($this->howMuchDoYouKnowConfigPayloadBuilder === null) {
-            $this->howMuchDoYouKnowConfigPayloadBuilder = new HowMuchDoYouKnowConfigPayloadBuilder(
+            $this->howMuchDoYouKnowConfigPayloadBuilder = new ConfigPayloadBuilder(
                 $this->topicRepository()
             );
         }
@@ -338,10 +338,10 @@ final class AppWiring
         return $this->howMuchDoYouKnowConfigPayloadBuilder;
     }
 
-    private function howMuchDoYouKnowTitlePayloadBuilder(): HowMuchDoYouKnowTitlePayloadBuilder
+    private function howMuchDoYouKnowTitlePayloadBuilder(): TitlePayloadBuilder
     {
         if ($this->howMuchDoYouKnowTitlePayloadBuilder === null) {
-            $this->howMuchDoYouKnowTitlePayloadBuilder = new HowMuchDoYouKnowTitlePayloadBuilder(
+            $this->howMuchDoYouKnowTitlePayloadBuilder = new TitlePayloadBuilder(
                 $this->topicRepository(),
                 $this->hintService()
             );
@@ -350,10 +350,10 @@ final class AppWiring
         return $this->howMuchDoYouKnowTitlePayloadBuilder;
     }
 
-    private function howMuchDoYouKnowTitleEvaluationService(): HowMuchDoYouKnowTitleEvaluationService
+    private function howMuchDoYouKnowTitleEvaluationService(): TitleEvaluationService
     {
         if ($this->howMuchDoYouKnowTitleEvaluationService === null) {
-            $this->howMuchDoYouKnowTitleEvaluationService = new HowMuchDoYouKnowTitleEvaluationService(
+            $this->howMuchDoYouKnowTitleEvaluationService = new TitleEvaluationService(
                 $this->equalityEvaluator()
             );
         }

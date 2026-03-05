@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Exercises\Evaluation;
+namespace App\Application\Exercises\HowMuchDoYouKnow\Shared;
+
+use App\Application\Exercises\Evaluation\FieldResult;
 
 final class EqualityEvaluator
 {

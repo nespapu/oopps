@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\App\Routing;
+namespace App\App\Routing\HowMuchDoYouKnow;
 
 use App\Infrastructure\Routing\HttpMethod;
 use App\Infrastructure\Routing\RouteCollection;
 use App\Infrastructure\Routing\RouteDefinition;
 
-final class HowMuchDoYouKnowRoutes
+final class Routes
 {
     public function __construct(
-        private readonly HowMuchDoYouKnowPaths $paths,
+        private readonly Paths $paths,
         private readonly \Closure $showConfigHandler,
         private readonly \Closure $checkConfigHandler,
         private readonly \Closure $showTitleStepHandler,

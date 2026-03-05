@@ -2,7 +2,7 @@
 /** @var array $payload */
 /** @var string $sessionId */
 
-use App\Application\Exercises\Payload\StepPayloadKeys;
+use App\Application\Exercises\HowMuchDoYouKnow\Shared\StepPayloadKeys;
 
 $title = 'Cuánto sabes del tema';
 

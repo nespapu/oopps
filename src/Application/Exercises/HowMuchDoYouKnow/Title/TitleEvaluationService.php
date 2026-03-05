@@ -1,8 +1,12 @@
 <?php
 
-namespace App\Application\Exercises\Evaluation;
+namespace App\Application\Exercises\HowMuchDoYouKnow\Title;
 
-final class HowMuchDoYouKnowTitleEvaluationService
+use App\Application\Exercises\Evaluation\StepEvaluation;
+use App\Application\Exercises\Evaluation\StepResult;
+use App\Application\Exercises\HowMuchDoYouKnow\Shared\EqualityEvaluator;
+
+final class TitleEvaluationService
 {
     public function __construct(
         private readonly EqualityEvaluator $equalityEvaluator

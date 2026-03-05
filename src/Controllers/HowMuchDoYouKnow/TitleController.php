@@ -1,26 +1,26 @@
 <?php
 
-namespace App\Controllers;
+namespace App\Controllers\HowMuchDoYouKnow;
 
-use App\App\Routing\HowMuchDoYouKnowPaths;
-use App\Application\Auth\AuthService;
-use App\Application\Exercises\Evaluation\HowMuchDoYouKnowTitleEvaluationService;
+use App\App\Routing\HowMuchDoYouKnow\Paths;
+use App\Application\Auth\AuthService;;
 use App\Application\Exercises\ExerciseSessionStore;
-use App\Application\Exercises\Payload\StepPayloadKeys;
-use App\Application\Exercises\StepBuilder\HowMuchDoYouKnowTitlePayloadBuilder;
+use App\Application\Exercises\HowMuchDoYouKnow\Shared\StepPayloadKeys;
+use App\Application\Exercises\HowMuchDoYouKnow\Title\TitleEvaluationService;
+use App\Application\Exercises\HowMuchDoYouKnow\Title\TitlePayloadBuilder;
 use App\Application\Http\Redirector;
 use App\Application\Routing\UrlGenerator;
 use App\Core\View;
 use App\Domain\Exercise\ExerciseStep;
 
-final class HowMuchDoYouKnowTitleController
+final class TitleController
 {
     public function __construct(
         private readonly ExerciseSessionStore $exerciseSessionStore,
         private readonly AuthService $authService,
-        private readonly HowMuchDoYouKnowPaths $paths,
-        private readonly HowMuchDoYouKnowTitlePayloadBuilder $payloadBuilder,
-        private readonly HowMuchDoYouKnowTitleEvaluationService $evaluationService,
+        private readonly Paths $paths,
+        private readonly TitlePayloadBuilder $payloadBuilder,
+        private readonly TitleEvaluationService $evaluationService,
         private readonly Redirector $redirector,
         private readonly UrlGenerator $urlGenerator
     ) {}
@@ -34,7 +34,7 @@ final class HowMuchDoYouKnowTitleController
         $payload = $this->payloadBuilder->build($session);
         $evaluation = $session->getStepEvaluation(ExerciseStep::TITLE);
 
-        View::render('exercises/HowMuchDoYouKnowTitle', [
+        View::render('exercises/how-much-do-you-know/title', [
             'payload' => $payload,
             'sessionId' => $session->sessionId(),
             'evaluation' => $evaluation,
