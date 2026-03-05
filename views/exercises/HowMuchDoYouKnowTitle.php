@@ -1,30 +1,34 @@
 <?php
 /** @var array $payload */
-/** @var string $sesionId */
+/** @var string $sessionId */
 
 use App\Application\Exercises\Payload\StepPayloadKeys;
+
+$title = 'Cuánto sabes del tema';
 
 $items = $payload[StepPayloadKeys::ITEMS] ?? [];
 $meta  = $payload[StepPayloadKeys::META] ?? [];
 
-$numeracionTema   = $meta['numeracionTema'] ?? '';
-$tituloTema       = $meta['tituloTema'] ?? '';
-$gradoDificultad  = $meta['gradoDificultad'] ?? '';
-$banderas         = $meta['banderas'] ?? [];
-$tipoPista        = $meta['tipoPista'] ?? '';
+$topicOrder   = $meta['topicOrder'] ?? '';
+$topicTitle   = $meta['topicTitle'] ?? '';
+$difficulty   = $meta['difficulty'] ?? '';
+$flags        = $meta['flags'] ?? [];
+$hintType     = $meta['hintType'] ?? '';
 
 $item        = $items[0] ?? [];
-$fieldName   = $item['nombre'] ?? 'titulo';
+$fieldName   = $item['name'] ?? 'title';
 $placeholder = $item['placeholder'] ?? '';
-$pista       = $item['pista'] ?? '';
+$hint       = $item['hint'] ?? '';
 
 $isStepCorrect = null;
 
-if (is_array($evaluacion)) {
-    $isStepCorrect = $evaluacion['result']['isStepCorrect'] ?? null;
+if (is_array($evaluation)) {
+    $isStepCorrect = $evaluation['result']['isStepCorrect'] ?? null;
 }
 
-$action = $url->to($cuantoSabesTemaPaths->titleEvaluation($sesionId));
+$action = $url->to($howMuchDoYouKnowPaths->titleEvaluation($sessionId));
+
+$e = fn($v) => htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8');
 ?>
 
 <div class="row justify-content-center">
@@ -40,11 +44,12 @@ $action = $url->to($cuantoSabesTemaPaths->titleEvaluation($sesionId));
 
       <div class="text-end">
         <span class="badge text-bg-primary me-1">
-          Tema <?= htmlspecialchars((string)$numeracionTema, ENT_QUOTES, 'UTF-8') ?>
+          Tema <?= $e($topicOrder) ?>
         </span>
-        <?php if ($gradoDificultad !== ''): ?>
+
+        <?php if ($difficulty !== ''): ?>
           <span class="badge text-bg-secondary">
-            Dificultad <?= htmlspecialchars((string)$gradoDificultad, ENT_QUOTES, 'UTF-8') ?>
+            Dificultad <?= $e($difficulty) ?>
           </span>
         <?php endif; ?>
       </div>
@@ -69,70 +74,80 @@ $action = $url->to($cuantoSabesTemaPaths->titleEvaluation($sesionId));
     <div class="card shadow-sm">
       <div class="card-body">
 
-        <form method="post" action="<?= htmlspecialchars($action, ENT_QUOTES, 'UTF-8') ?>">
+        <form method="post" action="<?= $e($action) ?>">
           <div class="mb-3">
-            <label for="<?= htmlspecialchars($fieldName, ENT_QUOTES, 'UTF-8') ?>" class="form-label fw-semibold">
+
+            <label for="<?= $e($fieldName) ?>" class="form-label fw-semibold">
               Escribe el título del tema
             </label>
 
             <input
               type="text"
               class="form-control form-control-lg"
-              id="<?= htmlspecialchars($fieldName, ENT_QUOTES, 'UTF-8') ?>"
-              name="<?= htmlspecialchars($fieldName, ENT_QUOTES, 'UTF-8') ?>"
-              placeholder="<?= htmlspecialchars((string)$placeholder, ENT_QUOTES, 'UTF-8') ?>"
+              id="<?= $e($fieldName) ?>"
+              name="<?= $e($fieldName) ?>"
+              placeholder="<?= $e($placeholder) ?>"
               autocomplete="off"
               required
             >
 
             <div class="form-text">
-              <?php if (!empty($tipoPista)): ?>
-                Pista: <span class="fw-semibold"><?= htmlspecialchars((string)$tipoPista, ENT_QUOTES, 'UTF-8') ?></span>.
+              <?php if (!empty($hintType)): ?>
+                Pista: <span class="fw-semibold"><?= $e($hintType) ?></span>.
               <?php else: ?>
-                Escribe exactamente el título (mañana añadimos pistas).
+                Escribe exactamente el título.
               <?php endif; ?>
             </div>
 
-            <?php if (!empty($pista)): ?>
+            <?php if (!empty($hint)): ?>
               <div class="alert alert-info mt-3 mb-0">
                 <div class="fw-semibold mb-1">Pista</div>
-                <div><?= htmlspecialchars((string)$pista, ENT_QUOTES, 'UTF-8') ?></div>
+                <div><?= $e($hint) ?></div>
               </div>
             <?php endif; ?>
+
           </div>
 
-          <?php if (!empty($banderas) && is_array($banderas)): ?>
+          <?php if (!empty($flags) && is_array($flags)): ?>
             <div class="mb-4">
               <div class="small text-muted mb-2">Configuración activa</div>
+
               <div class="d-flex flex-wrap gap-2">
-                <?php foreach ($banderas as $key => $enabled): ?>
+                <?php foreach ($flags as $key => $enabled): ?>
                   <?php if ($enabled): ?>
                     <span class="badge rounded-pill text-bg-light border">
-                      ✅ <?= htmlspecialchars((string)$key, ENT_QUOTES, 'UTF-8') ?>
+                      ✅ <?= $e($key) ?>
                     </span>
                   <?php endif; ?>
                 <?php endforeach; ?>
               </div>
+
             </div>
           <?php endif; ?>
 
           <div class="d-flex justify-content-end gap-2">
+
             <a class="btn btn-outline-secondary" href="javascript:history.back()">
               Volver
             </a>
+
             <?php if (($isStepCorrect ?? null) === true): ?>
-            <a class="btn btn-success"
-              href="<?= htmlspecialchars(
-                  $url->to($cuantoSabesTemaPaths->indexStep($sesionId)),
-                  ENT_QUOTES,
-                  'UTF-8'
-              ) ?>">
-              Continuar
-            </a>
-          <?php else: ?>
-            <button type="submit" class="btn btn-primary">Comprobar</button>
-          <?php endif; ?>
+
+              <a class="btn btn-success"
+                 href="<?= $e($url->to($howMuchDoYouKnowPaths->indexStep($sessionId))) ?>">
+                Continuar
+              </a>
+
+            <?php else: ?>
+
+              <button type="submit" class="btn btn-primary">
+                Comprobar
+              </button>
+
+            <?php endif; ?>
+
           </div>
+
         </form>
 
       </div>

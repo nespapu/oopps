@@ -6,6 +6,7 @@ use App\App\Routing\HowMuchDoYouKnowPaths;
 use App\Application\Auth\AuthService;
 use App\Application\Exercises\Evaluation\HowMuchDoYouKnowTitleEvaluationService;
 use App\Application\Exercises\ExerciseSessionStore;
+use App\Application\Exercises\Payload\StepPayloadKeys;
 use App\Application\Exercises\StepBuilder\HowMuchDoYouKnowTitlePayloadBuilder;
 use App\Application\Http\Redirector;
 use App\Application\Routing\UrlGenerator;
@@ -33,12 +34,12 @@ final class HowMuchDoYouKnowTitleController
         $payload = $this->payloadBuilder->build($session);
         $evaluation = $session->getStepEvaluation(ExerciseStep::TITLE);
 
-        View::render('exercises/CuantoSabesTemaTitulo', [
+        View::render('exercises/HowMuchDoYouKnowTitle', [
             'payload' => $payload,
-            'sesionId' => $session->sessionId(),
-            'evaluacion' => $evaluation,
+            'sessionId' => $session->sessionId(),
+            'evaluation' => $evaluation,
             'url' => $this->urlGenerator,
-            'cuantoSabesTemaPaths' => $this->paths,
+            'howMuchDoYouKnowPaths' => $this->paths,
         ]);
     }
 
@@ -64,11 +65,14 @@ final class HowMuchDoYouKnowTitleController
     {
         $values = [];
 
-        foreach ($payload['items'] as $item) {
+        foreach ($payload[StepPayloadKeys::ITEMS] as $item) {
             $key = $item['key'];
             $values[$key] = isset($_POST[$key]) ? trim((string) $_POST[$key]) : '';
         }
 
-        return ['step' => $step, 'values' => $values];
+        return [
+            'step' => $step,
+            'values' => $values,
+        ];
     }
 }

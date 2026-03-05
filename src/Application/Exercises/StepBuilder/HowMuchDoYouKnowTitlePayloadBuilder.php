@@ -22,7 +22,10 @@ final class HowMuchDoYouKnowTitlePayloadBuilder
         $oppositionCode = $session->userContext()->oppositionCode();
         $topicOrder = $session->config()->topicId();
 
-        $title = $this->topicRepository->findTitleByOppositionCodeAndOrder($oppositionCode, $topicOrder);
+        $title = $this->topicRepository->findTitleByOppositionCodeAndOrder(
+            $oppositionCode,
+            $topicOrder
+        );
 
         $difficulty = Difficulty::from($session->config()->difficulty());
         $hintMode = HintMode::WORDS;
@@ -33,24 +36,27 @@ final class HowMuchDoYouKnowTitlePayloadBuilder
 
         return [
             'step' => ExerciseStep::TITLE->value,
+
             StepPayloadKeys::ITEMS => [
                 [
-                    'key' => 'titulo',
-                    'tipo' => 'text',
-                    'nombre' => 'titulo',
-                    'pista' => $hint,
+                    'key' => 'title',
+                    'type' => 'text',
+                    'name' => 'title',
+                    'hint' => $hint,
                     'placeholder' => 'Escribe el título del tema',
                 ],
             ],
+
             StepPayloadKeys::META => [
-                'numeracionTema' => $topicOrder,
-                'tituloTema' => $title,
-                'gradoDificultad' => $session->config()->difficulty(),
-                'banderas' => $session->config()->flags(),
-                'tipoPista' => $hintMode->value,
+                    'topicOrder' => $topicOrder,
+                    'topicTitle' => $title,
+                    'difficulty' => $session->config()->difficulty(),
+                    'flags' => $session->config()->flags(),
+                    'hintType' => $hintMode->value,
             ],
+
             'expected' => [
-                'titulo' => $title,
+                'title' => $title,
             ],
         ];
     }

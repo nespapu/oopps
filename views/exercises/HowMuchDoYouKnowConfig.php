@@ -1,4 +1,6 @@
 <?php
+$title = 'Cuánto sabes del tema';
+
 $topics = $payload['topics'] ?? [];
 $difficultyLevels = $payload['difficultyLevels'] ?? [];
 $defaults = $payload['defaults'] ?? ['topicOrder' => 0, 'difficulty' => 3];
