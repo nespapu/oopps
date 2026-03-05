@@ -38,12 +38,11 @@ final class HowMuchDoYouKnowConfigController
 
         $payload = $this->payloadBuilder->build($userContext);
         $payload['error'] = $error;
-        $payload['titulo'] = 'Configuración';
 
-        View::render('exercises/CuantoSabesTemaConfiguracion', [
+        View::render('exercises/HowMuchDoYouKnowConfig', [
             'payload' => $payload,
             'url' => $this->urlGenerator,
-            'cuantoSabesTemaPaths' => $this->paths,
+            'howMuchDoYouKnowPaths' => $this->paths,
         ]);
     }
 
@@ -52,20 +51,20 @@ final class HowMuchDoYouKnowConfigController
         $this->authService->requireOppositionContext();
         $userContext = $this->authService->userContext();
 
-        $rawTopicOrder = $_POST['numeracionTema'] ?? null;
-        $rawDifficulty = $_POST['dificultad'] ?? null;
+        $rawTopicOrder = $_POST['topicOrder'] ?? null;
+        $rawDifficulty = $_POST['difficulty'] ?? null;
 
         $topicOrder = is_numeric($rawTopicOrder) ? (int) $rawTopicOrder : -1;
         $difficultyValue = is_numeric($rawDifficulty) ? (int) $rawDifficulty : -1;
 
         if ($topicOrder < 0) {
-            $this->flash->set('error', 'Tema inválido.');
+            $this->flash->set('error', 'Tema no válido.');
             $this->redirector->redirect($this->paths->config());
         }
 
         $difficulty = Difficulty::tryFrom($difficultyValue);
         if ($difficulty === null) {
-            $this->flash->set('error', 'Dificultad inválida.');
+            $this->flash->set('error', 'Dificultad no válida.');
             $this->redirector->redirect($this->paths->config());
         }
 

@@ -1,39 +1,29 @@
 <?php
-/**
- * Payload esperado:
- * - $temas: array of ['valor' => int, 'etiqueta' => string]
- * - $gradosDificultad: array of ['valor' => int, 'etiqueta' => string]
- * - $defecto: array ['tema' => int, 'gradoDificultad' => int]
- * - $error: (opcional) string
- * - $titulo: (opcional) string
- */
+$topics = $payload['topics'] ?? [];
+$difficultyLevels = $payload['difficultyLevels'] ?? [];
+$defaults = $payload['defaults'] ?? ['topicOrder' => 0, 'difficulty' => 3];
 
-$temas = $payload['temas'] ?? [];
-$gradosDificultad = $payload['gradosDificultad'] ?? [];
-$defecto = $payload['defecto'] ?? ['tema' => 0, 'gradoDificultad' => 3];
 $error = $payload['error'] ?? null;
-$titulo = $payload['titulo'] ?? 'Configuración';
 
-$temaSeleccionado = (int)($defecto['tema'] ?? 0);
-$gradoDificultadSeleccionado = (int)($defecto['gradoDificultad'] ?? 3);
+$selectedTopicOrder = (int) ($defaults['topicOrder'] ?? 0);
+$selectedDifficulty = (int) ($defaults['difficulty'] ?? 3);
 
+$formAction = $url->to($howMuchDoYouKnowPaths->start());
 
-$formularioAccion = $url->to($cuantoSabesTemaPaths->start());
+$escape = static fn(string $value): string =>
+    htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 
-$escapar = static fn(string $valor): string =>
-    htmlspecialchars($valor, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-
-$buscarEtiqueta = static function (array $opciones, int $valor): string {
-    foreach ($opciones as $opc) {
-        if ((int)($opc['valor'] ?? -1) === $valor) {
-            return (string)($opc['etiqueta'] ?? '');
+$findLabel = static function (array $options, int $value): string {
+    foreach ($options as $option) {
+        if ((int) ($option['value'] ?? -1) === $value) {
+            return (string) ($option['label'] ?? '');
         }
     }
     return '';
 };
 
-$etiquetaTemaSeleccionado = $buscarEtiqueta($temas, $temaSeleccionado);
-$etiquetaGradoDificultadSeleccionado = $buscarEtiqueta($gradosDificultad, $gradoDificultadSeleccionado);
+$selectedTopicLabel = $findLabel($topics, $selectedTopicOrder);
+$selectedDifficultyLabel = $findLabel($difficultyLevels, $selectedDifficulty);
 ?>
 
 <div class="row justify-content-center">
@@ -41,7 +31,7 @@ $etiquetaGradoDificultadSeleccionado = $buscarEtiqueta($gradosDificultad, $grado
         <div class="d-flex align-items-center justify-content-between mb-3">
             <div>
                 <h1 class="h3 mb-1">Cuánto sabes del tema</h1>
-                <p class="text-muted mb-0">Configura el ejercicio antes de comenzar.</p>
+                <p class="text-muted mb-0">Configura el ejercicio antes de empezar.</p>
             </div>
             <span class="badge text-bg-primary">Paso 0 · Configuración</span>
         </div>
@@ -49,12 +39,11 @@ $etiquetaGradoDificultadSeleccionado = $buscarEtiqueta($gradosDificultad, $grado
         <?php if (!empty($error)): ?>
             <div class="alert alert-danger d-flex align-items-start" role="alert">
                 <div class="me-2">⚠️</div>
-                <div><?= $escapar((string)$error) ?></div>
+                <div><?= $escape((string) $error) ?></div>
             </div>
         <?php endif; ?>
 
         <div class="row g-3">
-            <!-- Main card -->
             <div class="col-12 col-lg-8">
                 <div class="card shadow-sm">
                     <div class="card-header bg-white">
@@ -62,34 +51,29 @@ $etiquetaGradoDificultadSeleccionado = $buscarEtiqueta($gradosDificultad, $grado
                             <div class="me-2">🧩</div>
                             <div>
                                 <div class="fw-semibold">Opciones del ejercicio</div>
-                                <div class="text-muted small">Elige tema y dificultad.</div>
+                                <div class="text-muted small">Elige el tema y la dificultad.</div>
                             </div>
                         </div>
                     </div>
 
                     <div class="card-body">
-                        <form method="POST" action="<?= $escapar($formularioAccion) ?>" class="needs-validation" novalidate>
+                        <form method="POST" action="<?= $escape($formAction) ?>" class="needs-validation" novalidate>
                             <div class="mb-3">
                                 <label for="topicOrder" class="form-label">Tema</label>
-                                <select
-                                    id="topicOrder"
-                                    name="numeracionTema"
-                                    class="form-select"
-                                    required
-                                >
-                                    <?php foreach ($temas as $opc): ?>
+                                <select id="topicOrder" name="topicOrder" class="form-select" required>
+                                    <?php foreach ($topics as $option): ?>
                                         <?php
-                                            $valor = (int)($opc['valor'] ?? 0);
-                                            $etiqueta = (string)($opc['etiqueta'] ?? '');
-                                            $estaSeleccionado = ($valor === $temaSeleccionado);
+                                            $value = (int) ($option['value'] ?? 0);
+                                            $label = (string) ($option['label'] ?? '');
+                                            $isSelected = ($value === $selectedTopicOrder);
                                         ?>
-                                        <option value="<?= $valor ?>" <?= $estaSeleccionado ? 'selected' : '' ?>>
-                                            <?= $escapar($etiqueta) ?>
+                                        <option value="<?= $value ?>" <?= $isSelected ? 'selected' : '' ?>>
+                                            <?= $escape($label) ?>
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
                                 <div class="form-text">
-                                    Selecciona un tema concreto o <strong>Aleatorio</strong> para escoger uno al azar.
+                                    Selecciona un tema concreto o elige <strong>Aleatorio</strong>.
                                 </div>
                                 <div class="invalid-feedback">
                                     Debes seleccionar un tema.
@@ -98,25 +82,20 @@ $etiquetaGradoDificultadSeleccionado = $buscarEtiqueta($gradosDificultad, $grado
 
                             <div class="mb-3">
                                 <label for="difficulty" class="form-label">Dificultad</label>
-                                <select
-                                    id="difficulty"
-                                    name="dificultad"
-                                    class="form-select"
-                                    required
-                                >
-                                    <?php foreach ($gradosDificultad as $opc): ?>
+                                <select id="difficulty" name="difficulty" class="form-select" required>
+                                    <?php foreach ($difficultyLevels as $option): ?>
                                         <?php
-                                            $valor = (int)($opc['valor'] ?? 0);
-                                            $etiqueta = (string)($opc['etiqueta'] ?? '');
-                                            $estaSeleccionado = ($valor === $gradoDificultadSeleccionado);
+                                            $value = (int) ($option['value'] ?? 0);
+                                            $label = (string) ($option['label'] ?? '');
+                                            $isSelected = ($value === $selectedDifficulty);
                                         ?>
-                                        <option value="<?= $valor ?>" <?= $estaSeleccionado ? 'selected' : '' ?>>
-                                            <?= $escapar($etiqueta) ?>
+                                        <option value="<?= $value ?>" <?= $isSelected ? 'selected' : '' ?>>
+                                            <?= $escape($label) ?>
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
                                 <div class="form-text">
-                                    Ajusta el nivel de exigencia del ejercicio.
+                                    Ajusta el nivel de reto.
                                 </div>
                                 <div class="invalid-feedback">
                                     Debes seleccionar una dificultad.
@@ -130,8 +109,8 @@ $etiquetaGradoDificultadSeleccionado = $buscarEtiqueta($gradosDificultad, $grado
                                     Empezar
                                 </button>
 
-                                <a class="btn btn-outline-secondary"
-                                    href="<?= $escapar($url->to('/panel-control-ejercicios')) ?>">
+                                <!-- Si tienes Paths del dashboard, úsalo aquí -->
+                                <a class="btn btn-outline-secondary" href="<?= $escape($url->to('/panel-control-ejercicios')) ?>">
                                     Volver
                                 </a>
                             </div>
@@ -140,7 +119,6 @@ $etiquetaGradoDificultadSeleccionado = $buscarEtiqueta($gradosDificultad, $grado
                 </div>
             </div>
 
-            <!-- Side summary -->
             <div class="col-12 col-lg-4">
                 <div class="card shadow-sm">
                     <div class="card-header bg-white">
@@ -151,27 +129,27 @@ $etiquetaGradoDificultadSeleccionado = $buscarEtiqueta($gradosDificultad, $grado
                         <div class="mb-3">
                             <div class="text-muted small">Tema</div>
                             <div class="fw-semibold">
-                                <?= $escapar($etiquetaTemaSeleccionado !== '' ? $etiquetaTemaSeleccionado : 'Aleatorio') ?>
+                                <?= $escape($selectedTopicLabel !== '' ? $selectedTopicLabel : 'Aleatorio') ?>
                             </div>
                         </div>
 
                         <div class="mb-3">
                             <div class="text-muted small">Dificultad</div>
                             <div class="fw-semibold">
-                                <?= $escapar($etiquetaGradoDificultadSeleccionado !== '' ? $etiquetaGradoDificultadSeleccionado : '—') ?>
+                                <?= $escape($selectedDifficultyLabel !== '' ? $selectedDifficultyLabel : '—') ?>
                             </div>
                         </div>
 
                         <div class="alert alert-light border mb-0">
                             <div class="small text-muted mb-1">Siguiente paso</div>
                             <div class="fw-semibold">Título</div>
-                            <div class="small text-muted">Tras iniciar, te redirigimos al primer paso del ejercicio.</div>
+                            <div class="small text-muted">Al empezar, pasarás al paso 1.</div>
                         </div>
                     </div>
                 </div>
 
                 <div class="text-muted small mt-3">
-                    Consejo: si eliges <strong>Aleatorio</strong>, el sistema seleccionará un tema válido para tu oposición.
+                    Consejo: si eliges <strong>Aleatorio</strong>, el sistema escogerá un tema válido para tu oposición.
                 </div>
             </div>
         </div>

@@ -15,11 +15,11 @@ final class HowMuchDoYouKnowConfigPayloadBuilder
     public function build(UserContext $ctx): array
     {
         return [
-            'temas' => $this->buildTopicOptions($ctx),
-            'gradosDificultad' => $this->buildDifficultyOptions(),
-            'defecto' => [
-                'tema' => 0,
-                'gradoDificultad' => Difficulty::MEDIUM->value,
+            'topics' => $this->buildTopicOptions($ctx),
+            'difficultyLevels' => $this->buildDifficultyOptions(),
+            'defaults' => [
+                'topicOrder' => 0,
+                'difficulty' => Difficulty::MEDIUM->value,
             ],
         ];
     }
@@ -29,17 +29,16 @@ final class HowMuchDoYouKnowConfigPayloadBuilder
         $topics = $this->topicRepository->findByOppositionCode($ctx->oppositionCode());
 
         $options = array_map(
-            fn(array $row) => [
-                'valor' => (int) $row['numeracion'],
-                'etiqueta' => $row['titulo'],
+            static fn(array $row) => [
+                'value' => (int) $row['numeracion'],
+                'label' => (string) $row['titulo'],
             ],
             $topics
         );
 
-        // Add the "random" option
         array_unshift($options, [
-            'valor' => 0,
-            'etiqueta' => 'Aleatorio',
+            'value' => 0,
+            'label' => 'Aleatorio',
         ]);
 
         return $options;
@@ -49,8 +48,8 @@ final class HowMuchDoYouKnowConfigPayloadBuilder
     {
         return array_map(
             static fn(Difficulty $difficulty) => [
-                'valor' => $difficulty->value,
-                'etiqueta' => $difficulty->label(),
+                'value' => $difficulty->value,
+                'label' => $difficulty->label(), // ojo: que label() esté en español (o lo traducimos)
             ],
             Difficulty::cases()
         );
