@@ -51,6 +51,11 @@ final class ConfigController
         $this->authService->requireOppositionContext();
         $userContext = $this->authService->userContext();
 
+        $flags = [
+          'sectionOrder' => isset($_POST['flags']['sectionOrder']),
+          'sectionTitle' => isset($_POST['flags']['sectionTitle']),
+        ];
+
         $rawTopicOrder = $_POST['topicOrder'] ?? null;
         $rawDifficulty = $_POST['difficulty'] ?? null;
 
@@ -88,7 +93,7 @@ final class ConfigController
         $exerciseConfig = new ExerciseConfig(
             $topicOrder,
             $difficultyValue,
-            []
+            $flags
         );
 
         $exerciseType = ExerciseType::howMuchDoYouKnowTopic();

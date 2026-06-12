@@ -17,6 +17,7 @@ final class ConfigPayloadBuilder
         return [
             'topics' => $this->buildTopicOptions($ctx),
             'difficultyLevels' => $this->buildDifficultyOptions(),
+            'flags' => $this->buildConfigurationFlags(),
             'defaults' => [
                 'topicOrder' => 0,
                 'difficulty' => Difficulty::MEDIUM->value,
@@ -53,5 +54,13 @@ final class ConfigPayloadBuilder
             ],
             Difficulty::cases()
         );
+    }
+
+    private function buildConfigurationFlags() : array
+    {
+        return [
+            'sectionOrder' => false,
+            'sectionTitle' => false
+        ];
     }
 }

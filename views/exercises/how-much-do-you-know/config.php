@@ -1,9 +1,16 @@
 <?php
+
+declare(strict_types=1);
+
+/** @var UrlGenerator $url */
+/** @var Paths $howMuchDoYouKnowPaths */
+
 $title = 'Cuánto sabes del tema';
 
 $topics = $payload['topics'] ?? [];
 $difficultyLevels = $payload['difficultyLevels'] ?? [];
 $defaults = $payload['defaults'] ?? ['topicOrder' => 0, 'difficulty' => 3];
+$flags = $payload['flags'] ?? [];
 
 $error = $payload['error'] ?? null;
 
@@ -101,6 +108,47 @@ $selectedDifficultyLabel = $findLabel($difficultyLevels, $selectedDifficulty);
                                 </div>
                                 <div class="invalid-feedback">
                                     Debes seleccionar una dificultad.
+                                </div>
+                            </div>
+
+                            <hr class="my-4">
+
+                            <div class="mb-4">
+                                <h2 class="h5 mb-2">Índice</h2>
+                                <p class="text-muted small mb-3">
+                                    Configura qué partes del índice se mostrarán resueltas durante el ejercicio.
+                                </p>
+                                <div class="form-check mb-2">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="sectionOrder"
+                                        name="flags[sectionOrder]"
+                                        value="1"
+                                    <?= ($flags['sectionOrder'] ?? false) ? 'checked' : '' ?>
+                                    >
+                                    <label class="form-check-label" for="sectionOrder">
+                                        Numeración
+                                    </label>
+                                    <div class="form-text">
+                                        Si está marcado, la numeración de los apartados aparecerá visible.
+                                    </div>
+                                </div>
+                                <div class="form-check">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="sectionTitle"
+                                        name="flags[sectionTitle]"
+                                        value="1"
+                                        <?= ($flags['sectionTitle'] ?? false) ? 'checked' : '' ?>
+                                    >
+                                    <label class="form-check-label" for="sectionTitle">
+                                        Apartado
+                                    </label>
+                                    <div class="form-text">
+                                        Si está marcado, el título de los apartados aparecerá visible.
+                                    </div>
                                 </div>
                             </div>
 
