@@ -10,11 +10,12 @@ use App\Domain\Exercise\HintMode;
 use App\Domain\Exercise\ExerciseStep;
 use App\Domain\Exercise\HintService;
 use App\Domain\Exercise\ExerciseSession;
+use App\Domain\Temas\SectionRepository;
 
 final class IndexPayloadBuilder
 {
     public function __construct(
-       /* TODO:: inyectar servicio apartado*/
+        private SectionRepository $sectionRepository,
         private HintService $hintService
     ) {}
 
@@ -24,7 +25,7 @@ final class IndexPayloadBuilder
         $oppositionCode = $session->userContext()->oppositionCode();
         $topicOrder = $session->config()->topicId();
 
-        $sections = []; /* TODO obtener a través del servicio los apartados del tema*/
+        $sections = $this->sectionRepository->findByTopic($oppositionCode, $topicOrder);
 
         $difficulty = Difficulty::from($session->config()->difficulty());
         $sectionOrderHintMode = HintMode::LETTERS;
@@ -34,14 +35,12 @@ final class IndexPayloadBuilder
         return [
             'step' => ExerciseStep::INDEX->value,
 
-
             StepPayloadKeys::ITEMS => $this->buildSectionItems(
                 $sections,
                 $difficulty,
                 $sectionOrderHintMode,
                 $sectionTitleHintMode
             ),
-
 
             StepPayloadKeys::META => [
                     'topicOrder' => $topicOrder,
@@ -57,7 +56,6 @@ final class IndexPayloadBuilder
                     ]
             ],
 
-
             'expected' => $this->buildExpectedItems($sections),
         ];
     }
@@ -71,14 +69,10 @@ final class IndexPayloadBuilder
         return array_map(
             fn(array $row, int $index): array => [
                 'key' => 'item' . $index,
-                'sectionOrder' => $row['numeracion'],
+                'sectionOrder' => $row['orden'],
                 'sectionTitle' => $row['titulo'],
                 'hints' => [
-                    'sectionOrder' => $this->hintService->getHint(
-                        $row['numeracion'],
-                        $difficulty,
-                        $sectionOrderHintMode
-                    ),
+                    'sectionOrder' => '',  // TODO: Define hint strategy for structured fields (e.g. section numbering).
                     'sectionTitle' => $this->hintService->getHint(
                         $row['titulo'],
                         $difficulty,
@@ -96,7 +90,7 @@ final class IndexPayloadBuilder
         return array_map(
             static fn(array $row, int $index): array => [
                 'key' => 'item' . $index,
-                'sectionOrder' => $row['numeracion'],
+                'sectionOrder' => $row['orden'],
                 'sectionTitle' => $row['titulo'],
             ],
             $sections,

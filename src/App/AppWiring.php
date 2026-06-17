@@ -26,6 +26,7 @@ use App\Controllers\ExercisesDashboardController;
 use App\Controllers\LoginController;
 use App\Domain\Auth\UserRepository;
 use App\Domain\Exercise\HintService;
+use App\Domain\Temas\SectionRepository;
 use App\Domain\Temas\TopicRepository;
 use App\Infrastructure\Auth\DefaultAuthService;
 use App\Infrastructure\Config\DatabaseConfigProvider;
@@ -35,6 +36,7 @@ use App\Infrastructure\Http\DefaultHttpMethodGuard;
 use App\Infrastructure\Http\HeaderRedirector;
 use App\Infrastructure\Http\ServerRequestContext;
 use App\Infrastructure\Persistence\PdoFactory;
+use App\Infrastructure\Persistence\Repositories\SqlSectionRepository;
 use App\Infrastructure\Persistence\Repositories\TopicRepositorySQL;
 use App\Infrastructure\Persistence\Repositories\UserRepositorySQL;
 use App\Infrastructure\Routing\RouteAssembler;
@@ -80,6 +82,7 @@ final class AppWiring
     private ?UrlGenerator $urlGenerator = null;
     private ?TopicRepository $topicRepository = null;
     private ?UserRepository $userRepository = null;
+    private ?SectionRepository $sectionRepository = null;
 
     /**
      * @template T of object
@@ -228,6 +231,7 @@ final class AppWiring
             $this->urlGenerator(),
             $this->routeUrlGenerator(),
             $this->topicRepository(),
+            $this->sectionRepository(),
             $this->hintService()
         ));
 
@@ -378,6 +382,16 @@ final class AppWiring
             $this->pdo()
         ));
 
+        return $repo;
+    }
+
+    private function sectionRepository(): SectionRepository
+    {
+        /** @var SectionRepository $repo */
+        $repo = $this->memoize($this->sectionRepository, fn(): SectionRepository => new SqlSectionRepository(
+            $this->pdo()
+        ));
+        
         return $repo;
     }
 }

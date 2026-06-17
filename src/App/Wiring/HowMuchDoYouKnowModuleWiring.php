@@ -7,6 +7,7 @@ use App\App\Routing\HowMuchDoYouKnow\Routes;
 use App\Application\Auth\AuthService;
 use App\Application\Exercises\ExerciseSessionStore;
 use App\Application\Exercises\HowMuchDoYouKnow\Config\ConfigPayloadBuilder;
+use App\Application\Exercises\HowMuchDoYouKnow\Index\IndexPayloadBuilder;
 use App\Application\Exercises\HowMuchDoYouKnow\Shared\EqualityEvaluator;
 use App\Application\Exercises\HowMuchDoYouKnow\Shared\TextNormalizer;
 use App\Application\Exercises\HowMuchDoYouKnow\Title\TitleEvaluationService;
@@ -16,8 +17,10 @@ use App\Application\Http\Redirector;
 use App\Application\Routing\RouteUrlGenerator;
 use App\Application\Routing\UrlGenerator;
 use App\Controllers\HowMuchDoYouKnow\ConfigController;
+use App\Controllers\HowMuchDoYouKnow\IndexController;
 use App\Controllers\HowMuchDoYouKnow\TitleController;
 use App\Domain\Exercise\HintService;
+use App\Domain\Temas\SectionRepository;
 use App\Domain\Temas\TopicRepository;
 
 final class HowMuchDoYouKnowModuleWiring
@@ -26,9 +29,11 @@ final class HowMuchDoYouKnowModuleWiring
     private ?Routes $routes = null;
 
     private ?ConfigController $configController = null;
+    private ?IndexController $indexController = null;
     private ?TitleController $titleController = null;
 
     private ?ConfigPayloadBuilder $configPayloadBuilder = null;
+    private ?IndexPayloadBuilder $indexPayloadBuilder = null;
     private ?TitlePayloadBuilder $titlePayloadBuilder = null;
     private ?TitleEvaluationService $titleEvaluationService = null;
 
@@ -43,6 +48,7 @@ final class HowMuchDoYouKnowModuleWiring
         private readonly UrlGenerator $urlGenerator,
         private readonly RouteUrlGenerator $routeUrlGenerator,
         private readonly TopicRepository $topicRepository,
+        private readonly SectionRepository $sectionRepository,
         private readonly HintService $hintService
     ) {}
 
@@ -67,6 +73,7 @@ final class HowMuchDoYouKnowModuleWiring
         $routes = $this->memoize($this->routes, function (): Routes {
             $configController = $this->configController();
             $titleController = $this->titleController();
+            $indexController = $this->indexController();
 
             return new Routes(
                 $this->paths(),
@@ -74,7 +81,7 @@ final class HowMuchDoYouKnowModuleWiring
                 \Closure::fromCallable([$configController, 'submit']),
                 \Closure::fromCallable([$titleController, 'show']),
                 \Closure::fromCallable([$titleController, 'evaluate']),
-                fn() => print 'Proximamente...'
+                \Closure::fromCallable([$indexController, 'show'])
             );
         });
 
@@ -107,6 +114,19 @@ final class HowMuchDoYouKnowModuleWiring
         return $controller;
     }
 
+    private function indexController() : IndexController
+    {
+        /** @var IndexController $controller */
+        $controller = $this->memoize($this->indexController, function (): IndexController {
+            return new IndexController(
+                $this->exerciseSessionStore,
+                $this->authService,
+                $this->indexPayloadBuilder()
+            );
+        });
+        return $controller;
+    }
+
     private function titleController(): TitleController
     {
         /** @var TitleController $controller */
@@ -130,6 +150,17 @@ final class HowMuchDoYouKnowModuleWiring
         /** @var ConfigPayloadBuilder $builder */
         $builder = $this->memoize($this->configPayloadBuilder, fn(): ConfigPayloadBuilder => new ConfigPayloadBuilder(
             $this->topicRepository
+        ));
+
+        return $builder;
+    }
+
+    private function indexPayloadBuilder(): IndexPayloadBuilder
+    {
+        /** @var  IndexPayloadBuilder $builder */
+        $builder = $this->memoize($this->indexPayloadBuilder, fn(): IndexPayloadBuilder => new IndexPayloadBuilder(
+            $this->sectionRepository,
+            $this->hintService
         ));
 
         return $builder;
