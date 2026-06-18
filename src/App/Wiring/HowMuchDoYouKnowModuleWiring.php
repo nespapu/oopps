@@ -7,6 +7,7 @@ use App\App\Routing\HowMuchDoYouKnow\Routes;
 use App\Application\Auth\AuthService;
 use App\Application\Exercises\ExerciseSessionStore;
 use App\Application\Exercises\HowMuchDoYouKnow\Config\ConfigPayloadBuilder;
+use App\Application\Exercises\HowMuchDoYouKnow\Index\IndexEvaluationService;
 use App\Application\Exercises\HowMuchDoYouKnow\Index\IndexPayloadBuilder;
 use App\Application\Exercises\HowMuchDoYouKnow\Shared\EqualityEvaluator;
 use App\Application\Exercises\HowMuchDoYouKnow\Shared\TextNormalizer;
@@ -34,6 +35,7 @@ final class HowMuchDoYouKnowModuleWiring
 
     private ?ConfigPayloadBuilder $configPayloadBuilder = null;
     private ?IndexPayloadBuilder $indexPayloadBuilder = null;
+    private ?IndexEvaluationService $indexEvaluationService = null;
     private ?TitlePayloadBuilder $titlePayloadBuilder = null;
     private ?TitleEvaluationService $titleEvaluationService = null;
 
@@ -81,7 +83,8 @@ final class HowMuchDoYouKnowModuleWiring
                 \Closure::fromCallable([$configController, 'submit']),
                 \Closure::fromCallable([$titleController, 'show']),
                 \Closure::fromCallable([$titleController, 'evaluate']),
-                \Closure::fromCallable([$indexController, 'show'])
+                \Closure::fromCallable([$indexController, 'show']),
+                \Closure::fromCallable([$indexController, 'evaluate'])
             );
         });
 
@@ -123,6 +126,8 @@ final class HowMuchDoYouKnowModuleWiring
                 $this->authService,
                  $this->paths(),
                 $this->indexPayloadBuilder(),
+                $this->indexEvaluationService(),
+                $this->redirector,
                 $this->urlGenerator
             );
         });
@@ -177,6 +182,17 @@ final class HowMuchDoYouKnowModuleWiring
         ));
 
         return $builder;
+    }
+
+    private function indexEvaluationService(): IndexEvaluationService
+    {
+        /** @var IndexEvaluationService $service */
+        $service = $this->memoize($this->indexEvaluationService, fn(): IndexEvaluationService => new IndexEvaluationService(
+            $this->equalityEvaluator()
+        ));
+
+
+        return $service;
     }
 
     private function titleEvaluationService(): TitleEvaluationService

@@ -33,7 +33,7 @@ final class IndexPayloadBuilder
 
 
         return [
-            'step' => ExerciseStep::INDEX->value,
+            StepPayloadKeys::STEP => ExerciseStep::INDEX->value,
 
             StepPayloadKeys::ITEMS => $this->buildSectionItems(
                 $sections,
@@ -56,7 +56,7 @@ final class IndexPayloadBuilder
                     ]
             ],
 
-            'expected' => $this->buildExpectedItems($sections),
+            StepPayloadKeys::EXPECTED => $this->buildExpectedItems($sections),
         ];
     }
 

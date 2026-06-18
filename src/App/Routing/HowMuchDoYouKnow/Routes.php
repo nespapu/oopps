@@ -16,7 +16,8 @@ final class Routes
         private readonly \Closure $checkConfigHandler,
         private readonly \Closure $showTitleStepHandler,
         private readonly \Closure $evaluateTitleStepHandler,
-        private readonly \Closure $showIndexStepHandler
+        private readonly \Closure $showIndexStepHandler,
+        private readonly \Closure $evaluateIndexStepHandler
     ) {}
 
     public function routes(): RouteCollection
@@ -53,6 +54,11 @@ final class Routes
             handler: $this->showIndexStepHandler
         ));
 
+        $routes->add(new RouteDefinition(
+            path: $this->paths->indexEvaluationPattern(),
+            method: HttpMethod::POST,
+            handler: $this->evaluateIndexStepHandler
+        ));
         return $routes;
     }
 }
