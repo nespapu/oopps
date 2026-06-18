@@ -15,6 +15,9 @@ final class Paths
     private const TITLE_EVALUATION = 'ejercicios/cuanto-sabes-tema/sesiones/{sesionId}/pasos/titulo/evaluar';
 
     private const INDEX_STEP = 'ejercicios/cuanto-sabes-tema/sesiones/{sesionId}/pasos/indice';
+    private const INDEX_EVALUATION = 'ejercicios/cuanto-sabes-tema/sesiones/{sesionId}/pasos/indice/evaluar';
+
+    private const JUSTIFICATION_STEP = 'ejercicios/cuanto-sabes-tema/sesiones/{sesionId}/pasos/justificacion';
 
     public function __construct(
         private readonly RouteUrlGenerator $routeUrlGenerator
@@ -54,6 +57,17 @@ final class Paths
         ]);
     }
 
+    public function justificationStepPattern(): string
+    {
+        return self::JUSTIFICATION_STEP;
+    }
+    public function justificationStep(string $sessionId): string
+    {
+        return $this->routeUrlGenerator->generate(self::JUSTIFICATION_STEP, [
+            'sesionId' => $sessionId,
+        ]);
+    }
+
     public function titleEvaluationPattern(): string
     {
         return self::TITLE_EVALUATION;
@@ -62,6 +76,17 @@ final class Paths
     public function titleEvaluation(string $sessionId): string
     {
         return $this->routeUrlGenerator->generate(self::TITLE_EVALUATION, [
+            'sesionId' => $sessionId,
+        ]);
+    }
+
+    public function indexEvaluationPattern(): string
+    {
+        return self::INDEX_EVALUATION;
+    }
+    public function indexEvaluation(string $sessionId): string
+    {
+        return $this->routeUrlGenerator->generate(self::INDEX_EVALUATION, [
             'sesionId' => $sessionId,
         ]);
     }

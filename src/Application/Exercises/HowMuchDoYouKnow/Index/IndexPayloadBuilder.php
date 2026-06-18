@@ -29,7 +29,7 @@ final class IndexPayloadBuilder
 
         $difficulty = Difficulty::from($session->config()->difficulty());
         $sectionOrderHintMode = HintMode::LETTERS;
-        $sectionTitleHintMode = HintMode::WORDS;
+        $sectionTitleHintMode = HintMode::LETTERS;
 
 
         return [

@@ -121,7 +121,9 @@ final class HowMuchDoYouKnowModuleWiring
             return new IndexController(
                 $this->exerciseSessionStore,
                 $this->authService,
-                $this->indexPayloadBuilder()
+                 $this->paths(),
+                $this->indexPayloadBuilder(),
+                $this->urlGenerator
             );
         });
         return $controller;
