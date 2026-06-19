@@ -33,11 +33,14 @@ final class IndexController
 
         $payload = $this->payloadBuilder->build($session);
 
+        $stepAnswer = $session->getStepAnswer(ExerciseStep::INDEX);
+
         $evaluation = $session->getStepEvaluation(ExerciseStep::INDEX);
 
         View::render('exercises/how-much-do-you-know/index', [
             'payload' => $payload,
             'sessionId' => $session->sessionId(),
+            'stepAnswer' => $stepAnswer,
             'evaluation' => $evaluation,
             'url' => $this->urlGenerator,
             'howMuchDoYouKnowPaths' => $this->paths,
@@ -55,6 +58,8 @@ final class IndexController
         $stepAnswer = $this->buildStepAnswerFromPost($payload, $_POST, ExerciseStep::INDEX->value);
 
         $evaluation = $this->evaluationService->evaluate($payload, $stepAnswer);
+
+        $session->setStepAnswer(ExerciseStep::INDEX, $stepAnswer);
 
         $session->setStepEvaluation(ExerciseStep::INDEX, $evaluation);
 

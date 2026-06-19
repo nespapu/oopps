@@ -32,11 +32,15 @@ final class TitleController
         $session = $this->exerciseSessionStore->getCurrentSession();
 
         $payload = $this->payloadBuilder->build($session);
+
+        $stepAnswer = $session->getStepAnswer(ExerciseStep::TITLE);
+
         $evaluation = $session->getStepEvaluation(ExerciseStep::TITLE);
 
         View::render('exercises/how-much-do-you-know/title', [
             'payload' => $payload,
             'sessionId' => $session->sessionId(),
+            'stepAnswer' => $stepAnswer,
             'evaluation' => $evaluation,
             'url' => $this->urlGenerator,
             'howMuchDoYouKnowPaths' => $this->paths,
@@ -55,7 +59,10 @@ final class TitleController
 
         $evaluation = $this->evaluationService->evaluate($payload, $stepAnswer);
 
+        $session->setStepAnswer(ExerciseStep::TITLE, $stepAnswer);
+
         $session->setStepEvaluation(ExerciseStep::TITLE, $evaluation);
+
         $this->exerciseSessionStore->save($session);
 
         $this->redirector->redirect($this->paths->titleStep($session->sessionId()));

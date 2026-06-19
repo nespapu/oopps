@@ -1,6 +1,11 @@
 <?php
-/** @var array $payload */
+
+/** @var array<string, mixed> $payload */
 /** @var string $sessionId */
+/** @var array<string, mixed>|null $stepAnswer */
+/** @var array<string, mixed>|null $evaluation */
+/** @var \App\Application\Routing\UrlGenerator $url */
+/** @var \App\App\Routing\HowMuchDoYouKnow\Paths $howMuchDoYouKnowPaths */
 
 use App\Application\Exercises\HowMuchDoYouKnow\Shared\StepPayloadKeys;
 
@@ -19,6 +24,30 @@ $item        = $items[0] ?? [];
 $fieldName   = $item['name'] ?? 'title';
 $placeholder = $item['placeholder'] ?? '';
 $hint       = $item['hint'] ?? '';
+
+$stepAnswerValues = is_array($stepAnswer['values'] ?? null)
+    ? $stepAnswer['values']
+    : [];
+
+
+$result = is_array($evaluation['result'] ?? null)
+    ? $evaluation['result']
+    : [];
+
+
+$fieldResults = is_array($result['fieldResults'] ?? null)
+    ? $result['fieldResults']
+    : [];
+
+$titleFieldResult = $fieldResults['title'] ?? null;
+
+$titleCssClass = '';
+
+if (is_array($titleFieldResult)) {
+  $titleCssClass = ($titleFieldResult['isCorrect'] ?? false)
+    ? 'is-valid'
+    : 'is-invalid';
+}
 
 $isStepCorrect = null;
 
@@ -83,10 +112,11 @@ $e = fn($v) => htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8');
 
             <input
               type="text"
-              class="form-control form-control-lg"
+              class="form-control form-control-lg <?= $titleCssClass ?>"
               id="<?= $e($fieldName) ?>"
               name="<?= $e($fieldName) ?>"
               placeholder="<?= $e($placeholder) ?>"
+              value = "<?= $stepAnswerValues[$fieldName] ?? '' ?>"
               autocomplete="off"
               required
             >

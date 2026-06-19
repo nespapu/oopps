@@ -2,6 +2,7 @@
 
 /** @var array<string, mixed> $payload */
 /** @var string $sessionId */
+/** @var array<string, mixed>|null $stepAnswer */
 /** @var array<string, mixed>|null $evaluation */
 /** @var \App\Application\Routing\UrlGenerator $url */
 /** @var \App\App\Routing\HowMuchDoYouKnow\Paths $howMuchDoYouKnowPaths */
@@ -20,6 +21,18 @@ $evaluable  = $meta['evaluable'] ?? [];
 
 $isSectionOrderEvaluable = (bool)($evaluable['sectionOrder'] ?? false);
 $isSectionTitleEvaluable = (bool)($evaluable['sectionTitle'] ?? false);
+
+$stepAnswerValues = is_array($stepAnswer['values'] ?? null)
+    ? $stepAnswer['values']
+    : [];
+
+$result = is_array($evaluation['result'] ?? null)
+    ? $evaluation['result']
+    : [];
+
+$fieldResults = is_array($result['fieldResults'] ?? null)
+    ? $result['fieldResults']
+    : [];
 
 $isStepCorrect = null;
 
@@ -107,6 +120,24 @@ $e = fn($v) => htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8');
 
                     $sectionOrderInputId = $key . '_sectionOrder';
                     $sectionTitleInputId = $key . '_sectionTitle';
+
+                    $sectionOrderResult = $fieldResults[$key.'.sectionOrder'] ?? null;
+                    $sectionTitleResult = $fieldResults[$key.'.sectionTitle'] ?? null;
+
+                    $sectionOrderCssClass = '';
+                    $sectionTitleCssClass = '';
+
+                    if (is_array($sectionOrderResult)) {
+                        $sectionOrderCssClass = ($sectionOrderResult['isCorrect'] ?? false)
+                            ? 'is-valid'
+                            : 'is-invalid';
+                    }
+
+                    if (is_array($sectionTitleResult)) {
+                        $sectionTitleCssClass = ($sectionTitleResult['isCorrect'] ?? false)
+                            ? 'is-valid'
+                            : 'is-invalid';
+                    }
                   ?>
 
                   <tr>
@@ -118,10 +149,11 @@ $e = fn($v) => htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8');
 
                         <input
                           type="text"
-                          class="form-control"
+                          class="form-control <?= $sectionOrderCssClass ?>"
                           id="<?= $e($sectionOrderInputId) ?>"
                           name="<?= $e($key) ?>[sectionOrder]"
                           placeholder="<?= $e($sectionOrderHint) ?>"
+                          value = "<?= $stepAnswerValues[$key.'.sectionOrder'] ?? '' ?>"
                           autocomplete="off"
                           required
                         >
@@ -151,10 +183,11 @@ $e = fn($v) => htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8');
 
                         <input
                           type="text"
-                          class="form-control"
+                          class="form-control <?= $sectionTitleCssClass ?>"
                           id="<?= $e($sectionTitleInputId) ?>"
                           name="<?= $e($key) ?>[sectionTitle]"
                           placeholder="<?= $e($sectionTitleHint) ?>"
+                          value = "<?= $stepAnswerValues[$key.'.sectionTitle'] ?? '' ?>"
                           autocomplete="off"
                           required
                         >
