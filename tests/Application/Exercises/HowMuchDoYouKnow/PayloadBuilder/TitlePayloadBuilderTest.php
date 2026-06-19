@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Domain\Exercise\StepBuilder;
+namespace Tests\Application\Exercises\HowMuchDoYouKnow\PayloadBuilder;
 
 use App\Application\Exercises\HowMuchDoYouKnow\Shared\StepPayloadKeys;
 use App\Application\Exercises\HowMuchDoYouKnow\Title\TitlePayloadBuilder;
@@ -14,9 +14,9 @@ use App\Domain\Exercise\ExerciseType;
 use App\Domain\Exercise\HintMode;
 use App\Domain\Exercise\HintService;
 use PHPUnit\Framework\TestCase;
-use Tests\Domain\Exercise\Doubles\FakeTopicRepository;
+use Tests\Doubles\Exercise\FakeTopicRepository;
 
-final class HowMuchDoYouKnowTitlePayloadBuilderTest extends TestCase
+final class TitlePayloadBuilderTest extends TestCase
 {
     public function testBuildsPayloadWithHintAndMetadata(): void
     {
@@ -37,15 +37,15 @@ final class HowMuchDoYouKnowTitlePayloadBuilderTest extends TestCase
         $this->assertSame(ExerciseStep::TITLE->value, $payload['step']);
 
         $this->assertArrayHasKey(StepPayloadKeys::ITEMS, $payload);
-        $this->assertSame('text', $payload[StepPayloadKeys::ITEMS][0]['tipo']);
-        $this->assertSame('titulo', $payload[StepPayloadKeys::ITEMS][0]['nombre']);
+        $this->assertSame('text', $payload[StepPayloadKeys::ITEMS][0]['type']);
+        $this->assertSame('title', $payload[StepPayloadKeys::ITEMS][0]['name']);
 
-        $this->assertArrayHasKey('pista', $payload[StepPayloadKeys::ITEMS][0]);
-        $this->assertNotSame('', $payload[StepPayloadKeys::ITEMS][0]['pista']);
+        $this->assertArrayHasKey('hint', $payload[StepPayloadKeys::ITEMS][0]);
+        $this->assertNotSame('', $payload[StepPayloadKeys::ITEMS][0]['hint']);
 
-        $this->assertSame(16, $payload[StepPayloadKeys::META]['numeracionTema']);
-        $this->assertSame('Sistemas operativos. Gestión de procesos', $payload[StepPayloadKeys::META]['tituloTema']);
-        $this->assertSame(HintMode::WORDS->value, $payload[StepPayloadKeys::META]['tipoPista']);
+        $this->assertSame(16, $payload[StepPayloadKeys::META]['topicOrder']);
+        $this->assertSame('Sistemas operativos. Gestión de procesos', $payload[StepPayloadKeys::META]['topicTitle']);
+        $this->assertSame(HintMode::WORDS->value, $payload[StepPayloadKeys::META]['hintType']);
     }
 
     public function testUsesFallbackHintWhenTitleIsMissing(): void
@@ -65,7 +65,7 @@ final class HowMuchDoYouKnowTitlePayloadBuilderTest extends TestCase
         $payload = $builder->build($session);
 
         // If you changed the fallback string in the builder, update this expected value accordingly.
-        $this->assertSame('(no hint generated)', $payload[StepPayloadKeys::ITEMS][0]['pista']);
+        $this->assertSame('(no hint generated)', $payload[StepPayloadKeys::ITEMS][0]['hint']);
     }
 
     private function userContextDummy(): UserContext

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace tests\Domain\Exercise\Doubles;
+namespace Tests\Doubles\Exercise;
 
 use App\Domain\Temas\TopicRepository;
 
