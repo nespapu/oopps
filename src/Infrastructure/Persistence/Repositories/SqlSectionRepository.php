@@ -33,8 +33,8 @@ final class SqlSectionRepository implements SectionRepository
         $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
         return array_map(
             static fn(array $row): array => [
-                'orden' => (string) $row['orden'],
-                'titulo' => (string) $row['titulo'],
+                'sectionOrder' => (string) $row['orden'],
+                'sectionTitle' => (string) $row['titulo'],
             ],
             $rows
         );

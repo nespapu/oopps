@@ -69,12 +69,12 @@ final class IndexPayloadBuilder
         return array_map(
             fn(array $row, int $index): array => [
                 'key' => 'item' . $index,
-                'sectionOrder' => $row['orden'],
-                'sectionTitle' => $row['titulo'],
+                'sectionOrder' => $row['sectionOrder'],
+                'sectionTitle' => $row['sectionTitle'],
                 'hints' => [
                     'sectionOrder' => '',  // TODO: Define hint strategy for structured fields (e.g. section numbering).
                     'sectionTitle' => $this->hintService->getHint(
-                        $row['titulo'],
+                        $row['sectionTitle'],
                         $difficulty,
                         $sectionTitleHintMode
                     ),
@@ -90,8 +90,8 @@ final class IndexPayloadBuilder
         return array_map(
             static fn(array $row, int $index): array => [
                 'key' => 'item' . $index,
-                'sectionOrder' => $row['orden'],
-                'sectionTitle' => $row['titulo'],
+                'sectionOrder' => $row['sectionOrder'],
+                'sectionTitle' => $row['sectionTitle'],
             ],
             $sections,
             array_keys($sections)
