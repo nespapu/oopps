@@ -44,7 +44,7 @@ final class IndexPayloadBuilder
 
             StepPayloadKeys::META => [
                     'topicOrder' => $topicOrder,
-                    'difficulty' => $session->config()->difficulty(),
+                    'difficulty' => $difficulty->value,
                     'flags' => $session->config()->flags(),
                     'evaluable' => [
                         'sectionOrder' => !$session->config()->isFlagEnabled('sectionOrder'),

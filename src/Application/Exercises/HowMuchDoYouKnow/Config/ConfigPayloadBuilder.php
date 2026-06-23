@@ -60,7 +60,10 @@ final class ConfigPayloadBuilder
     {
         return [
             'sectionOrder' => false,
-            'sectionTitle' => false
+            'sectionTitle' => false,
+            'cycles' => false,
+            'laws' => false,
+            'modules' => false
         ];
     }
 }

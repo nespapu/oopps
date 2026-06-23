@@ -54,6 +54,9 @@ final class ConfigController
         $flags = [
           'sectionOrder' => isset($_POST['flags']['sectionOrder']),
           'sectionTitle' => isset($_POST['flags']['sectionTitle']),
+          'cycles' => isset($_POST['flags']['cycles']),
+          'laws' => isset($_POST['flags']['laws']),
+          'modules' => isset($_POST['flags']['modules'])
         ];
 
         $rawTopicOrder = $_POST['topicOrder'] ?? null;

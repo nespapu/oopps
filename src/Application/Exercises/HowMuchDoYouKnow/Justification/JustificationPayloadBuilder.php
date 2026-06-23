@@ -35,7 +35,7 @@ final class JustificationPayloadBuilder
 
             StepPayloadKeys::META => [
                 'topicOrder' => $topicOrder,
-                'difficulty' => $difficulty,
+                'difficulty' => $difficulty->value,
                 'flags' => $session->config()->flags(),
                 'evaluable' => [
                     'cycles' => !$session->config()->isFlagEnabled('cycles'),

@@ -50,7 +50,7 @@ final class TitlePayloadBuilder
             StepPayloadKeys::META => [
                     'topicOrder' => $topicOrder,
                     'topicTitle' => $title,
-                    'difficulty' => $session->config()->difficulty(),
+                    'difficulty' => $difficulty->value,
                     'flags' => $session->config()->flags(),
                     'hintType' => $hintMode->value,
             ],

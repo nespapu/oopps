@@ -20,6 +20,8 @@ final class Paths
     private const JUSTIFICATION_STEP = 'ejercicios/cuanto-sabes-tema/sesiones/{sesionId}/pasos/justificacion';
     private const JUSTIFICATION_EVALUATION = 'ejercicios/cuanto-sabes-tema/sesiones/{sesionId}/pasos/justificacion/evaluar';
 
+    private const QUOTES_STEP = 'ejercicios/cuanto-sabes-tema/sesiones/{sesionId}/pasos/citas';
+
     public function __construct(
         private readonly RouteUrlGenerator $routeUrlGenerator
     ) {}
@@ -66,6 +68,19 @@ final class Paths
     public function justificationStep(string $sessionId): string
     {
         return $this->routeUrlGenerator->generate(self::JUSTIFICATION_STEP, [
+            'sesionId' => $sessionId,
+        ]);
+    }
+
+    public function quotesStepPattern(): string
+    {
+        return self::QUOTES_STEP;
+    }
+
+
+    public function quotesStep(string $sessionId): string
+    {
+        return $this->routeUrlGenerator->generate(self::QUOTES_STEP, [
             'sesionId' => $sessionId,
         ]);
     }

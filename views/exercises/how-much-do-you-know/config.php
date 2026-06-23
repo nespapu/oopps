@@ -154,6 +154,66 @@ $selectedDifficultyLabel = $findLabel($difficultyLevels, $selectedDifficulty);
 
                             <hr class="my-4">
 
+                            <div class="mb-4">
+                                <h2 class="h5 mb-2">Justificación</h2>
+                                <p class="text-muted small mb-3">
+                                    Configura qué elementos de la justificación se mostrarán resueltos durante el ejercicio.
+                                </p>
+                                                                
+                                <div class="form-check mb-2">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="cycles"
+                                        name="flags[cycles]"
+                                        value="1"
+                                        <?= ($flags['cycles'] ?? false) ? 'checked' : '' ?>
+                                    >
+                                    <label class="form-check-label" for="cycles">
+                                        Ciclos
+                                    </label>
+                                    <div class="form-text">
+                                        Si está marcado, los ciclos aparecerán visibles.
+                                    </div>
+                                </div>
+                                                                
+                                <div class="form-check mb-2">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="laws"
+                                        name="flags[laws]"
+                                        value="1"
+                                        <?= ($flags['laws'] ?? false) ? 'checked' : '' ?>
+                                    >
+                                    <label class="form-check-label" for="laws">
+                                        Leyes
+                                    </label>
+                                    <div class="form-text">
+                                        Si está marcado, las leyes aparecerán visibles.
+                                    </div>
+                                </div>
+                                                                
+                                <div class="form-check">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="modules"
+                                        name="flags[modules]"
+                                        value="1"
+                                        <?= ($flags['modules'] ?? false) ? 'checked' : '' ?>
+                                    >
+                                    <label class="form-check-label" for="modules">
+                                        Módulos
+                                    </label>
+                                    <div class="form-text">
+                                        Si está marcado, los módulos aparecerán visibles.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr class="my-4">
+
                             <div class="d-flex gap-2">
                                 <button type="submit" class="btn btn-primary">
                                     Empezar

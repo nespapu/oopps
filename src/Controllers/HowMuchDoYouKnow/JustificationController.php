@@ -36,10 +36,19 @@ final class JustificationController
 
         $payload = $this->payloadBuilder->build($session);
 
-        echo '<pre>';
-        print_r($payload);
-        echo '</pre>';
-        exit;
+        $stepAnswer = $session->getStepAnswer(ExerciseStep::JUSTIFICATION);
+        
+        $evaluation = $session->getStepEvaluation(ExerciseStep::JUSTIFICATION);
+
+        View::render('exercises/how-much-do-you-know/justification', [
+            'payload' => $payload,
+            'sessionId' => $session->sessionId(),
+            'stepAnswer' => $stepAnswer,
+            'evaluation' => $evaluation,
+            'url' => $this->urlGenerator,
+            'howMuchDoYouKnowPaths' => $this->paths,
+        ]);
+
     }
 
 
@@ -48,6 +57,20 @@ final class JustificationController
         $this->authService->requireLogin();
 
         $session = $this->exerciseSessionStore->getCurrentSession();
+        
+        $payload = $this->payloadBuilder->build($session);
+        
+        $stepAnswer = $this->buildStepAnswerFromPost($payload, $_POST, ExerciseStep::JUSTIFICATION->value);
+        
+        $evaluation = []; //TODO
+        
+        $session->setStepAnswer(ExerciseStep::JUSTIFICATION, $stepAnswer);
+        
+        $session->setStepEvaluation(ExerciseStep::JUSTIFICATION, $evaluation);
+        
+        $this->exerciseSessionStore->save($session);
+        
+        $this->redirector->redirect($this->paths->justificationStep($session->sessionId()));
     }
 
 
