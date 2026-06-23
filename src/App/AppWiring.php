@@ -26,6 +26,7 @@ use App\Controllers\ExercisesDashboardController;
 use App\Controllers\LoginController;
 use App\Domain\Auth\UserRepository;
 use App\Domain\Exercise\HintService;
+use App\Domain\Temas\JustificationRepository;
 use App\Domain\Temas\SectionRepository;
 use App\Domain\Temas\TopicRepository;
 use App\Infrastructure\Auth\DefaultAuthService;
@@ -36,6 +37,7 @@ use App\Infrastructure\Http\DefaultHttpMethodGuard;
 use App\Infrastructure\Http\HeaderRedirector;
 use App\Infrastructure\Http\ServerRequestContext;
 use App\Infrastructure\Persistence\PdoFactory;
+use App\Infrastructure\Persistence\Repositories\SqlJustificationRepository;
 use App\Infrastructure\Persistence\Repositories\SqlSectionRepository;
 use App\Infrastructure\Persistence\Repositories\TopicRepositorySQL;
 use App\Infrastructure\Persistence\Repositories\UserRepositorySQL;
@@ -80,6 +82,7 @@ final class AppWiring
     private ?PdoFactory $pdoFactory = null;
     private ?SessionStore $sessionStore = null;
     private ?UrlGenerator $urlGenerator = null;
+    private ?JustificationRepository $justificationRepository = null;
     private ?TopicRepository $topicRepository = null;
     private ?UserRepository $userRepository = null;
     private ?SectionRepository $sectionRepository = null;
@@ -230,6 +233,7 @@ final class AppWiring
             $this->redirector(),
             $this->urlGenerator(),
             $this->routeUrlGenerator(),
+            $this->justificationRepository(),
             $this->topicRepository(),
             $this->sectionRepository(),
             $this->hintService()
@@ -363,6 +367,17 @@ final class AppWiring
         /** @var UrlGenerator $generator */
         $generator = $this->memoize($this->urlGenerator, fn(): UrlGenerator => new ScriptNameUrlGenerator());
         return $generator;
+    }
+
+    private function justificationRepository(): JustificationRepository
+    {
+        /** @var JustificationRepository $repo */
+        $repo = $this->memoize($this->justificationRepository, fn(): JustificationRepository => new SqlJustificationRepository(
+            $this->pdo()
+        ));
+
+
+        return $repo;
     }
 
     private function topicRepository(): TopicRepository

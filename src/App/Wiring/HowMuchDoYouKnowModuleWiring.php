@@ -9,6 +9,7 @@ use App\Application\Exercises\ExerciseSessionStore;
 use App\Application\Exercises\HowMuchDoYouKnow\Config\ConfigPayloadBuilder;
 use App\Application\Exercises\HowMuchDoYouKnow\Index\IndexEvaluationService;
 use App\Application\Exercises\HowMuchDoYouKnow\Index\IndexPayloadBuilder;
+use App\Application\Exercises\HowMuchDoYouKnow\Justification\JustificationPayloadBuilder;
 use App\Application\Exercises\HowMuchDoYouKnow\Shared\EqualityEvaluator;
 use App\Application\Exercises\HowMuchDoYouKnow\Shared\TextNormalizer;
 use App\Application\Exercises\HowMuchDoYouKnow\Title\TitleEvaluationService;
@@ -19,8 +20,10 @@ use App\Application\Routing\RouteUrlGenerator;
 use App\Application\Routing\UrlGenerator;
 use App\Controllers\HowMuchDoYouKnow\ConfigController;
 use App\Controllers\HowMuchDoYouKnow\IndexController;
+use App\Controllers\HowMuchDoYouKnow\JustificationController;
 use App\Controllers\HowMuchDoYouKnow\TitleController;
 use App\Domain\Exercise\HintService;
+use App\Domain\Temas\JustificationRepository;
 use App\Domain\Temas\SectionRepository;
 use App\Domain\Temas\TopicRepository;
 
@@ -31,11 +34,13 @@ final class HowMuchDoYouKnowModuleWiring
 
     private ?ConfigController $configController = null;
     private ?IndexController $indexController = null;
+    private ?JustificationController $justificationController = null;
     private ?TitleController $titleController = null;
 
     private ?ConfigPayloadBuilder $configPayloadBuilder = null;
     private ?IndexPayloadBuilder $indexPayloadBuilder = null;
     private ?IndexEvaluationService $indexEvaluationService = null;
+    private ?JustificationPayloadBuilder $justificationPayloadBuilder = null;
     private ?TitlePayloadBuilder $titlePayloadBuilder = null;
     private ?TitleEvaluationService $titleEvaluationService = null;
 
@@ -49,6 +54,7 @@ final class HowMuchDoYouKnowModuleWiring
         private readonly Redirector $redirector,
         private readonly UrlGenerator $urlGenerator,
         private readonly RouteUrlGenerator $routeUrlGenerator,
+        private readonly JustificationRepository $justificationRepository,
         private readonly TopicRepository $topicRepository,
         private readonly SectionRepository $sectionRepository,
         private readonly HintService $hintService
@@ -76,6 +82,7 @@ final class HowMuchDoYouKnowModuleWiring
             $configController = $this->configController();
             $titleController = $this->titleController();
             $indexController = $this->indexController();
+            $justificationController = $this->justificationController();
 
             return new Routes(
                 $this->paths(),
@@ -84,7 +91,9 @@ final class HowMuchDoYouKnowModuleWiring
                 \Closure::fromCallable([$titleController, 'show']),
                 \Closure::fromCallable([$titleController, 'evaluate']),
                 \Closure::fromCallable([$indexController, 'show']),
-                \Closure::fromCallable([$indexController, 'evaluate'])
+                \Closure::fromCallable([$indexController, 'evaluate']),
+                \Closure::fromCallable([$justificationController, 'show']),
+                \Closure::fromCallable([$justificationController, 'evaluate'])
             );
         });
 
@@ -134,6 +143,23 @@ final class HowMuchDoYouKnowModuleWiring
         return $controller;
     }
 
+    private function justificationController() : JustificationController
+    {
+        /** @var JustificationController $controller */
+        $controller = $this->memoize($this->justificationController, function (): JustificationController {
+            return new JustificationController(
+                $this->exerciseSessionStore,
+                $this->authService,
+                 $this->paths(),
+                $this->justificationPayloadBuilder(),
+                // TODO inject justification evaluation service
+                $this->redirector,
+                $this->urlGenerator
+            );
+        });
+        return $controller;
+    }
+
     private function titleController(): TitleController
     {
         /** @var TitleController $controller */
@@ -169,6 +195,18 @@ final class HowMuchDoYouKnowModuleWiring
             $this->sectionRepository,
             $this->hintService
         ));
+
+        return $builder;
+    }
+
+    private function justificationPayloadBuilder(): JustificationPayloadBuilder
+    {
+        /** @var  JustificationPayloadBuilder $builder */
+        $builder = $this->memoize($this->justificationPayloadBuilder, fn(): JustificationPayloadBuilder => new JustificationPayloadBuilder(
+            $this->justificationRepository,
+            $this->hintService
+        ));
+
 
         return $builder;
     }

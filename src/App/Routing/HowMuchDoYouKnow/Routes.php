@@ -17,7 +17,9 @@ final class Routes
         private readonly \Closure $showTitleStepHandler,
         private readonly \Closure $evaluateTitleStepHandler,
         private readonly \Closure $showIndexStepHandler,
-        private readonly \Closure $evaluateIndexStepHandler
+        private readonly \Closure $evaluateIndexStepHandler,
+        private readonly \Closure $showJustificationStepHandler,
+        private readonly \Closure $evaluateJustificationStepHandler
     ) {}
 
     public function routes(): RouteCollection
@@ -59,6 +61,20 @@ final class Routes
             method: HttpMethod::POST,
             handler: $this->evaluateIndexStepHandler
         ));
+
+        $routes->add(new RouteDefinition(
+            path: $this->paths->justificationStepPattern(),
+            method: HttpMethod::GET,
+            handler: $this->showJustificationStepHandler
+        ));
+
+
+        $routes->add(new RouteDefinition(
+            path: $this->paths->justificationEvaluationPattern(),
+            method: HttpMethod::POST,
+            handler: $this->evaluateJustificationStepHandler
+        ));
+
         return $routes;
     }
 }

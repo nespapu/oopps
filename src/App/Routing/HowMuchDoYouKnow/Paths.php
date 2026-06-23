@@ -18,6 +18,7 @@ final class Paths
     private const INDEX_EVALUATION = 'ejercicios/cuanto-sabes-tema/sesiones/{sesionId}/pasos/indice/evaluar';
 
     private const JUSTIFICATION_STEP = 'ejercicios/cuanto-sabes-tema/sesiones/{sesionId}/pasos/justificacion';
+    private const JUSTIFICATION_EVALUATION = 'ejercicios/cuanto-sabes-tema/sesiones/{sesionId}/pasos/justificacion/evaluar';
 
     public function __construct(
         private readonly RouteUrlGenerator $routeUrlGenerator
@@ -61,6 +62,7 @@ final class Paths
     {
         return self::JUSTIFICATION_STEP;
     }
+
     public function justificationStep(string $sessionId): string
     {
         return $this->routeUrlGenerator->generate(self::JUSTIFICATION_STEP, [
@@ -84,9 +86,23 @@ final class Paths
     {
         return self::INDEX_EVALUATION;
     }
+
     public function indexEvaluation(string $sessionId): string
     {
         return $this->routeUrlGenerator->generate(self::INDEX_EVALUATION, [
+            'sesionId' => $sessionId,
+        ]);
+    }
+
+    public function justificationEvaluationPattern(): string
+    {
+        return self::JUSTIFICATION_EVALUATION;
+    }
+
+
+    public function justificationEvaluation(string $sessionId): string
+    {
+        return $this->routeUrlGenerator->generate(self::JUSTIFICATION_EVALUATION, [
             'sesionId' => $sessionId,
         ]);
     }
