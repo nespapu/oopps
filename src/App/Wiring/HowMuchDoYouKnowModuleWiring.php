@@ -9,6 +9,7 @@ use App\Application\Exercises\ExerciseSessionStore;
 use App\Application\Exercises\HowMuchDoYouKnow\Config\ConfigPayloadBuilder;
 use App\Application\Exercises\HowMuchDoYouKnow\Index\IndexEvaluationService;
 use App\Application\Exercises\HowMuchDoYouKnow\Index\IndexPayloadBuilder;
+use App\Application\Exercises\HowMuchDoYouKnow\Justification\JustificationEvaluationService;
 use App\Application\Exercises\HowMuchDoYouKnow\Justification\JustificationPayloadBuilder;
 use App\Application\Exercises\HowMuchDoYouKnow\Shared\EqualityEvaluator;
 use App\Application\Exercises\HowMuchDoYouKnow\Shared\TextNormalizer;
@@ -41,6 +42,7 @@ final class HowMuchDoYouKnowModuleWiring
     private ?IndexPayloadBuilder $indexPayloadBuilder = null;
     private ?IndexEvaluationService $indexEvaluationService = null;
     private ?JustificationPayloadBuilder $justificationPayloadBuilder = null;
+    private ?JustificationEvaluationService $justificationEvaluationService = null;
     private ?TitlePayloadBuilder $titlePayloadBuilder = null;
     private ?TitleEvaluationService $titleEvaluationService = null;
 
@@ -150,9 +152,9 @@ final class HowMuchDoYouKnowModuleWiring
             return new JustificationController(
                 $this->exerciseSessionStore,
                 $this->authService,
-                 $this->paths(),
+                $this->paths(),
                 $this->justificationPayloadBuilder(),
-                // TODO inject justification evaluation service
+                $this->justificationEvaluationService(),
                 $this->redirector,
                 $this->urlGenerator
             );
@@ -229,7 +231,16 @@ final class HowMuchDoYouKnowModuleWiring
             $this->equalityEvaluator()
         ));
 
+        return $service;
+    }
 
+    private function justificationEvaluationService(): JustificationEvaluationService
+    {
+        /** @var JustificationEvaluationService $service */
+        $service = $this->memoize($this->justificationEvaluationService, fn(): JustificationEvaluationService => new JustificationEvaluationService(
+            $this->equalityEvaluator()
+        ));
+        
         return $service;
     }
 

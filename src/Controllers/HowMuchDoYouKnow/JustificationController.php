@@ -7,6 +7,7 @@ namespace App\Controllers\HowMuchDoYouKnow;
 use App\App\Routing\HowMuchDoYouKnow\Paths;
 use App\Application\Auth\AuthService;
 use App\Application\Exercises\ExerciseSessionStore;
+use App\Application\Exercises\HowMuchDoYouKnow\Justification\JustificationEvaluationService;
 use App\Application\Exercises\HowMuchDoYouKnow\Justification\JustificationPayloadBuilder;
 use App\Application\Exercises\HowMuchDoYouKnow\Shared\StepPayloadKeys;
 use App\Application\Http\Redirector;
@@ -22,7 +23,7 @@ final class JustificationController
         private readonly AuthService $authService,
         private readonly Paths $paths,
         private readonly JustificationPayloadBuilder $payloadBuilder,
-        //TODO inject justification evaluation service
+        private readonly JustificationEvaluationService $evaluationService,
         private readonly Redirector $redirector,
         private readonly UrlGenerator $urlGenerator
     ) {}
@@ -62,7 +63,7 @@ final class JustificationController
         
         $stepAnswer = $this->buildStepAnswerFromPost($payload, $_POST, ExerciseStep::JUSTIFICATION->value);
         
-        $evaluation = []; //TODO
+        $evaluation = $this->evaluationService->evaluate($payload, $stepAnswer);
         
         $session->setStepAnswer(ExerciseStep::JUSTIFICATION, $stepAnswer);
         
@@ -73,10 +74,68 @@ final class JustificationController
         $this->redirector->redirect($this->paths->justificationStep($session->sessionId()));
     }
 
-
     private function buildStepAnswerFromPost(array $payload, array $postData, string $step): array
     {
         $values = [];
+
+        $evaluable = $payload[StepPayloadKeys::META]['evaluable'] ?? [];
+        $items = $payload[StepPayloadKeys::ITEMS] ?? [];
+
+        foreach ($items as $cycle) {
+            $cycleKey = $cycle['key'] ?? null;
+
+            if (!is_string($cycleKey) || $cycleKey === '') {
+                continue;
+            }
+
+            $cyclePost = $postData[$cycleKey] ?? [];
+
+            if (!is_array($cyclePost)) {
+                $cyclePost = [];
+            }
+
+            if (($evaluable['cycles'] ?? false) === true) {
+                $values[$cycleKey . '.name'] = trim((string)($cyclePost['name'] ?? ''));
+            }
+
+            if (($evaluable['laws'] ?? false) === true) {
+                foreach (($cycle['laws'] ?? []) as $law) {
+                    $lawKey = $law['key'] ?? null;
+
+                    if (!is_string($lawKey) || $lawKey === '') {
+                        continue;
+                    }
+
+                    $lawPost = $cyclePost[$lawKey] ?? [];
+
+                    if (!is_array($lawPost)) {
+                        $lawPost = [];
+                    }
+
+                    $values[$cycleKey . '.' . $lawKey . '.name'] =
+                        trim((string)($lawPost['name'] ?? ''));
+                }
+            }
+
+            if (($evaluable['modules'] ?? false) === true) {
+                foreach (($cycle['modules'] ?? []) as $module) {
+                    $moduleKey = $module['key'] ?? null;
+
+                    if (!is_string($moduleKey) || $moduleKey === '') {
+                        continue;
+                    }
+
+                    $modulePost = $cyclePost[$moduleKey] ?? [];
+
+                    if (!is_array($modulePost)) {
+                        $modulePost = [];
+                    }
+
+                    $values[$cycleKey . '.' . $moduleKey . '.name'] =
+                        trim((string)($modulePost['name'] ?? ''));
+                }
+            }
+        }
 
         return [
             'step' => $step,
