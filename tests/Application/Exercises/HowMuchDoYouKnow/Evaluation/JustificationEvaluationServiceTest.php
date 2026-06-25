@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Application\Exercises\HowMuchDoYouKnow\Evaluation;
 
+use App\Application\Exercises\Evaluation\EvaluationMode;
 use App\Application\Exercises\HowMuchDoYouKnow\Justification\JustificationEvaluationService;
 use App\Application\Exercises\HowMuchDoYouKnow\Shared\EqualityEvaluator;
 use App\Application\Exercises\HowMuchDoYouKnow\Shared\StepPayloadKeys;
@@ -155,24 +156,39 @@ final class JustificationEvaluationServiceTest extends TestCase
                 [
                     'key' => 'cycle0',
                     'name' => 'Cycle A',
+                    'evaluation' => [
+                        'mode' => EvaluationMode::EQUALITY
+                    ],
                     'laws' => [
                         [
                             'key' => 'law0',
-                            'name' => 'Law A1'
+                            'name' => 'Law A1',
+                            'evaluation' => [
+                                'mode' => EvaluationMode::EQUALITY
+                            ]
                         ],
                         [
                             'key' => 'law1',
-                            'name' => 'Law A2'
+                            'name' => 'Law A2',
+                            'evaluation' => [
+                                'mode' => EvaluationMode::EQUALITY
+                            ]
                         ]
                     ],
                     'modules' => [
                         [
                             'key' => 'module0',
-                            'name' => 'Module A1'
+                            'name' => 'Module A1',
+                            'evaluation' => [
+                                'mode' => EvaluationMode::EQUALITY
+                            ]
                         ],
                         [
                             'key' => 'module1',
-                            'name' => 'Module A2'
+                            'name' => 'Module A2',
+                            'evaluation' => [
+                                'mode' => EvaluationMode::EQUALITY
+                            ]
                         ]
                     ]
                 ],

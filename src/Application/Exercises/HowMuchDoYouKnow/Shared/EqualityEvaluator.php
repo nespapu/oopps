@@ -4,28 +4,17 @@ declare(strict_types=1);
 
 namespace App\Application\Exercises\HowMuchDoYouKnow\Shared;
 
-use App\Application\Exercises\Evaluation\FieldResult;
-
 final class EqualityEvaluator
 {
     public function __construct(
         private readonly TextNormalizer $normalizer
     ) {}
 
-    public function evaluate(string $fieldkey, string $actual, string $expected): FieldResult
+    public function evaluate(string $actual, string $expected): bool
     {
         $normalizedActual = $this->normalizer->normalize($actual);
         $normalizedExpected = $this->normalizer->normalize($expected);
 
-        $isCorrect = ($normalizedActual === $normalizedExpected);
-
-        return new FieldResult(
-            fieldKey: $fieldkey,
-            actual: $actual,
-            isCorrect: $isCorrect,
-            strategy: 'equality',
-            similarityScore: null,
-            message: $isCorrect ? null : 'Answer does not match the expected value.'
-        );
+        return $normalizedActual === $normalizedExpected;
     }
 }

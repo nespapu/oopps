@@ -3,7 +3,7 @@
 
 namespace App\Application\Exercises\HowMuchDoYouKnow\Index;
 
-
+use App\Application\Exercises\Evaluation\EvaluationMode;
 use App\Application\Exercises\HowMuchDoYouKnow\Shared\StepPayloadKeys;
 use App\Domain\Exercise\Difficulty;
 use App\Domain\Exercise\HintMode;
@@ -79,6 +79,9 @@ final class IndexPayloadBuilder
                         $sectionTitleHintMode
                     ),
                 ],
+                'evaluation' => [
+                    'mode' => EvaluationMode::EQUALITY
+                ]                
             ],
             $sections,
             array_keys($sections)

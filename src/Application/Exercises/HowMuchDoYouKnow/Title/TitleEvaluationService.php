@@ -2,9 +2,11 @@
 
 namespace App\Application\Exercises\HowMuchDoYouKnow\Title;
 
+use App\Application\Exercises\Evaluation\FieldResult;
 use App\Application\Exercises\Evaluation\StepEvaluation;
 use App\Application\Exercises\Evaluation\StepResult;
 use App\Application\Exercises\HowMuchDoYouKnow\Shared\EqualityEvaluator;
+use App\Application\Exercises\HowMuchDoYouKnow\Shared\StepPayloadKeys;
 
 final class TitleEvaluationService
 {
@@ -29,7 +31,7 @@ final class TitleEvaluationService
      */
     public function evaluate(array $payload, array $stepAnswer): StepEvaluation
     {
-        if (($stepAnswer['step'] ?? null) !== ($payload['step'] ?? null)) {
+        if (($stepAnswer['step'] ?? null) !== ($payload[StepPayloadKeys::STEP] ?? null)) {
             throw new \InvalidArgumentException('Step mismatch.');
         }
 
@@ -41,27 +43,36 @@ final class TitleEvaluationService
         $fieldResults = [];
         $isStepCorrect = true;
 
-        foreach ($payload['items'] as $item) {
+        foreach ($payload[StepPayloadKeys::ITEMS] as $item) {
             $fieldKey = $item['key'] ?? null;
             if (!is_string($fieldKey) || $fieldKey === '') {
                 throw new \LogicException('Invalid item key.');
             }
 
-            if (!array_key_exists($fieldKey, $payload['expected'])) {
+            if (!array_key_exists($fieldKey, $payload[StepPayloadKeys::EXPECTED])) {
                 throw new \LogicException("Missing expected value for field '{$fieldKey}'.");
             }
 
-            $expected = $payload['expected'][$fieldKey];
+            $expected = $payload[StepPayloadKeys::EXPECTED][$fieldKey];
             $actual = isset($values[$fieldKey]) ? (string) $values[$fieldKey] : '';
 
-            $fieldResult = $this->equalityEvaluator->evaluate($fieldKey, $actual, $expected);
+            $isCorrect = $this->equalityEvaluator->evaluate($actual, $expected);
+
+            $fieldResult = new FieldResult(
+                $fieldKey,
+                $actual,
+                $isCorrect,
+                $item['evaluation']['mode'],
+                null,
+                $isCorrect ? null : 'Answer does not match the expected value.'
+            );
 
             $fieldResults[$fieldKey] = $fieldResult;
             $isStepCorrect = $isStepCorrect && $fieldResult->isCorrect;
         }
 
         $stepResult = new StepResult(
-            step: $payload['step'],
+            step: $payload[StepPayloadKeys::STEP],
             fieldResults: $fieldResults,
             isStepCorrect: $isStepCorrect,
             score: $isStepCorrect ? 1.0 : 0.0

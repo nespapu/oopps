@@ -2,6 +2,7 @@
 
 namespace App\Application\Exercises\HowMuchDoYouKnow\Index;
 
+use App\Application\Exercises\Evaluation\FieldResult;
 use App\Application\Exercises\Evaluation\StepEvaluation;
 use App\Application\Exercises\Evaluation\StepResult;
 use App\Application\Exercises\HowMuchDoYouKnow\Shared\EqualityEvaluator;
@@ -69,14 +70,18 @@ final class IndexEvaluationService
                 $expected = (string) $expectedByItemKey[$itemKey][$fieldKey];
                 $actual = isset($values[$answerKey]) ? (string) $values[$answerKey] : '';
 
-                $fieldResult = $this->equalityEvaluator->evaluate(
-                    $answerKey,
+                $isCorrect = $this->equalityEvaluator->evaluate($actual, $expected);
+
+                $fieldResults[$answerKey] = new FieldResult(
+                    $fieldKey,
                     $actual,
-                    $expected
+                    $isCorrect,
+                    $item['evaluation']['mode'],
+                    null,
+                    $isCorrect ? null : 'Answer does not match the expected value.'
                 );
 
-                $fieldResults[$answerKey] = $fieldResult;
-                $isStepCorrect = $isStepCorrect && $fieldResult->isCorrect;
+                $isStepCorrect = $isStepCorrect && $isCorrect;
             }
         }
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Application\Exercises\HowMuchDoYouKnow\PayloadBuilder;
 
+use App\Application\Exercises\Evaluation\EvaluationMode;
 use App\Application\Exercises\HowMuchDoYouKnow\Shared\StepPayloadKeys;
 use App\Application\Exercises\HowMuchDoYouKnow\Title\TitlePayloadBuilder;
 use App\Domain\Auth\UserContext;
@@ -34,14 +35,12 @@ final class TitlePayloadBuilderTest extends TestCase
 
         $payload = $builder->build($session);
 
-        $this->assertSame(ExerciseStep::TITLE->value, $payload['step']);
-
-        $this->assertArrayHasKey(StepPayloadKeys::ITEMS, $payload);
+        $this->assertSame(ExerciseStep::TITLE->value, $payload[StepPayloadKeys::STEP]);
+        
         $this->assertSame('text', $payload[StepPayloadKeys::ITEMS][0]['type']);
         $this->assertSame('title', $payload[StepPayloadKeys::ITEMS][0]['name']);
-
-        $this->assertArrayHasKey('hint', $payload[StepPayloadKeys::ITEMS][0]);
         $this->assertNotSame('', $payload[StepPayloadKeys::ITEMS][0]['hint']);
+        $this->assertSame(EvaluationMode::EQUALITY, $payload[StepPayloadKeys::ITEMS][0]['evaluation']['mode']);
 
         $this->assertSame(16, $payload[StepPayloadKeys::META]['topicOrder']);
         $this->assertSame('Sistemas operativos. Gestión de procesos', $payload[StepPayloadKeys::META]['topicTitle']);

@@ -2,6 +2,7 @@
 
 namespace App\Application\Exercises\HowMuchDoYouKnow\Title;
 
+use App\Application\Exercises\Evaluation\EvaluationMode;
 use App\Application\Exercises\HowMuchDoYouKnow\Shared\StepPayloadKeys;
 use App\Domain\Exercise\Difficulty;
 use App\Domain\Exercise\HintMode;
@@ -35,7 +36,7 @@ final class TitlePayloadBuilder
             : $this->hintService->getHint($title, $difficulty, $hintMode);
 
         return [
-            'step' => ExerciseStep::TITLE->value,
+            StepPayloadKeys::STEP => ExerciseStep::TITLE->value,
 
             StepPayloadKeys::ITEMS => [
                 [
@@ -44,6 +45,9 @@ final class TitlePayloadBuilder
                     'name' => 'title',
                     'hint' => $hint,
                     'placeholder' => 'Escribe el título del tema',
+                    'evaluation' => [
+                        'mode' => EvaluationMode::EQUALITY
+                    ]
                 ],
             ],
 
@@ -55,7 +59,7 @@ final class TitlePayloadBuilder
                     'hintType' => $hintMode->value,
             ],
 
-            'expected' => [
+            StepPayloadKeys::EXPECTED => [
                 'title' => $title,
             ],
         ];

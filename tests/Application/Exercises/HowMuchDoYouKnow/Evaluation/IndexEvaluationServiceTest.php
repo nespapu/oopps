@@ -6,6 +6,7 @@ declare(strict_types=1);
 
 namespace Tests\Application\Exercises\HowMuchDoYouKnow\Evaluation;
 
+use App\Application\Exercises\Evaluation\EvaluationMode;
 use App\Application\Exercises\HowMuchDoYouKnow\Index\IndexEvaluationService;
 use App\Application\Exercises\HowMuchDoYouKnow\Shared\EqualityEvaluator;
 use App\Application\Exercises\HowMuchDoYouKnow\Shared\StepPayloadKeys;
@@ -110,6 +111,9 @@ final class IndexEvaluationServiceTest extends TestCase
             StepPayloadKeys::ITEMS => [
                 [
                     'key' => 'item0',
+                    'evaluation' => [
+                        'mode' => EvaluationMode::EQUALITY
+                    ]
                 ],
             ],
             StepPayloadKeys::EXPECTED => [

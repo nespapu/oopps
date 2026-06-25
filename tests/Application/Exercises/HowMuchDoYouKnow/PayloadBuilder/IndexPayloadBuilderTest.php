@@ -6,7 +6,7 @@ declare(strict_types=1);
 
 namespace Tests\Application\Exercises\HowMuchDoYouKnow\PayloadBuilder;
 
-
+use App\Application\Exercises\Evaluation\EvaluationMode;
 use App\Application\Exercises\HowMuchDoYouKnow\Shared\StepPayloadKeys;
 use App\Application\Exercises\HowMuchDoYouKnow\Index\IndexPayloadBuilder;
 use App\Domain\Auth\UserContext;
@@ -55,9 +55,11 @@ final class IndexPayloadBuilderTest extends TestCase
         $this->assertSame('item0', $payload[StepPayloadKeys::ITEMS][0]['key']);
         $this->assertSame('1', $payload[StepPayloadKeys::ITEMS][0]['sectionOrder']);
         $this->assertSame('Introducción', $payload[StepPayloadKeys::ITEMS][0]['sectionTitle']);
+        $this->assertSame(EvaluationMode::EQUALITY, $payload[StepPayloadKeys::ITEMS][0]['evaluation']['mode']);
         $this->assertSame('item1', $payload[StepPayloadKeys::ITEMS][1]['key']);
         $this->assertSame('2', $payload[StepPayloadKeys::ITEMS][1]['sectionOrder']);
         $this->assertSame('Procesos', $payload[StepPayloadKeys::ITEMS][1]['sectionTitle']);
+        $this->assertSame(EvaluationMode::EQUALITY, $payload[StepPayloadKeys::ITEMS][1]['evaluation']['mode']);
 
         $this->assertSame(16, $payload[StepPayloadKeys::META]['topicOrder']);
         $this->assertTrue($payload[StepPayloadKeys::META]['evaluable']['sectionOrder']);

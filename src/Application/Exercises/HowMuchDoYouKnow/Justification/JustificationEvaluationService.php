@@ -2,6 +2,8 @@
 
 namespace App\Application\Exercises\HowMuchDoYouKnow\Justification;
 
+use App\Application\Exercises\Evaluation\EvaluationMode;
+use App\Application\Exercises\Evaluation\FieldResult;
 use App\Application\Exercises\Evaluation\StepEvaluation;
 use App\Application\Exercises\Evaluation\StepResult;
 use App\Application\Exercises\HowMuchDoYouKnow\Shared\EqualityEvaluator;
@@ -59,7 +61,8 @@ final class JustificationEvaluationService
                     $isStepCorrect,
                     $cycleKey . '.name',
                     $values,
-                    (string) ($expectedCycle['name'] ?? '')
+                    (string) ($expectedCycle['name'] ?? ''),
+                    $cycle['evaluation']['mode']
                 );
             }
 
@@ -123,7 +126,8 @@ final class JustificationEvaluationService
                 $isStepCorrect,
                 $answerKey,
                 $values,
-                (string) ($expectedByKey[$itemKey]['name'] ?? '')
+                (string) ($expectedByKey[$itemKey]['name'] ?? ''),
+                $item['evaluation']['mode']
             );
         }
     }
@@ -133,18 +137,23 @@ final class JustificationEvaluationService
         bool &$isStepCorrect,
         string $answerKey,
         array $values,
-        string $expected
+        string $expected,
+        EvaluationMode $mode
     ): void {
         $actual = isset($values[$answerKey]) ? (string) $values[$answerKey] : '';
 
-        $fieldResult = $this->equalityEvaluator->evaluate(
+        $isCorrect = $this->equalityEvaluator->evaluate($actual, $expected);
+
+        $fieldResults[$answerKey] = new FieldResult(
             $answerKey,
             $actual,
-            $expected
+            $isCorrect,
+            $mode,
+            null,
+            $isCorrect ? null : 'Answer does not match the expected value.'
         );
 
-        $fieldResults[$answerKey] = $fieldResult;
-        $isStepCorrect = $isStepCorrect && $fieldResult->isCorrect;
+        $isStepCorrect = $isStepCorrect && $isCorrect;
     }
 
     private function buildExpectedByCycleKey(array $expectedItems): array

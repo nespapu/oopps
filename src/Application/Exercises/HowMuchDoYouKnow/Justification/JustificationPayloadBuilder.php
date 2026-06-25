@@ -2,6 +2,7 @@
 
 namespace App\Application\Exercises\HowMuchDoYouKnow\Justification;
 
+use App\Application\Exercises\Evaluation\EvaluationMode;
 use App\Application\Exercises\HowMuchDoYouKnow\Shared\StepPayloadKeys;
 use App\Domain\Exercise\Difficulty;
 use App\Domain\Exercise\HintMode;
@@ -77,14 +78,20 @@ final class JustificationPayloadBuilder
                 'name' => $cycle['cycleName'],
                 'hint' => $this->hintService->getHint($cycle['cycleName'], $difficulty, $cycleHintMode),
                 'laws' => [],
-                'modules' => []
+                'modules' => [],
+                'evaluation' => [
+                    'mode' => EvaluationMode::EQUALITY
+                ]
             ];
 
             foreach ($cycle['laws'] as $index2 => $law){
                 $item['laws'][] = [
                     'key' => 'law'.$index2,
                     'name' => $law,
-                    'hint' => $this->hintService->getHint($law, $difficulty, $lawHintMode)
+                    'hint' => $this->hintService->getHint($law, $difficulty, $lawHintMode),
+                    'evaluation' => [
+                        'mode' => EvaluationMode::EQUALITY
+                    ]
                 ];
             }
 
@@ -92,7 +99,10 @@ final class JustificationPayloadBuilder
                 $item['modules'][] = [
                     'key' => 'module'.$index2,
                     'name' => $module,
-                    'hint' => $this->hintService->getHint($module, $difficulty, $moduleHintMode)
+                    'hint' => $this->hintService->getHint($module, $difficulty, $moduleHintMode),
+                    'evaluation' => [
+                        'mode' => EvaluationMode::EQUALITY
+                    ]
                 ];
             }
 
