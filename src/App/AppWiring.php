@@ -27,6 +27,7 @@ use App\Controllers\LoginController;
 use App\Domain\Auth\UserRepository;
 use App\Domain\Exercise\HintService;
 use App\Domain\Temas\JustificationRepository;
+use App\Domain\Temas\QuotesRepository;
 use App\Domain\Temas\SectionRepository;
 use App\Domain\Temas\TopicRepository;
 use App\Infrastructure\Auth\DefaultAuthService;
@@ -38,6 +39,7 @@ use App\Infrastructure\Http\HeaderRedirector;
 use App\Infrastructure\Http\ServerRequestContext;
 use App\Infrastructure\Persistence\PdoFactory;
 use App\Infrastructure\Persistence\Repositories\SqlJustificationRepository;
+use App\Infrastructure\Persistence\Repositories\SqlQuotesRepository;
 use App\Infrastructure\Persistence\Repositories\SqlSectionRepository;
 use App\Infrastructure\Persistence\Repositories\TopicRepositorySQL;
 use App\Infrastructure\Persistence\Repositories\UserRepositorySQL;
@@ -83,6 +85,7 @@ final class AppWiring
     private ?SessionStore $sessionStore = null;
     private ?UrlGenerator $urlGenerator = null;
     private ?JustificationRepository $justificationRepository = null;
+    private ?QuotesRepository $quotesRepository = null;
     private ?TopicRepository $topicRepository = null;
     private ?UserRepository $userRepository = null;
     private ?SectionRepository $sectionRepository = null;
@@ -234,6 +237,7 @@ final class AppWiring
             $this->urlGenerator(),
             $this->routeUrlGenerator(),
             $this->justificationRepository(),
+            $this->quotesRepository(),
             $this->topicRepository(),
             $this->sectionRepository(),
             $this->hintService()
@@ -376,6 +380,16 @@ final class AppWiring
             $this->pdo()
         ));
 
+
+        return $repo;
+    }
+
+    private function quotesRepository(): QuotesRepository
+    {
+        /** @var QuotesRepository $repo */
+        $repo = $this->memoize($this->quotesRepository, fn(): QuotesRepository => new SqlQuotesRepository(
+            $this->pdo()
+        ));
 
         return $repo;
     }

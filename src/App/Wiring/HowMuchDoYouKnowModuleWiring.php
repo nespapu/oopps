@@ -11,6 +11,7 @@ use App\Application\Exercises\HowMuchDoYouKnow\Index\IndexEvaluationService;
 use App\Application\Exercises\HowMuchDoYouKnow\Index\IndexPayloadBuilder;
 use App\Application\Exercises\HowMuchDoYouKnow\Justification\JustificationEvaluationService;
 use App\Application\Exercises\HowMuchDoYouKnow\Justification\JustificationPayloadBuilder;
+use App\Application\Exercises\HowMuchDoYouKnow\Quotes\QuotesPayloadBuilder;
 use App\Application\Exercises\HowMuchDoYouKnow\Shared\EqualityEvaluator;
 use App\Application\Exercises\HowMuchDoYouKnow\Shared\TextNormalizer;
 use App\Application\Exercises\HowMuchDoYouKnow\Title\TitleEvaluationService;
@@ -22,9 +23,11 @@ use App\Application\Routing\UrlGenerator;
 use App\Controllers\HowMuchDoYouKnow\ConfigController;
 use App\Controllers\HowMuchDoYouKnow\IndexController;
 use App\Controllers\HowMuchDoYouKnow\JustificationController;
+use App\Controllers\HowMuchDoYouKnow\QuotesController;
 use App\Controllers\HowMuchDoYouKnow\TitleController;
 use App\Domain\Exercise\HintService;
 use App\Domain\Temas\JustificationRepository;
+use App\Domain\Temas\QuotesRepository;
 use App\Domain\Temas\SectionRepository;
 use App\Domain\Temas\TopicRepository;
 
@@ -36,6 +39,7 @@ final class HowMuchDoYouKnowModuleWiring
     private ?ConfigController $configController = null;
     private ?IndexController $indexController = null;
     private ?JustificationController $justificationController = null;
+    private ?QuotesController $quotesController = null;
     private ?TitleController $titleController = null;
 
     private ?ConfigPayloadBuilder $configPayloadBuilder = null;
@@ -43,6 +47,7 @@ final class HowMuchDoYouKnowModuleWiring
     private ?IndexEvaluationService $indexEvaluationService = null;
     private ?JustificationPayloadBuilder $justificationPayloadBuilder = null;
     private ?JustificationEvaluationService $justificationEvaluationService = null;
+    private ?QuotesPayloadBuilder $quotesPayloadBuilder = null;
     private ?TitlePayloadBuilder $titlePayloadBuilder = null;
     private ?TitleEvaluationService $titleEvaluationService = null;
 
@@ -57,6 +62,7 @@ final class HowMuchDoYouKnowModuleWiring
         private readonly UrlGenerator $urlGenerator,
         private readonly RouteUrlGenerator $routeUrlGenerator,
         private readonly JustificationRepository $justificationRepository,
+        private readonly QuotesRepository $quotesRepository,
         private readonly TopicRepository $topicRepository,
         private readonly SectionRepository $sectionRepository,
         private readonly HintService $hintService
@@ -85,6 +91,7 @@ final class HowMuchDoYouKnowModuleWiring
             $titleController = $this->titleController();
             $indexController = $this->indexController();
             $justificationController = $this->justificationController();
+            $quotesController = $this->quotesController();
 
             return new Routes(
                 $this->paths(),
@@ -95,7 +102,9 @@ final class HowMuchDoYouKnowModuleWiring
                 \Closure::fromCallable([$indexController, 'show']),
                 \Closure::fromCallable([$indexController, 'evaluate']),
                 \Closure::fromCallable([$justificationController, 'show']),
-                \Closure::fromCallable([$justificationController, 'evaluate'])
+                \Closure::fromCallable([$justificationController, 'evaluate']),
+                \Closure::fromCallable([$quotesController, 'show']),
+                \Closure::fromCallable([$quotesController, 'evaluate'])
             );
         });
 
@@ -162,6 +171,23 @@ final class HowMuchDoYouKnowModuleWiring
         return $controller;
     }
 
+    private function quotesController() : QuotesController
+    {
+        /** @var QuotesController $controller */
+        $controller = $this->memoize($this->quotesController, function (): QuotesController {
+            return new QuotesController(
+                $this->exerciseSessionStore,
+                $this->authService,
+                $this->paths(),
+                $this->quotesPayloadBuilder(),
+                //$this->quotesEvaluationService(),
+                $this->redirector,
+                $this->urlGenerator
+            );
+        });
+        return $controller;
+    }
+
     private function titleController(): TitleController
     {
         /** @var TitleController $controller */
@@ -209,6 +235,17 @@ final class HowMuchDoYouKnowModuleWiring
             $this->hintService
         ));
 
+
+        return $builder;
+    }
+
+    private function quotesPayloadBuilder(): QuotesPayloadBuilder
+    {
+        /** @var  QuotesPayloadBuilder $builder */
+        $builder = $this->memoize($this->quotesPayloadBuilder, fn(): QuotesPayloadBuilder => new QuotesPayloadBuilder(
+            $this->quotesRepository,
+            $this->hintService
+        ));
 
         return $builder;
     }
