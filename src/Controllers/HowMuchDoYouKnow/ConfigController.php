@@ -56,7 +56,13 @@ final class ConfigController
           'sectionTitle' => isset($_POST['flags']['sectionTitle']),
           'cycles' => isset($_POST['flags']['cycles']),
           'laws' => isset($_POST['flags']['laws']),
-          'modules' => isset($_POST['flags']['modules'])
+          'modules' => isset($_POST['flags']['modules']),
+          'quoteConcept' => isset($_POST['flags']['quoteConcept']),
+          'quoteAuthor' => isset($_POST['flags']['quoteAuthor']),
+          'quoteYear' => isset($_POST['flags']['quoteYear']),
+          'quoteContent' => isset($_POST['flags']['quoteContent']),
+          'quoteSectionOrder' => isset($_POST['flags']['quoteSectionOrder']),
+          'quoteSectionTitle' => isset($_POST['flags']['quoteSectionTitle'])
         ];
 
         $rawTopicOrder = $_POST['topicOrder'] ?? null;

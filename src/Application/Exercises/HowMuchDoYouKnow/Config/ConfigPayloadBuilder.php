@@ -63,7 +63,13 @@ final class ConfigPayloadBuilder
             'sectionTitle' => false,
             'cycles' => false,
             'laws' => false,
-            'modules' => false
+            'modules' => false,
+            'quoteConcept' => false,
+            'quoteAuthor' => false,
+            'quoteYear' => false,
+            'quoteContent' => false,
+            'quoteSectionOrder' => false,
+            'quoteSectionTitle' => false,
         ];
     }
 }

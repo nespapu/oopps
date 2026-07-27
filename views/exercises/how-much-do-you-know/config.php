@@ -214,6 +214,117 @@ $selectedDifficultyLabel = $findLabel($difficultyLevels, $selectedDifficulty);
 
                             <hr class="my-4">
 
+                            <div class="mb-4">
+                                <h2 class="h5 mb-2">Citas</h2>
+                                <p class="text-muted small mb-3">
+                                    Configura qué elementos de las citas se mostrarán resueltos durante el ejercicio.
+                                </p>
+
+                                <div class="form-check mb-2">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="quoteConcept"
+                                        name="flags[quoteConcept]"
+                                        value="1"
+                                        <?= ($flags['quoteConcept'] ?? false) ? 'checked' : '' ?>
+                                    >
+                                    <label class="form-check-label" for="quoteConcept">
+                                        Concepto
+                                    </label>
+                                    <div class="form-text">
+                                        Si está marcado, el concepto de la cita aparecerá visible.
+                                    </div>
+                                </div>
+
+                                <div class="form-check mb-2">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="quoteAuthor"
+                                        name="flags[quoteAuthor]"
+                                        value="1"
+                                        <?= ($flags['quoteAuthor'] ?? false) ? 'checked' : '' ?>
+                                    >
+                                    <label class="form-check-label" for="quoteAuthor">
+                                        Autor
+                                    </label>
+                                    <div class="form-text">
+                                        Si está marcado, el autor de la cita aparecerá visible.
+                                    </div>
+                                </div>
+
+                                <div class="form-check mb-2">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="quoteYear"
+                                        name="flags[quoteYear]"
+                                        value="1"
+                                        <?= ($flags['quoteYear'] ?? false) ? 'checked' : '' ?>
+                                    >
+                                    <label class="form-check-label" for="quoteYear">
+                                        Año
+                                    </label>
+                                    <div class="form-text">
+                                        Si está marcado, el año de la cita aparecerá visible.
+                                    </div>
+                                </div>
+
+                                <div class="form-check mb-2">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="quoteContent"
+                                        name="flags[quoteContent]"
+                                        value="1"
+                                        <?= ($flags['quoteContent'] ?? false) ? 'checked' : '' ?>
+                                    >
+                                    <label class="form-check-label" for="quoteContent">
+                                        Contenido
+                                    </label>
+                                    <div class="form-text">
+                                        Si está marcado, el contenido de la cita aparecerá visible.
+                                    </div>
+                                </div>
+
+                                <div class="form-check mb-2">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="quoteSectionOrder"
+                                        name="flags[quoteSectionOrder]"
+                                        value="1"
+                                        <?= ($flags['quoteSectionOrder'] ?? false) ? 'checked' : '' ?>
+                                    >
+                                    <label class="form-check-label" for="quoteSectionOrder">
+                                        Numeración del apartado
+                                    </label>
+                                    <div class="form-text">
+                                        Si está marcado, la numeración del apartado aparecerá visible.
+                                    </div>
+                                </div>
+
+                                <div class="form-check">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="quoteSectionTitle"
+                                        name="flags[quoteSectionTitle]"
+                                        value="1"
+                                        <?= ($flags['quoteSectionTitle'] ?? false) ? 'checked' : '' ?>
+                                    >
+                                    <label class="form-check-label" for="quoteSectionTitle">
+                                        Título del apartado
+                                    </label>
+                                    <div class="form-text">
+                                        Si está marcado, el título del apartado aparecerá visible.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr class="my-4">
+
                             <div class="d-flex gap-2">
                                 <button type="submit" class="btn btn-primary">
                                     Empezar

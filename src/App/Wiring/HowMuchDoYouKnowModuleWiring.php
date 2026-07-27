@@ -12,7 +12,10 @@ use App\Application\Exercises\HowMuchDoYouKnow\Index\IndexPayloadBuilder;
 use App\Application\Exercises\HowMuchDoYouKnow\Justification\JustificationEvaluationService;
 use App\Application\Exercises\HowMuchDoYouKnow\Justification\JustificationPayloadBuilder;
 use App\Application\Exercises\HowMuchDoYouKnow\Quotes\QuotesPayloadBuilder;
+use App\Application\Exercises\HowMuchDoYouKnow\Quotes\QuotesEvaluationService;
+use App\Application\Exercises\HowMuchDoYouKnow\Shared\DiceCoefficientSimilarityEvaluator;
 use App\Application\Exercises\HowMuchDoYouKnow\Shared\EqualityEvaluator;
+use App\Application\Exercises\HowMuchDoYouKnow\Shared\SimilarityEvaluator;
 use App\Application\Exercises\HowMuchDoYouKnow\Shared\TextNormalizer;
 use App\Application\Exercises\HowMuchDoYouKnow\Title\TitleEvaluationService;
 use App\Application\Exercises\HowMuchDoYouKnow\Title\TitlePayloadBuilder;
@@ -48,10 +51,12 @@ final class HowMuchDoYouKnowModuleWiring
     private ?JustificationPayloadBuilder $justificationPayloadBuilder = null;
     private ?JustificationEvaluationService $justificationEvaluationService = null;
     private ?QuotesPayloadBuilder $quotesPayloadBuilder = null;
+    private ?QuotesEvaluationService $quotesEvaluationService = null;
     private ?TitlePayloadBuilder $titlePayloadBuilder = null;
     private ?TitleEvaluationService $titleEvaluationService = null;
 
     private ?EqualityEvaluator $equalityEvaluator = null;
+    private ?SimilarityEvaluator $similarityEvaluator = null;
     private ?TextNormalizer $textNormalizer = null;
 
     public function __construct(
@@ -180,7 +185,7 @@ final class HowMuchDoYouKnowModuleWiring
                 $this->authService,
                 $this->paths(),
                 $this->quotesPayloadBuilder(),
-                //$this->quotesEvaluationService(),
+                $this->quotesEvaluationService(),
                 $this->redirector,
                 $this->urlGenerator
             );
@@ -281,6 +286,17 @@ final class HowMuchDoYouKnowModuleWiring
         return $service;
     }
 
+    private function quotesEvaluationService(): QuotesEvaluationService
+    {
+        /** @var QuotesEvaluationService $service */
+        $service = $this->memoize($this->quotesEvaluationService, fn(): QuotesEvaluationService => new QuotesEvaluationService(
+            $this->equalityEvaluator(),
+            $this->similarityEvaluator()
+        ));
+        
+        return $service;
+    }
+
     private function titleEvaluationService(): TitleEvaluationService
     {
         /** @var TitleEvaluationService $service */
@@ -297,6 +313,14 @@ final class HowMuchDoYouKnowModuleWiring
         $evaluator = $this->memoize($this->equalityEvaluator, fn(): EqualityEvaluator => new EqualityEvaluator(
             $this->textNormalizer()
         ));
+
+        return $evaluator;
+    }
+
+    private function similarityEvaluator(): SimilarityEvaluator
+    {
+        /** @var SimilarityEvaluator $evaluator */
+        $evaluator = $this->memoize($this->similarityEvaluator, fn(): SimilarityEvaluator => new DiceCoefficientSimilarityEvaluator());
 
         return $evaluator;
     }

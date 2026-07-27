@@ -23,6 +23,8 @@ final class Paths
     private const QUOTES_STEP = 'ejercicios/cuanto-sabes-tema/sesiones/{sesionId}/pasos/citas';
     private const QUOTES_EVALUATION = 'ejercicios/cuanto-sabes-tema/sesiones/{sesionId}/pasos/citas/evaluar';
 
+    private const TOOLS_STEP = 'ejercicios/cuanto-sabes-tema/sesiones/{sesionId}/pasos/herramientas';
+
     public function __construct(
         private readonly RouteUrlGenerator $routeUrlGenerator
     ) {}
@@ -81,6 +83,19 @@ final class Paths
     public function quotesStep(string $sessionId): string
     {
         return $this->routeUrlGenerator->generate(self::QUOTES_STEP, [
+            'sesionId' => $sessionId,
+        ]);
+    }
+
+    public function toolsStepPattern(): string
+    {
+        return self::TOOLS_STEP;
+    }
+
+
+    public function toolsStep(string $sessionId): string
+    {
+        return $this->routeUrlGenerator->generate(self::TOOLS_STEP, [
             'sesionId' => $sessionId,
         ]);
     }
