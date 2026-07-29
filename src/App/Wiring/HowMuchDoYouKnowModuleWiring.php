@@ -19,6 +19,8 @@ use App\Application\Exercises\HowMuchDoYouKnow\Shared\SimilarityEvaluator;
 use App\Application\Exercises\HowMuchDoYouKnow\Shared\TextNormalizer;
 use App\Application\Exercises\HowMuchDoYouKnow\Title\TitleEvaluationService;
 use App\Application\Exercises\HowMuchDoYouKnow\Title\TitlePayloadBuilder;
+use App\Application\Exercises\HowMuchDoYouKnow\Tools\ToolsEvaluationService;
+use App\Application\Exercises\HowMuchDoYouKnow\Tools\ToolsPayloadBuilder;
 use App\Application\Flash\FlashMessenger;
 use App\Application\Http\Redirector;
 use App\Application\Routing\RouteUrlGenerator;
@@ -28,11 +30,13 @@ use App\Controllers\HowMuchDoYouKnow\IndexController;
 use App\Controllers\HowMuchDoYouKnow\JustificationController;
 use App\Controllers\HowMuchDoYouKnow\QuotesController;
 use App\Controllers\HowMuchDoYouKnow\TitleController;
+use App\Controllers\HowMuchDoYouKnow\ToolsController;
 use App\Domain\Exercise\HintService;
 use App\Domain\Temas\JustificationRepository;
 use App\Domain\Temas\QuotesRepository;
 use App\Domain\Temas\SectionRepository;
 use App\Domain\Temas\TopicRepository;
+use App\Domain\Temas\ToolsRepository;
 
 final class HowMuchDoYouKnowModuleWiring
 {
@@ -44,6 +48,7 @@ final class HowMuchDoYouKnowModuleWiring
     private ?JustificationController $justificationController = null;
     private ?QuotesController $quotesController = null;
     private ?TitleController $titleController = null;
+    private ?ToolsController $toolsController = null;
 
     private ?ConfigPayloadBuilder $configPayloadBuilder = null;
     private ?IndexPayloadBuilder $indexPayloadBuilder = null;
@@ -54,6 +59,8 @@ final class HowMuchDoYouKnowModuleWiring
     private ?QuotesEvaluationService $quotesEvaluationService = null;
     private ?TitlePayloadBuilder $titlePayloadBuilder = null;
     private ?TitleEvaluationService $titleEvaluationService = null;
+    private ?ToolsPayloadBuilder $toolsPayloadBuilder = null;
+    private ?ToolsEvaluationService $toolsEvaluationService = null;
 
     private ?EqualityEvaluator $equalityEvaluator = null;
     private ?SimilarityEvaluator $similarityEvaluator = null;
@@ -70,6 +77,7 @@ final class HowMuchDoYouKnowModuleWiring
         private readonly QuotesRepository $quotesRepository,
         private readonly TopicRepository $topicRepository,
         private readonly SectionRepository $sectionRepository,
+        private readonly ToolsRepository $toolsRepository,
         private readonly HintService $hintService
     ) {}
 
@@ -97,6 +105,7 @@ final class HowMuchDoYouKnowModuleWiring
             $indexController = $this->indexController();
             $justificationController = $this->justificationController();
             $quotesController = $this->quotesController();
+            $toolsController = $this->toolsController();
 
             return new Routes(
                 $this->paths(),
@@ -109,7 +118,9 @@ final class HowMuchDoYouKnowModuleWiring
                 \Closure::fromCallable([$justificationController, 'show']),
                 \Closure::fromCallable([$justificationController, 'evaluate']),
                 \Closure::fromCallable([$quotesController, 'show']),
-                \Closure::fromCallable([$quotesController, 'evaluate'])
+                \Closure::fromCallable([$quotesController, 'evaluate']),
+                \Closure::fromCallable([$toolsController, 'show']),
+                \Closure::fromCallable([$toolsController, 'evaluate'])
             );
         });
 
@@ -211,6 +222,24 @@ final class HowMuchDoYouKnowModuleWiring
         return $controller;
     }
 
+    private function toolsController(): ToolsController
+    {
+        /** @var ToolsController $controller */
+        $controller = $this->memoize($this->toolsController, function (): ToolsController {
+            return new ToolsController(
+                $this->exerciseSessionStore,
+                $this->authService,
+                $this->paths(),
+                $this->toolsPayloadBuilder(),
+                $this->toolsEvaluationService(),
+                $this->redirector,
+                $this->urlGenerator
+            );
+        });
+
+        return $controller;
+    }
+
     private function configPayloadBuilder(): ConfigPayloadBuilder
     {
         /** @var ConfigPayloadBuilder $builder */
@@ -266,6 +295,17 @@ final class HowMuchDoYouKnowModuleWiring
         return $builder;
     }
 
+    private function toolsPayloadBuilder(): ToolsPayloadBuilder
+    {
+        /** @var ToolsPayloadBuilder $builder */
+        $builder = $this->memoize($this->toolsPayloadBuilder, fn(): ToolsPayloadBuilder => new ToolsPayloadBuilder(
+            $this->toolsRepository,
+            $this->hintService
+        ));
+
+        return $builder;
+    }
+
     private function indexEvaluationService(): IndexEvaluationService
     {
         /** @var IndexEvaluationService $service */
@@ -302,6 +342,17 @@ final class HowMuchDoYouKnowModuleWiring
         /** @var TitleEvaluationService $service */
         $service = $this->memoize($this->titleEvaluationService, fn(): TitleEvaluationService => new TitleEvaluationService(
             $this->equalityEvaluator()
+        ));
+
+        return $service;
+    }
+
+    private function toolsEvaluationService(): ToolsEvaluationService
+    {
+        /** @var ToolsEvaluationService $service */
+        $service = $this->memoize($this->toolsEvaluationService, fn(): ToolsEvaluationService => new ToolsEvaluationService(
+            $this->equalityEvaluator(),
+            $this->similarityEvaluator()
         ));
 
         return $service;

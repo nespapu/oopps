@@ -30,6 +30,7 @@ use App\Domain\Temas\JustificationRepository;
 use App\Domain\Temas\QuotesRepository;
 use App\Domain\Temas\SectionRepository;
 use App\Domain\Temas\TopicRepository;
+use App\Domain\Temas\ToolsRepository;
 use App\Infrastructure\Auth\DefaultAuthService;
 use App\Infrastructure\Config\DatabaseConfigProvider;
 use App\Infrastructure\Config\EnvDatabaseConfigProvider;
@@ -41,6 +42,7 @@ use App\Infrastructure\Persistence\PdoFactory;
 use App\Infrastructure\Persistence\Repositories\SqlJustificationRepository;
 use App\Infrastructure\Persistence\Repositories\SqlQuotesRepository;
 use App\Infrastructure\Persistence\Repositories\SqlSectionRepository;
+use App\Infrastructure\Persistence\Repositories\SqlToolsRepository;
 use App\Infrastructure\Persistence\Repositories\TopicRepositorySQL;
 use App\Infrastructure\Persistence\Repositories\UserRepositorySQL;
 use App\Infrastructure\Routing\RouteAssembler;
@@ -87,6 +89,7 @@ final class AppWiring
     private ?JustificationRepository $justificationRepository = null;
     private ?QuotesRepository $quotesRepository = null;
     private ?TopicRepository $topicRepository = null;
+    private ?ToolsRepository $toolsRepository = null;
     private ?UserRepository $userRepository = null;
     private ?SectionRepository $sectionRepository = null;
 
@@ -240,6 +243,7 @@ final class AppWiring
             $this->quotesRepository(),
             $this->topicRepository(),
             $this->sectionRepository(),
+            $this->toolsRepository(),
             $this->hintService()
         ));
 
@@ -398,6 +402,16 @@ final class AppWiring
     {
         /** @var TopicRepository $repo */
         $repo = $this->memoize($this->topicRepository, fn(): TopicRepository => new TopicRepositorySQL(
+            $this->pdo()
+        ));
+
+        return $repo;
+    }
+
+    private function toolsRepository(): ToolsRepository
+    {
+        /** @var ToolsRepository $repo */
+        $repo = $this->memoize($this->toolsRepository, fn(): ToolsRepository => new SqlToolsRepository(
             $this->pdo()
         ));
 

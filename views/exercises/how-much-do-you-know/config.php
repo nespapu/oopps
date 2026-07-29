@@ -125,7 +125,7 @@ $selectedDifficultyLabel = $findLabel($difficultyLevels, $selectedDifficulty);
                                         id="sectionOrder"
                                         name="flags[sectionOrder]"
                                         value="1"
-                                    <?= ($flags['sectionOrder'] ?? false) ? 'checked' : '' ?>
+                                        <?= ($flags['sectionOrder'] ?? false) ? 'checked' : '' ?>
                                     >
                                     <label class="form-check-label" for="sectionOrder">
                                         Numeración
@@ -319,6 +319,49 @@ $selectedDifficultyLabel = $findLabel($difficultyLevels, $selectedDifficulty);
                                     </label>
                                     <div class="form-text">
                                         Si está marcado, el título del apartado aparecerá visible.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr class="my-4">
+
+                            <div class="mb-4">
+                                <h2 class="h5 mb-2">Herramientas</h2>
+                                <p class="text-muted small mb-3">
+                                    Configura qué elementos de las herramientas se mostrarán resueltos durante el ejercicio.
+                                </p>
+
+                                <div class="form-check mb-2">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="toolName"
+                                        name="flags[toolName]"
+                                        value="1"
+                                        <?= ($flags['toolName'] ?? false) ? 'checked' : '' ?>
+                                    >
+                                    <label class="form-check-label" for="toolName">
+                                        Nombre
+                                    </label>
+                                    <div class="form-text">
+                                        Si está marcado, el nombre de la herramienta aparecerá visible.
+                                    </div>
+                                </div>
+
+                                <div class="form-check">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="toolDescription"
+                                        name="flags[toolDescription]"
+                                        value="1"
+                                        <?= ($flags['toolDescription'] ?? false) ? 'checked' : '' ?>
+                                    >
+                                    <label class="form-check-label" for="toolDescription">
+                                        Descripción
+                                    </label>
+                                    <div class="form-text">
+                                        Si está marcado, la descripción de la herramienta aparecerá visible.
                                     </div>
                                 </div>
                             </div>

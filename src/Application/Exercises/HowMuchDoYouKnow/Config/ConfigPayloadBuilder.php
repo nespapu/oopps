@@ -70,6 +70,8 @@ final class ConfigPayloadBuilder
             'quoteContent' => false,
             'quoteSectionOrder' => false,
             'quoteSectionTitle' => false,
+            'toolName' => false,
+            'toolDescription' => false
         ];
     }
 }
