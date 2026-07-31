@@ -368,6 +368,117 @@ $selectedDifficultyLabel = $findLabel($difficultyLevels, $selectedDifficulty);
 
                             <hr class="my-4">
 
+                            <div class="mb-4">
+                                <h2 class="h5 mb-2">Contexto escolar</h2>
+                                <p class="text-muted small mb-3">
+                                    Configura qué elementos del contexto escolar se mostrarán resueltos durante el ejercicio.
+                                </p>
+                                                                
+                                <div class="form-check mb-2">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="schoolContextTeaching"
+                                        name="flags[schoolContextTeaching]"
+                                        value="1"
+                                        <?= ($flags['schoolContextTeaching'] ?? false) ? 'checked' : '' ?>
+                                    >
+                                    <label class="form-check-label" for="schoolContextTeaching">
+                                        Enseñanza
+                                    </label>
+                                    <div class="form-text">
+                                        Si está marcado, la enseñanza aparecerá visible.
+                                    </div>
+                                </div>
+                                                                
+                                <div class="form-check mb-2">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="schoolContextCycle"
+                                        name="flags[schoolContextCycle]"
+                                        value="1"
+                                        <?= ($flags['schoolContextCycle'] ?? false) ? 'checked' : '' ?>
+                                    >
+                                    <label class="form-check-label" for="schoolContextCycle">
+                                        Ciclo
+                                    </label>
+                                    <div class="form-text">
+                                        Si está marcado, el ciclo aparecerá visible.
+                                    </div>
+                                </div>
+                                                                
+                                <div class="form-check mb-2">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="schoolContextModule"
+                                        name="flags[schoolContextModule]"
+                                        value="1"
+                                        <?= ($flags['schoolContextModule'] ?? false) ? 'checked' : '' ?>
+                                    >
+                                    <label class="form-check-label" for="schoolContextModule">
+                                        Módulo
+                                    </label>
+                                    <div class="form-text">
+                                        Si está marcado, el módulo aparecerá visible.
+                                    </div>
+                                </div>
+                                                                
+                                <div class="form-check mb-2">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="schoolContextConcept"
+                                        name="flags[schoolContextConcept]"
+                                        value="1"
+                                        <?= ($flags['schoolContextConcept'] ?? false) ? 'checked' : '' ?>
+                                    >
+                                    <label class="form-check-label" for="schoolContextConcept">
+                                        Concepto
+                                    </label>
+                                    <div class="form-text">
+                                        Si está marcado, el concepto aparecerá visible.
+                                    </div>
+                                </div>
+                                                                
+                                <div class="form-check mb-2">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="schoolContextApplication"
+                                        name="flags[schoolContextApplication]"
+                                        value="1"
+                                        <?= ($flags['schoolContextApplication'] ?? false) ? 'checked' : '' ?>
+                                    >
+                                    <label class="form-check-label" for="schoolContextApplication">
+                                        Aplicación
+                                    </label>
+                                    <div class="form-text">
+                                        Si está marcado, la aplicación del concepto aparecerá visible.
+                                    </div>
+                                </div>
+                                                                
+                                <div class="form-check">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="schoolContextMethod"
+                                        name="flags[schoolContextMethod]"
+                                        value="1"
+                                        <?= ($flags['schoolContextMethod'] ?? false) ? 'checked' : '' ?>
+                                    >
+                                    <label class="form-check-label" for="schoolContextMethod">
+                                        Metodología
+                                    </label>
+                                    <div class="form-text">
+                                        Si está marcado, la metodología aparecerá visible.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr class="my-4">
+
                             <div class="d-flex gap-2">
                                 <button type="submit" class="btn btn-primary">
                                     Empezar

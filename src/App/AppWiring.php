@@ -29,6 +29,7 @@ use App\Domain\Exercise\HintService;
 use App\Domain\Temas\JustificationRepository;
 use App\Domain\Temas\QuotesRepository;
 use App\Domain\Temas\SectionRepository;
+use App\Domain\Temas\SchoolContextRepository;
 use App\Domain\Temas\TopicRepository;
 use App\Domain\Temas\ToolsRepository;
 use App\Infrastructure\Auth\DefaultAuthService;
@@ -42,6 +43,7 @@ use App\Infrastructure\Persistence\PdoFactory;
 use App\Infrastructure\Persistence\Repositories\SqlJustificationRepository;
 use App\Infrastructure\Persistence\Repositories\SqlQuotesRepository;
 use App\Infrastructure\Persistence\Repositories\SqlSectionRepository;
+use App\Infrastructure\Persistence\Repositories\SqlSchoolContextRepository;
 use App\Infrastructure\Persistence\Repositories\SqlToolsRepository;
 use App\Infrastructure\Persistence\Repositories\TopicRepositorySQL;
 use App\Infrastructure\Persistence\Repositories\UserRepositorySQL;
@@ -92,6 +94,7 @@ final class AppWiring
     private ?ToolsRepository $toolsRepository = null;
     private ?UserRepository $userRepository = null;
     private ?SectionRepository $sectionRepository = null;
+    private ?SchoolContextRepository $schoolContextRepository = null;
 
     /**
      * @template T of object
@@ -243,6 +246,7 @@ final class AppWiring
             $this->quotesRepository(),
             $this->topicRepository(),
             $this->sectionRepository(),
+            $this->schoolContextRepository(),
             $this->toolsRepository(),
             $this->hintService()
         ));
@@ -384,7 +388,6 @@ final class AppWiring
             $this->pdo()
         ));
 
-
         return $repo;
     }
 
@@ -432,6 +435,16 @@ final class AppWiring
     {
         /** @var SectionRepository $repo */
         $repo = $this->memoize($this->sectionRepository, fn(): SectionRepository => new SqlSectionRepository(
+            $this->pdo()
+        ));
+        
+        return $repo;
+    }
+
+    private function schoolContextRepository(): SchoolContextRepository
+    {
+        /** @var SchoolContextRepository $repo */
+        $repo = $this->memoize($this->schoolContextRepository, fn(): SchoolContextRepository => new SqlSchoolContextRepository(
             $this->pdo()
         ));
         

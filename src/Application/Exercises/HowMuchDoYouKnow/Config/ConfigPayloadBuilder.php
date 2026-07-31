@@ -71,7 +71,13 @@ final class ConfigPayloadBuilder
             'quoteSectionOrder' => false,
             'quoteSectionTitle' => false,
             'toolName' => false,
-            'toolDescription' => false
+            'toolDescription' => false,
+            'schoolContextTeaching' => false,
+            'schoolContextCycle' => false,
+            'schoolContextModule' => false,
+            'schoolContextConcept' => false,
+            'schoolContextApplication' => false,
+            'schoolContextMethod' => false
         ];
     }
 }

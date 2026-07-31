@@ -27,6 +27,9 @@ final class Paths
     private const TOOLS_EVALUATION = 'ejercicios/cuanto-sabes-tema/sesiones/{sesionId}/pasos/herramientas/evaluar';
 
     private const SCHOOL_CONTEXT_STEP = 'ejercicios/cuanto-sabes-tema/sesiones/{sesionId}/pasos/contexto-escolar';
+    private const SCHOOL_CONTEXT_EVALUATION = 'ejercicios/cuanto-sabes-tema/sesiones/{sesionId}/pasos/contexto-escolar/evaluar';
+
+    private const WORK_CONTEXT_STEP = 'ejercicios/cuanto-sabes-tema/sesiones/{sesionId}/pasos/contexto-laboral';
 
     public function __construct(
         private readonly RouteUrlGenerator $routeUrlGenerator
@@ -115,6 +118,19 @@ final class Paths
         ]);
     }
 
+    public function workContextStepPattern(): string
+    {
+        return self::WORK_CONTEXT_STEP;
+    }
+
+
+    public function workContextStep(string $sessionId): string
+    {
+        return $this->routeUrlGenerator->generate(self::WORK_CONTEXT_STEP, [
+            'sesionId' => $sessionId,
+        ]);
+    }
+
     public function titleEvaluationPattern(): string
     {
         return self::TITLE_EVALUATION;
@@ -173,6 +189,18 @@ final class Paths
     public function toolsEvaluation(string $sessionId): string
     {
         return $this->routeUrlGenerator->generate(self::TOOLS_EVALUATION, [
+            'sesionId' => $sessionId,
+        ]);
+    }
+
+    public function schoolContextEvaluationPattern(): string
+    {
+        return self::SCHOOL_CONTEXT_EVALUATION;
+    }
+
+    public function schoolContextEvaluation(string $sessionId): string
+    {
+        return $this->routeUrlGenerator->generate(self::SCHOOL_CONTEXT_EVALUATION, [
             'sesionId' => $sessionId,
         ]);
     }

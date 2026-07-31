@@ -13,6 +13,8 @@ use App\Application\Exercises\HowMuchDoYouKnow\Justification\JustificationEvalua
 use App\Application\Exercises\HowMuchDoYouKnow\Justification\JustificationPayloadBuilder;
 use App\Application\Exercises\HowMuchDoYouKnow\Quotes\QuotesPayloadBuilder;
 use App\Application\Exercises\HowMuchDoYouKnow\Quotes\QuotesEvaluationService;
+use App\Application\Exercises\HowMuchDoYouKnow\SchoolContext\SchoolContextEvaluationService;
+use App\Application\Exercises\HowMuchDoYouKnow\SchoolContext\SchoolContextPayloadBuilder;
 use App\Application\Exercises\HowMuchDoYouKnow\Shared\DiceCoefficientSimilarityEvaluator;
 use App\Application\Exercises\HowMuchDoYouKnow\Shared\EqualityEvaluator;
 use App\Application\Exercises\HowMuchDoYouKnow\Shared\SimilarityEvaluator;
@@ -29,12 +31,14 @@ use App\Controllers\HowMuchDoYouKnow\ConfigController;
 use App\Controllers\HowMuchDoYouKnow\IndexController;
 use App\Controllers\HowMuchDoYouKnow\JustificationController;
 use App\Controllers\HowMuchDoYouKnow\QuotesController;
+use App\Controllers\HowMuchDoYouKnow\SchoolContextController;
 use App\Controllers\HowMuchDoYouKnow\TitleController;
 use App\Controllers\HowMuchDoYouKnow\ToolsController;
 use App\Domain\Exercise\HintService;
 use App\Domain\Temas\JustificationRepository;
 use App\Domain\Temas\QuotesRepository;
 use App\Domain\Temas\SectionRepository;
+use App\Domain\Temas\SchoolContextRepository;
 use App\Domain\Temas\TopicRepository;
 use App\Domain\Temas\ToolsRepository;
 
@@ -47,6 +51,7 @@ final class HowMuchDoYouKnowModuleWiring
     private ?IndexController $indexController = null;
     private ?JustificationController $justificationController = null;
     private ?QuotesController $quotesController = null;
+    private ?SchoolContextController $schoolContextController = null;
     private ?TitleController $titleController = null;
     private ?ToolsController $toolsController = null;
 
@@ -57,6 +62,8 @@ final class HowMuchDoYouKnowModuleWiring
     private ?JustificationEvaluationService $justificationEvaluationService = null;
     private ?QuotesPayloadBuilder $quotesPayloadBuilder = null;
     private ?QuotesEvaluationService $quotesEvaluationService = null;
+    private ?SchoolContextPayloadBuilder $schoolContextPayloadBuilder = null;
+    private ?SchoolContextEvaluationService $schoolContextEvaluationService = null;
     private ?TitlePayloadBuilder $titlePayloadBuilder = null;
     private ?TitleEvaluationService $titleEvaluationService = null;
     private ?ToolsPayloadBuilder $toolsPayloadBuilder = null;
@@ -77,6 +84,7 @@ final class HowMuchDoYouKnowModuleWiring
         private readonly QuotesRepository $quotesRepository,
         private readonly TopicRepository $topicRepository,
         private readonly SectionRepository $sectionRepository,
+        private readonly SchoolContextRepository $schoolContextRepository,
         private readonly ToolsRepository $toolsRepository,
         private readonly HintService $hintService
     ) {}
@@ -105,6 +113,7 @@ final class HowMuchDoYouKnowModuleWiring
             $indexController = $this->indexController();
             $justificationController = $this->justificationController();
             $quotesController = $this->quotesController();
+            $schoolContextController = $this->schoolContextController();
             $toolsController = $this->toolsController();
 
             return new Routes(
@@ -120,7 +129,9 @@ final class HowMuchDoYouKnowModuleWiring
                 \Closure::fromCallable([$quotesController, 'show']),
                 \Closure::fromCallable([$quotesController, 'evaluate']),
                 \Closure::fromCallable([$toolsController, 'show']),
-                \Closure::fromCallable([$toolsController, 'evaluate'])
+                \Closure::fromCallable([$toolsController, 'evaluate']),
+                \Closure::fromCallable([$schoolContextController, 'show']),
+                \Closure::fromCallable([$schoolContextController, 'evaluate']),
             );
         });
 
@@ -197,6 +208,23 @@ final class HowMuchDoYouKnowModuleWiring
                 $this->paths(),
                 $this->quotesPayloadBuilder(),
                 $this->quotesEvaluationService(),
+                $this->redirector,
+                $this->urlGenerator
+            );
+        });
+        return $controller;
+    }
+
+    private function schoolContextController() : SchoolContextController
+    {
+        /** @var SchoolContextController $controller */
+        $controller = $this->memoize($this->schoolContextController, function (): SchoolContextController {
+            return new SchoolContextController(
+                $this->exerciseSessionStore,
+                $this->authService,
+                $this->paths(),
+                $this->schoolContextPayloadBuilder(),
+                $this->schoolContextEvaluationService(),
                 $this->redirector,
                 $this->urlGenerator
             );
@@ -284,6 +312,17 @@ final class HowMuchDoYouKnowModuleWiring
         return $builder;
     }
 
+    private function schoolContextPayloadBuilder(): SchoolContextPayloadBuilder
+    {
+        /** @var SchoolContextPayloadBuilder $builder */
+        $builder = $this->memoize($this->schoolContextPayloadBuilder, fn(): SchoolContextPayloadBuilder => new SchoolContextPayloadBuilder(
+            $this->schoolContextRepository,
+            $this->hintService
+        ));
+
+        return $builder;
+    }
+
     private function titlePayloadBuilder(): TitlePayloadBuilder
     {
         /** @var TitlePayloadBuilder $builder */
@@ -330,6 +369,17 @@ final class HowMuchDoYouKnowModuleWiring
     {
         /** @var QuotesEvaluationService $service */
         $service = $this->memoize($this->quotesEvaluationService, fn(): QuotesEvaluationService => new QuotesEvaluationService(
+            $this->equalityEvaluator(),
+            $this->similarityEvaluator()
+        ));
+        
+        return $service;
+    }
+
+    private function schoolContextEvaluationService(): SchoolContextEvaluationService
+    {
+        /** @var SchoolContextEvaluationService $service */
+        $service = $this->memoize($this->schoolContextEvaluationService, fn(): SchoolContextEvaluationService => new SchoolContextEvaluationService(
             $this->equalityEvaluator(),
             $this->similarityEvaluator()
         ));
