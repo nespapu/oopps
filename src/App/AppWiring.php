@@ -32,6 +32,7 @@ use App\Domain\Temas\SectionRepository;
 use App\Domain\Temas\SchoolContextRepository;
 use App\Domain\Temas\TopicRepository;
 use App\Domain\Temas\ToolsRepository;
+use App\Domain\Temas\WorkContextRepository;
 use App\Infrastructure\Auth\DefaultAuthService;
 use App\Infrastructure\Config\DatabaseConfigProvider;
 use App\Infrastructure\Config\EnvDatabaseConfigProvider;
@@ -45,6 +46,7 @@ use App\Infrastructure\Persistence\Repositories\SqlQuotesRepository;
 use App\Infrastructure\Persistence\Repositories\SqlSectionRepository;
 use App\Infrastructure\Persistence\Repositories\SqlSchoolContextRepository;
 use App\Infrastructure\Persistence\Repositories\SqlToolsRepository;
+use App\Infrastructure\Persistence\Repositories\SqlWorkContextRepository;
 use App\Infrastructure\Persistence\Repositories\TopicRepositorySQL;
 use App\Infrastructure\Persistence\Repositories\UserRepositorySQL;
 use App\Infrastructure\Routing\RouteAssembler;
@@ -95,6 +97,7 @@ final class AppWiring
     private ?UserRepository $userRepository = null;
     private ?SectionRepository $sectionRepository = null;
     private ?SchoolContextRepository $schoolContextRepository = null;
+    private ?WorkContextRepository $workContextRepository = null;
 
     /**
      * @template T of object
@@ -244,10 +247,11 @@ final class AppWiring
             $this->routeUrlGenerator(),
             $this->justificationRepository(),
             $this->quotesRepository(),
-            $this->topicRepository(),
             $this->sectionRepository(),
             $this->schoolContextRepository(),
             $this->toolsRepository(),
+            $this->topicRepository(),
+            $this->workContextRepository(),
             $this->hintService()
         ));
 
@@ -445,6 +449,16 @@ final class AppWiring
     {
         /** @var SchoolContextRepository $repo */
         $repo = $this->memoize($this->schoolContextRepository, fn(): SchoolContextRepository => new SqlSchoolContextRepository(
+            $this->pdo()
+        ));
+        
+        return $repo;
+    }
+
+    private function workContextRepository(): WorkContextRepository
+    {
+        /** @var WorkContextRepository $repo */
+        $repo = $this->memoize($this->workContextRepository, fn(): WorkContextRepository => new SqlWorkContextRepository(
             $this->pdo()
         ));
         

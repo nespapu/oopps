@@ -478,6 +478,100 @@ $selectedDifficultyLabel = $findLabel($difficultyLevels, $selectedDifficulty);
                             </div>
 
                             <hr class="my-4">
+                            
+                            <div class="mb-4">
+                                <h2 class="h5 mb-1">Contexto laboral</h2>
+                                <p class="text-muted small mb-3">
+                                    Selecciona qué campos del contexto laboral aparecerán visibles durante el ejercicio.
+                                </p>
+                                                                
+                                <div class="form-check mb-3">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="workContextField"
+                                        name="flags[workContextField]"
+                                        value="1"
+                                        <?= ($flags['workContextField'] ?? false) ? 'checked' : '' ?>
+                                    >
+                                    <label class="form-check-label" for="workContextField">
+                                        Campo profesional
+                                    </label>
+                                    <div class="form-text">
+                                        Si está marcado, el campo profesional aparecerá visible.
+                                    </div>
+                                </div>
+                                                                
+                                <div class="form-check mb-3">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="workContextRole"
+                                        name="flags[workContextRole]"
+                                        value="1"
+                                        <?= ($flags['workContextRole'] ?? false) ? 'checked' : '' ?>
+                                    >
+                                    <label class="form-check-label" for="workContextRole">
+                                        Rol profesional
+                                    </label>
+                                    <div class="form-text">
+                                        Si está marcado, el rol profesional aparecerá visible cuando sea aplicable.
+                                    </div>
+                                </div>
+                                                                
+                                <div class="form-check mb-3">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="workContextConcept"
+                                        name="flags[workContextConcept]"
+                                        value="1"
+                                        <?= ($flags['workContextConcept'] ?? false) ? 'checked' : '' ?>
+                                    >
+                                    <label class="form-check-label" for="workContextConcept">
+                                        Concepto
+                                    </label>
+                                    <div class="form-text">
+                                        Si está marcado, el concepto aparecerá visible.
+                                    </div>
+                                </div>
+                                                                
+                                <div class="form-check mb-3">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="workContextApplication"
+                                        name="flags[workContextApplication]"
+                                        value="1"
+                                        <?= ($flags['workContextApplication'] ?? false) ? 'checked' : '' ?>
+                                    >
+                                    <label class="form-check-label" for="workContextApplication">
+                                        Aplicación o tareas
+                                    </label>
+                                    <div class="form-text">
+                                        Si está marcado, la aplicación o las tareas relacionadas aparecerán visibles.
+                                    </div>
+                                </div>
+                                                                
+                                <div class="form-check">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="workContextBenefit"
+                                        name="flags[workContextBenefit]"
+                                        value="1"
+                                        <?= ($flags['workContextBenefit'] ?? false) ? 'checked' : '' ?>
+                                    >
+                                    <label class="form-check-label" for="workContextBenefit">
+                                        Beneficio
+                                    </label>
+                                    <div class="form-text">
+                                        Si está marcado, el beneficio obtenido aparecerá visible.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr class="my-4">
 
                             <div class="d-flex gap-2">
                                 <button type="submit" class="btn btn-primary">

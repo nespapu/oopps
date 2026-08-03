@@ -23,6 +23,8 @@ use App\Application\Exercises\HowMuchDoYouKnow\Title\TitleEvaluationService;
 use App\Application\Exercises\HowMuchDoYouKnow\Title\TitlePayloadBuilder;
 use App\Application\Exercises\HowMuchDoYouKnow\Tools\ToolsEvaluationService;
 use App\Application\Exercises\HowMuchDoYouKnow\Tools\ToolsPayloadBuilder;
+use App\Application\Exercises\HowMuchDoYouKnow\WorkContext\WorkContextEvaluationService;
+use App\Application\Exercises\HowMuchDoYouKnow\WorkContext\WorkContextPayloadBuilder;
 use App\Application\Flash\FlashMessenger;
 use App\Application\Http\Redirector;
 use App\Application\Routing\RouteUrlGenerator;
@@ -34,6 +36,7 @@ use App\Controllers\HowMuchDoYouKnow\QuotesController;
 use App\Controllers\HowMuchDoYouKnow\SchoolContextController;
 use App\Controllers\HowMuchDoYouKnow\TitleController;
 use App\Controllers\HowMuchDoYouKnow\ToolsController;
+use App\Controllers\HowMuchDoYouKnow\WorkContextController;
 use App\Domain\Exercise\HintService;
 use App\Domain\Temas\JustificationRepository;
 use App\Domain\Temas\QuotesRepository;
@@ -41,6 +44,7 @@ use App\Domain\Temas\SectionRepository;
 use App\Domain\Temas\SchoolContextRepository;
 use App\Domain\Temas\TopicRepository;
 use App\Domain\Temas\ToolsRepository;
+use App\Domain\Temas\WorkContextRepository;
 
 final class HowMuchDoYouKnowModuleWiring
 {
@@ -54,6 +58,7 @@ final class HowMuchDoYouKnowModuleWiring
     private ?SchoolContextController $schoolContextController = null;
     private ?TitleController $titleController = null;
     private ?ToolsController $toolsController = null;
+    private ?WorkContextController $workContextController = null;
 
     private ?ConfigPayloadBuilder $configPayloadBuilder = null;
     private ?IndexPayloadBuilder $indexPayloadBuilder = null;
@@ -68,6 +73,8 @@ final class HowMuchDoYouKnowModuleWiring
     private ?TitleEvaluationService $titleEvaluationService = null;
     private ?ToolsPayloadBuilder $toolsPayloadBuilder = null;
     private ?ToolsEvaluationService $toolsEvaluationService = null;
+    private ?WorkContextPayloadBuilder $workContextPayloadBuilder = null;
+    private ?WorkContextEvaluationService $workContextEvaluationService = null;
 
     private ?EqualityEvaluator $equalityEvaluator = null;
     private ?SimilarityEvaluator $similarityEvaluator = null;
@@ -82,10 +89,11 @@ final class HowMuchDoYouKnowModuleWiring
         private readonly RouteUrlGenerator $routeUrlGenerator,
         private readonly JustificationRepository $justificationRepository,
         private readonly QuotesRepository $quotesRepository,
-        private readonly TopicRepository $topicRepository,
         private readonly SectionRepository $sectionRepository,
         private readonly SchoolContextRepository $schoolContextRepository,
         private readonly ToolsRepository $toolsRepository,
+        private readonly TopicRepository $topicRepository,
+        private readonly WorkContextRepository $workContextRepository,
         private readonly HintService $hintService
     ) {}
 
@@ -115,6 +123,7 @@ final class HowMuchDoYouKnowModuleWiring
             $quotesController = $this->quotesController();
             $schoolContextController = $this->schoolContextController();
             $toolsController = $this->toolsController();
+            $workContextController = $this->workContextController();
 
             return new Routes(
                 $this->paths(),
@@ -132,6 +141,8 @@ final class HowMuchDoYouKnowModuleWiring
                 \Closure::fromCallable([$toolsController, 'evaluate']),
                 \Closure::fromCallable([$schoolContextController, 'show']),
                 \Closure::fromCallable([$schoolContextController, 'evaluate']),
+                \Closure::fromCallable([$workContextController, 'show']),
+                \Closure::fromCallable([$workContextController, 'evaluate']),
             );
         });
 
@@ -268,6 +279,23 @@ final class HowMuchDoYouKnowModuleWiring
         return $controller;
     }
 
+    private function workContextController() : WorkContextController
+    {
+        /** @var WorkContextController $controller */
+        $controller = $this->memoize($this->workContextController, function (): WorkContextController {
+            return new WorkContextController(
+                $this->exerciseSessionStore,
+                $this->authService,
+                $this->paths(),
+                $this->workContextPayloadBuilder(),
+                $this->workContextEvaluationService(),
+                $this->redirector,
+                $this->urlGenerator
+            );
+        });
+        return $controller;
+    }
+
     private function configPayloadBuilder(): ConfigPayloadBuilder
     {
         /** @var ConfigPayloadBuilder $builder */
@@ -345,6 +373,17 @@ final class HowMuchDoYouKnowModuleWiring
         return $builder;
     }
 
+    private function workContextPayloadBuilder(): WorkContextPayloadBuilder
+    {
+        /** @var WorkContextPayloadBuilder $builder */
+        $builder = $this->memoize($this->workContextPayloadBuilder, fn(): WorkContextPayloadBuilder => new WorkContextPayloadBuilder(
+            $this->workContextRepository,
+            $this->hintService
+        ));
+
+        return $builder;
+    }
+
     private function indexEvaluationService(): IndexEvaluationService
     {
         /** @var IndexEvaluationService $service */
@@ -405,6 +444,17 @@ final class HowMuchDoYouKnowModuleWiring
             $this->similarityEvaluator()
         ));
 
+        return $service;
+    }
+
+    private function workContextEvaluationService(): WorkContextEvaluationService
+    {
+        /** @var WorkContextEvaluationService $service */
+        $service = $this->memoize($this->workContextEvaluationService, fn(): WorkContextEvaluationService => new WorkContextEvaluationService(
+            $this->equalityEvaluator(),
+            $this->similarityEvaluator()
+        ));
+        
         return $service;
     }
 

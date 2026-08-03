@@ -77,7 +77,12 @@ final class ConfigPayloadBuilder
             'schoolContextModule' => false,
             'schoolContextConcept' => false,
             'schoolContextApplication' => false,
-            'schoolContextMethod' => false
+            'schoolContextMethod' => false,
+            'workContextField' => false,
+            'workContextRole' => false,
+            'workContextConcept' => false,
+            'workContextApplication' => false,
+            'workContextBenefit' => false
         ];
     }
 }
