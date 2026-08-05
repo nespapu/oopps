@@ -572,6 +572,95 @@ $selectedDifficultyLabel = $findLabel($difficultyLevels, $selectedDifficulty);
                             </div>
 
                             <hr class="my-4">
+                                                                
+                            <div class="mb-4">
+                                <h2 class="h5 mb-2">Bibliografía</h2>
+                                                                
+                                <p class="text-muted small mb-3">
+                                    Configura qué elementos de las referencias bibliográficas se mostrarán
+                                    resueltos durante el ejercicio.
+                                </p>
+                                                                
+                                <div class="form-check mb-2">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="bookAuthor"
+                                        name="flags[bookAuthor]"
+                                        value="1"
+                                        <?= ($flags['bookAuthor'] ?? false) ? 'checked' : '' ?>
+                                    >
+                                                                
+                                    <label class="form-check-label" for="bookAuthor">
+                                        Autor
+                                    </label>
+                                                                
+                                    <div class="form-text">
+                                        Si está marcado, el autor de la referencia bibliográfica aparecerá
+                                        visible.
+                                    </div>
+                                </div>
+                                                                
+                                <div class="form-check mb-2">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="bookPublicationYear"
+                                        name="flags[bookPublicationYear]"
+                                        value="1"
+                                        <?= ($flags['bookPublicationYear'] ?? false) ? 'checked' : '' ?>
+                                    >
+                                                                
+                                    <label class="form-check-label" for="bookPublicationYear">
+                                        Año de publicación
+                                    </label>
+                                                                
+                                    <div class="form-text">
+                                        Si está marcado, el año de publicación aparecerá visible.
+                                    </div>
+                                </div>
+                                                                
+                                <div class="form-check mb-2">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="bookPublisher"
+                                        name="flags[bookPublisher]"
+                                        value="1"
+                                        <?= ($flags['bookPublisher'] ?? false) ? 'checked' : '' ?>
+                                    >
+                                                                
+                                    <label class="form-check-label" for="bookPublisher">
+                                        Editorial
+                                    </label>
+                                                                
+                                    <div class="form-text">
+                                        Si está marcado, la editorial de la referencia bibliográfica
+                                        aparecerá visible.
+                                    </div>
+                                </div>
+                                                                
+                                <div class="form-check">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="bookTitle"
+                                        name="flags[bookTitle]"
+                                        value="1"
+                                        <?= ($flags['bookTitle'] ?? false) ? 'checked' : '' ?>
+                                    >
+                                                                
+                                    <label class="form-check-label" for="bookTitle">
+                                        Título
+                                    </label>
+                                                                
+                                    <div class="form-text">
+                                        Si está marcado, el título de la obra aparecerá visible.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr class="my-4">
 
                             <div class="d-flex gap-2">
                                 <button type="submit" class="btn btn-primary">

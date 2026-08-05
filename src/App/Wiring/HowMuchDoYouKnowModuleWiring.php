@@ -6,6 +6,8 @@ use App\App\Routing\HowMuchDoYouKnow\Paths;
 use App\App\Routing\HowMuchDoYouKnow\Routes;
 use App\Application\Auth\AuthService;
 use App\Application\Exercises\ExerciseSessionStore;
+use App\Application\Exercises\HowMuchDoYouKnow\Bibliography\BibliographyEvaluationService;
+use App\Application\Exercises\HowMuchDoYouKnow\Bibliography\BibliographyPayloadBuilder;
 use App\Application\Exercises\HowMuchDoYouKnow\Config\ConfigPayloadBuilder;
 use App\Application\Exercises\HowMuchDoYouKnow\Index\IndexEvaluationService;
 use App\Application\Exercises\HowMuchDoYouKnow\Index\IndexPayloadBuilder;
@@ -29,6 +31,7 @@ use App\Application\Flash\FlashMessenger;
 use App\Application\Http\Redirector;
 use App\Application\Routing\RouteUrlGenerator;
 use App\Application\Routing\UrlGenerator;
+use App\Controllers\HowMuchDoYouKnow\BibliographyController;
 use App\Controllers\HowMuchDoYouKnow\ConfigController;
 use App\Controllers\HowMuchDoYouKnow\IndexController;
 use App\Controllers\HowMuchDoYouKnow\JustificationController;
@@ -38,6 +41,7 @@ use App\Controllers\HowMuchDoYouKnow\TitleController;
 use App\Controllers\HowMuchDoYouKnow\ToolsController;
 use App\Controllers\HowMuchDoYouKnow\WorkContextController;
 use App\Domain\Exercise\HintService;
+use App\Domain\Temas\BookRepository;
 use App\Domain\Temas\JustificationRepository;
 use App\Domain\Temas\QuotesRepository;
 use App\Domain\Temas\SectionRepository;
@@ -51,6 +55,7 @@ final class HowMuchDoYouKnowModuleWiring
     private ?Paths $paths = null;
     private ?Routes $routes = null;
 
+    private ?BibliographyController $bibliographyController = null;
     private ?ConfigController $configController = null;
     private ?IndexController $indexController = null;
     private ?JustificationController $justificationController = null;
@@ -60,6 +65,8 @@ final class HowMuchDoYouKnowModuleWiring
     private ?ToolsController $toolsController = null;
     private ?WorkContextController $workContextController = null;
 
+    private ?BibliographyPayloadBuilder $bibliographyPayloadBuilder = null;
+    private ?BibliographyEvaluationService $bibliographyEvaluationService = null;
     private ?ConfigPayloadBuilder $configPayloadBuilder = null;
     private ?IndexPayloadBuilder $indexPayloadBuilder = null;
     private ?IndexEvaluationService $indexEvaluationService = null;
@@ -87,6 +94,7 @@ final class HowMuchDoYouKnowModuleWiring
         private readonly Redirector $redirector,
         private readonly UrlGenerator $urlGenerator,
         private readonly RouteUrlGenerator $routeUrlGenerator,
+        private readonly BookRepository $bookRepository,
         private readonly JustificationRepository $justificationRepository,
         private readonly QuotesRepository $quotesRepository,
         private readonly SectionRepository $sectionRepository,
@@ -124,6 +132,7 @@ final class HowMuchDoYouKnowModuleWiring
             $schoolContextController = $this->schoolContextController();
             $toolsController = $this->toolsController();
             $workContextController = $this->workContextController();
+            $bibliographyController = $this->bibliographyController();
 
             return new Routes(
                 $this->paths(),
@@ -143,6 +152,8 @@ final class HowMuchDoYouKnowModuleWiring
                 \Closure::fromCallable([$schoolContextController, 'evaluate']),
                 \Closure::fromCallable([$workContextController, 'show']),
                 \Closure::fromCallable([$workContextController, 'evaluate']),
+                \Closure::fromCallable([$bibliographyController, 'show']),
+                \Closure::fromCallable([$bibliographyController, 'evaluate']),
             );
         });
 
@@ -154,6 +165,23 @@ final class HowMuchDoYouKnowModuleWiring
         /** @var Paths $paths */
         $paths = $this->memoize($this->paths, fn(): Paths => new Paths($this->routeUrlGenerator));
         return $paths;
+    }
+
+    private function bibliographyController() : BibliographyController
+    {
+        /** @var BibliographyController $controller */
+        $controller = $this->memoize($this->bibliographyController, function (): BibliographyController {
+            return new BibliographyController(
+                $this->exerciseSessionStore,
+                $this->authService,
+                $this->paths(),
+                $this->bibliographyPayloadBuilder(),
+                $this->bibliographyEvaluationService(),
+                $this->redirector,
+                $this->urlGenerator
+            );
+        });
+        return $controller;
     }
 
     private function configController(): ConfigController
@@ -296,6 +324,18 @@ final class HowMuchDoYouKnowModuleWiring
         return $controller;
     }
 
+    private function bibliographyPayloadBuilder(): BibliographyPayloadBuilder
+    {
+        /** @var  BibliographyPayloadBuilder $builder */
+        $builder = $this->memoize($this->bibliographyPayloadBuilder, fn(): BibliographyPayloadBuilder => new BibliographyPayloadBuilder(
+            $this->bookRepository,
+            $this->hintService
+        ));
+
+
+        return $builder;
+    }
+
     private function configPayloadBuilder(): ConfigPayloadBuilder
     {
         /** @var ConfigPayloadBuilder $builder */
@@ -382,6 +422,17 @@ final class HowMuchDoYouKnowModuleWiring
         ));
 
         return $builder;
+    }
+
+    private function bibliographyEvaluationService(): BibliographyEvaluationService
+    {
+        /** @var BibliographyEvaluationService $service */
+        $service = $this->memoize($this->bibliographyEvaluationService, fn(): BibliographyEvaluationService => new BibliographyEvaluationService(
+            $this->equalityEvaluator()
+        ));
+
+
+        return $service;
     }
 
     private function indexEvaluationService(): IndexEvaluationService

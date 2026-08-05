@@ -26,6 +26,7 @@ use App\Controllers\ExercisesDashboardController;
 use App\Controllers\LoginController;
 use App\Domain\Auth\UserRepository;
 use App\Domain\Exercise\HintService;
+use App\Domain\Temas\BookRepository;
 use App\Domain\Temas\JustificationRepository;
 use App\Domain\Temas\QuotesRepository;
 use App\Domain\Temas\SectionRepository;
@@ -41,6 +42,7 @@ use App\Infrastructure\Http\DefaultHttpMethodGuard;
 use App\Infrastructure\Http\HeaderRedirector;
 use App\Infrastructure\Http\ServerRequestContext;
 use App\Infrastructure\Persistence\PdoFactory;
+use App\Infrastructure\Persistence\Repositories\SqlBookRepository;
 use App\Infrastructure\Persistence\Repositories\SqlJustificationRepository;
 use App\Infrastructure\Persistence\Repositories\SqlQuotesRepository;
 use App\Infrastructure\Persistence\Repositories\SqlSectionRepository;
@@ -90,6 +92,7 @@ final class AppWiring
     private ?PdoFactory $pdoFactory = null;
     private ?SessionStore $sessionStore = null;
     private ?UrlGenerator $urlGenerator = null;
+    private ?BookRepository $bookRepository = null;
     private ?JustificationRepository $justificationRepository = null;
     private ?QuotesRepository $quotesRepository = null;
     private ?TopicRepository $topicRepository = null;
@@ -245,6 +248,7 @@ final class AppWiring
             $this->redirector(),
             $this->urlGenerator(),
             $this->routeUrlGenerator(),
+            $this->bookRepository(),
             $this->justificationRepository(),
             $this->quotesRepository(),
             $this->sectionRepository(),
@@ -383,6 +387,16 @@ final class AppWiring
         /** @var UrlGenerator $generator */
         $generator = $this->memoize($this->urlGenerator, fn(): UrlGenerator => new ScriptNameUrlGenerator());
         return $generator;
+    }
+
+    private function bookRepository(): BookRepository
+    {
+        /** @var BookRepository $repo */
+        $repo = $this->memoize($this->bookRepository, fn(): BookRepository => new SqlBookRepository(
+            $this->pdo()
+        ));
+
+        return $repo;
     }
 
     private function justificationRepository(): JustificationRepository

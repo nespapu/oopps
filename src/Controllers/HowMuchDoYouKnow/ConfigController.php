@@ -76,6 +76,10 @@ final class ConfigController
           'workContextConcept' => isset($_POST['flags']['workContextConcept']),
           'workContextApplication' => isset($_POST['flags']['workContextApplication']),
           'workContextBenefit' => isset($_POST['flags']['workContextBenefit']),
+          'bookAuthor' => isset($_POST['flags']['bookAuthor']),
+          'bookPublicationYear' => isset($_POST['flags']['bookPublicationYear']),
+          'bookTitle' => isset($_POST['flags']['bookTitle']),
+          'bookPublisher' => isset($_POST['flags']['bookPublisher']),
         ];
 
         $rawTopicOrder = $_POST['topicOrder'] ?? null;

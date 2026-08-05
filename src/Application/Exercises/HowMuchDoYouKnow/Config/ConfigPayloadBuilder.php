@@ -82,7 +82,11 @@ final class ConfigPayloadBuilder
             'workContextRole' => false,
             'workContextConcept' => false,
             'workContextApplication' => false,
-            'workContextBenefit' => false
+            'workContextBenefit' => false,
+            'bookAuthor' => false,
+            'bookPublicationYear' => false,
+            'bookTitle' => false,
+            'bookPublisher' => false
         ];
     }
 }
