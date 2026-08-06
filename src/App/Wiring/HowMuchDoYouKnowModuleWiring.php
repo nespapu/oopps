@@ -2,6 +2,7 @@
 
 namespace App\App\Wiring;
 
+use App\App\Routing\ExercisesDashboardPaths;
 use App\App\Routing\HowMuchDoYouKnow\Paths;
 use App\App\Routing\HowMuchDoYouKnow\Routes;
 use App\Application\Auth\AuthService;
@@ -38,6 +39,7 @@ use App\Controllers\HowMuchDoYouKnow\ConfigController;
 use App\Controllers\HowMuchDoYouKnow\IndexController;
 use App\Controllers\HowMuchDoYouKnow\JustificationController;
 use App\Controllers\HowMuchDoYouKnow\QuotesController;
+use App\Controllers\HowMuchDoYouKnow\ResultController;
 use App\Controllers\HowMuchDoYouKnow\SchoolContextController;
 use App\Controllers\HowMuchDoYouKnow\TitleController;
 use App\Controllers\HowMuchDoYouKnow\ToolsController;
@@ -64,6 +66,7 @@ final class HowMuchDoYouKnowModuleWiring
     private ?IndexController $indexController = null;
     private ?JustificationController $justificationController = null;
     private ?QuotesController $quotesController = null;
+    private ?ResultController $resultController = null;
     private ?SchoolContextController $schoolContextController = null;
     private ?TitleController $titleController = null;
     private ?ToolsController $toolsController = null;
@@ -96,6 +99,7 @@ final class HowMuchDoYouKnowModuleWiring
 
     public function __construct(
         private readonly ExerciseSessionStore $exerciseSessionStore,
+        private readonly ExercisesDashboardPaths $dashboardPaths,
         private readonly AuthService $authService,
         private readonly FlashMessenger $flash,
         private readonly Redirector $redirector,
@@ -142,6 +146,7 @@ final class HowMuchDoYouKnowModuleWiring
             $workContextController = $this->workContextController();
             $bibliographyController = $this->bibliographyController();
             $webgraphyController = $this->webgraphyController();
+            $resultController = $this->resultController();
 
             return new Routes(
                 $this->paths(),
@@ -165,6 +170,7 @@ final class HowMuchDoYouKnowModuleWiring
                 \Closure::fromCallable([$bibliographyController, 'evaluate']),
                 \Closure::fromCallable([$webgraphyController, 'show']),
                 \Closure::fromCallable([$webgraphyController, 'evaluate']),
+                \Closure::fromCallable([$resultController, 'show']),
             );
         });
 
@@ -259,6 +265,20 @@ final class HowMuchDoYouKnowModuleWiring
                 $this->quotesPayloadBuilder(),
                 $this->quotesEvaluationService(),
                 $this->redirector,
+                $this->urlGenerator
+            );
+        });
+        return $controller;
+    }
+
+    private function resultController() : ResultController
+    {
+        /** @var ResultController $controller */
+        $controller = $this->memoize($this->resultController, function (): ResultController {
+            return new ResultController(
+                $this->authService,
+                $this->dashboardPaths,
+                $this->paths(),
                 $this->urlGenerator
             );
         });

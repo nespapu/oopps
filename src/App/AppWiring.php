@@ -246,6 +246,7 @@ final class AppWiring
         /** @var HowMuchDoYouKnowModuleWiring $module */
         $module = $this->memoize($this->howMuchDoYouKnowModule, fn(): HowMuchDoYouKnowModuleWiring => new HowMuchDoYouKnowModuleWiring(
             $this->exerciseSessionStore(),
+            $this->exercisesDashboardPaths(),
             $this->authService(),
             $this->flash(),
             $this->redirector(),
