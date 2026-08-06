@@ -86,7 +86,9 @@ final class ConfigPayloadBuilder
             'bookAuthor' => false,
             'bookPublicationYear' => false,
             'bookTitle' => false,
-            'bookPublisher' => false
+            'bookPublisher' => false,
+            'websiteName' => false,
+            'websiteURL' => false
         ];
     }
 }

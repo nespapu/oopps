@@ -33,6 +33,7 @@ use App\Domain\Temas\SectionRepository;
 use App\Domain\Temas\SchoolContextRepository;
 use App\Domain\Temas\TopicRepository;
 use App\Domain\Temas\ToolsRepository;
+use App\Domain\Temas\WebsiteRepository;
 use App\Domain\Temas\WorkContextRepository;
 use App\Infrastructure\Auth\DefaultAuthService;
 use App\Infrastructure\Config\DatabaseConfigProvider;
@@ -48,6 +49,7 @@ use App\Infrastructure\Persistence\Repositories\SqlQuotesRepository;
 use App\Infrastructure\Persistence\Repositories\SqlSectionRepository;
 use App\Infrastructure\Persistence\Repositories\SqlSchoolContextRepository;
 use App\Infrastructure\Persistence\Repositories\SqlToolsRepository;
+use App\Infrastructure\Persistence\Repositories\SqlWebsiteRepository;
 use App\Infrastructure\Persistence\Repositories\SqlWorkContextRepository;
 use App\Infrastructure\Persistence\Repositories\TopicRepositorySQL;
 use App\Infrastructure\Persistence\Repositories\UserRepositorySQL;
@@ -100,6 +102,7 @@ final class AppWiring
     private ?UserRepository $userRepository = null;
     private ?SectionRepository $sectionRepository = null;
     private ?SchoolContextRepository $schoolContextRepository = null;
+    private ?WebsiteRepository $websiteRepository = null;
     private ?WorkContextRepository $workContextRepository = null;
 
     /**
@@ -256,6 +259,7 @@ final class AppWiring
             $this->toolsRepository(),
             $this->topicRepository(),
             $this->workContextRepository(),
+            $this->websiteRepository(),
             $this->hintService()
         ));
 
@@ -463,6 +467,16 @@ final class AppWiring
     {
         /** @var SchoolContextRepository $repo */
         $repo = $this->memoize($this->schoolContextRepository, fn(): SchoolContextRepository => new SqlSchoolContextRepository(
+            $this->pdo()
+        ));
+        
+        return $repo;
+    }
+
+    private function websiteRepository(): WebsiteRepository
+    {
+        /** @var WebsiteRepository $repo */
+        $repo = $this->memoize($this->websiteRepository, fn(): WebsiteRepository => new SqlWebsiteRepository(
             $this->pdo()
         ));
         

@@ -661,6 +661,54 @@ $selectedDifficultyLabel = $findLabel($difficultyLevels, $selectedDifficulty);
                             </div>
 
                             <hr class="my-4">
+                                                                
+                            <div class="mb-4">
+                                <h2 class="h5 mb-2">Webgrafía</h2>
+                                                                
+                                <p class="text-muted small mb-3">
+                                    Configura qué elementos de la webgrafía se mostrarán resueltos durante el ejercicio.
+                                </p>
+                                                                
+                                <div class="form-check mb-2">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="websiteName"
+                                        name="flags[websiteName]"
+                                        value="1"
+                                        <?= ($flags['websiteName'] ?? false) ? 'checked' : '' ?>
+                                    >
+                                                                
+                                    <label class="form-check-label" for="websiteName">
+                                        Nombre del sitio web
+                                    </label>
+                                                                
+                                    <div class="form-text">
+                                        Si está marcado, el nombre del sitio web aparecerá visible.
+                                    </div>
+                                </div>
+                                                                
+                                <div class="form-check">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="websiteURL"
+                                        name="flags[websiteURL]"
+                                        value="1"
+                                        <?= ($flags['websiteURL'] ?? false) ? 'checked' : '' ?>
+                                    >
+                                                                
+                                    <label class="form-check-label" for="websiteURL">
+                                        URL
+                                    </label>
+                                                                
+                                    <div class="form-text">
+                                        Si está marcado, la URL del sitio web aparecerá visible.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr class="my-4">
 
                             <div class="d-flex gap-2">
                                 <button type="submit" class="btn btn-primary">

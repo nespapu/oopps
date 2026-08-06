@@ -36,6 +36,9 @@ final class Paths
     private const BIBLIOGRAPHY_EVALUATION = 'ejercicios/cuanto-sabes-tema/sesiones/{sesionId}/pasos/bibliografia/evaluar';
 
     private const WEBGRAPHY_STEP = 'ejercicios/cuanto-sabes-tema/sesiones/{sesionId}/pasos/webgrafia';
+    private const WEBGRAPHY_EVALUATION = 'ejercicios/cuanto-sabes-tema/sesiones/{sesionId}/pasos/webgrafia/evaluar';
+
+    private const RESULT_STEP = 'ejercicios/cuanto-sabes-tema/sesiones/{sesionId}/pasos/resultado';
 
     public function __construct(
         private readonly RouteUrlGenerator $routeUrlGenerator
@@ -162,6 +165,18 @@ final class Paths
         ]);
     }
 
+    public function resultStepPattern(): string
+    {
+        return self::RESULT_STEP;
+    }
+
+    public function resultStep(string $sessionId): string
+    {
+        return $this->routeUrlGenerator->generate(self::RESULT_STEP, [
+            'sesionId' => $sessionId,
+        ]);
+    }
+
     public function titleEvaluationPattern(): string
     {
         return self::TITLE_EVALUATION;
@@ -253,10 +268,21 @@ final class Paths
         return self::BIBLIOGRAPHY_EVALUATION;
     }
 
-
     public function bibliographyEvaluation(string $sessionId): string
     {
         return $this->routeUrlGenerator->generate(self::BIBLIOGRAPHY_EVALUATION, [
+            'sesionId' => $sessionId,
+        ]);
+    }
+
+    public function webgraphyEvaluationPattern(): string
+    {
+        return self::WEBGRAPHY_EVALUATION;
+    }
+
+    public function webgraphyEvaluation(string $sessionId): string
+    {
+        return $this->routeUrlGenerator->generate(self::WEBGRAPHY_EVALUATION, [
             'sesionId' => $sessionId,
         ]);
     }

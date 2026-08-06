@@ -30,6 +30,8 @@ final class Routes
         private readonly \Closure $evaluateWorkContextStepHandler,
         private readonly \Closure $showBibliographyStepHandler,
         private readonly \Closure $evaluateBibliographyStepHandler,
+        private readonly \Closure $showWebgraphyStepHandler,
+        private readonly \Closure $evaluateWebgraphyStepHandler,
         ) {}
 
     public function routes(): RouteCollection
@@ -142,6 +144,18 @@ final class Routes
             path: $this->paths->bibliographyEvaluationPattern(),
             method: HttpMethod::POST,
             handler: $this->evaluateBibliographyStepHandler
+        ));
+
+        $routes->add(new RouteDefinition(
+            path: $this->paths->webgraphyStepPattern(),
+            method: HttpMethod::GET,
+            handler: $this->showWebgraphyStepHandler
+        ));
+
+        $routes->add(new RouteDefinition(
+            path: $this->paths->webgraphyEvaluationPattern(),
+            method: HttpMethod::POST,
+            handler: $this->evaluateWebgraphyStepHandler
         ));
 
         return $routes;
